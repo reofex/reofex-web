@@ -117,6 +117,12 @@ import BackdropCurves from "../visuals/BackdropCurves.astro";
   }
 
   @media (max-width: 1023px) {
+    /* Glow sits lower so the hero's top edge matches the solid mobile header exactly */
+    .hero {
+      background:
+        radial-gradient(90% 45% at 80% 75%, rgb(26 66 74 / 0.9), transparent 70%),
+        linear-gradient(180deg, var(--reofex-dark-2) 0%, var(--reofex-dark-2) 12%, var(--reofex-dark) 100%);
+    }
     .hero__inner {
       grid-template-columns: 1fr;
     }

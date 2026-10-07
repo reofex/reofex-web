@@ -14,6 +14,7 @@ import respondlyShot from "../assets/products/respondly.png";
 import fynexShot from "../assets/products/fynex.png";
 import growthDashShot from "../assets/products/growth-dash.png";
 import growthApprovalShot from "../assets/products/growth-approval.png";
+import syncShot from "../assets/products/sync.png";
 
 export type ProductSlug = "respondly" | "reofex-growth" | "reofex-sync" | "fynex";
 
@@ -224,6 +225,11 @@ export const products: Product[] = [
     icon: "invoice",
     accent: "#138a8a",
     accentVar: "--accent-sync",
+    screenshot: {
+      src: syncShot,
+      alt: "Reofex Sync, AI for Accounts: auto-read invoices from email, extract GST details, match vendors and catch duplicates, and post to Zoho Books — shown with the invoice inbox on a laptop.",
+      frameLabel: "Reofex Sync · AI for Accounts",
+    },
     hero: {
       eyebrow: "AI invoice automation",
       title: "From invoice receipt to accounting entry —",
@@ -260,15 +266,16 @@ export const products: Product[] = [
     features: [
       { icon: "mail", title: "Email & WhatsApp intake", body: "Capture invoices from the channels vendors already use." },
       { icon: "scan", title: "AI document reading", body: "Extract vendor, line items, totals and tax from varied layouts." },
-      { icon: "link", title: "Vendor matching", body: "Match each invoice to the right vendor record automatically." },
+      { icon: "invoice", title: "GST extraction", body: "Extract GST details from every invoice, ready for your books." },
+      { icon: "link", title: "Vendor matching & duplicates", body: "Match each invoice to the right vendor and catch duplicates before they're posted." },
       { icon: "shieldCheck", title: "Automated validation", body: "Catch missing fields and inconsistencies before they reach your books." },
       { icon: "userCheck", title: "Approval workflows", body: "Route invoices to the right people for sign-off." },
-      { icon: "database", title: "Accounting integration", body: "Post approved entries to your connected accounting software." },
+      { icon: "database", title: "Post to Zoho Books", body: "Post approved entries to Zoho Books in one click." },
     ],
     integrations: {
       title: "Fits between your inbox and your ledger.",
-      body: "Intake channels on one side, your accounting system on the other. Specific accounting connectors are confirmed per deployment.",
-      items: ["Email", "WhatsApp", "Approval workflow", "Accounting software"],
+      body: "Intake channels on one side, your accounting system on the other — with AI reading, validation and approvals in between.",
+      items: ["Email", "WhatsApp", "GST", "Approval workflow", "Zoho Books"],
     },
     benefits: ["Less manual work", "Fewer errors", "Faster invoice processing", "Automated validation", "Approval workflows", "Accounting integration"],
     seo: {

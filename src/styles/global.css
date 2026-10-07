@@ -10,7 +10,14 @@
 * {
   margin: 0;
 }
+/*
+ * The page canvas is brand dark, and the cream surface lives on <main>.
+ * Visually identical, but browsers that tint their UI from the page colour
+ * (Safari 26+ ignores theme-color and samples the page) and the overscroll
+ * "rubber-band" area stay dark instead of flashing cream/white.
+ */
 html {
+  background-color: var(--reofex-dark);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-behavior: smooth;
@@ -22,7 +29,7 @@ body {
   font-weight: var(--fw-regular);
   line-height: var(--lh-body);
   color: var(--reofex-ink);
-  background: var(--reofex-cream);
+  background: var(--reofex-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -101,6 +108,11 @@ p {
 }
 .skip-link:focus {
   transform: none;
+}
+
+main {
+  display: block;
+  background: var(--reofex-cream);
 }
 
 /* ---------- Layout primitives ---------- */

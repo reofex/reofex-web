@@ -2,12 +2,14 @@
 /**
  * Contact form.
  * - If PUBLIC_FORM_ENDPOINT is set (e.g. a Formspree/Basin/own API URL), submits JSON via fetch.
- * - Otherwise falls back to opening the visitor's email client with the message pre-filled,
- *   so the form is never a dead end.
+ * - Otherwise (the default on a static host) it opens WhatsApp with a formatted "New enquiry"
+ *   message to Reofex's number; the visitor taps Send. "Send by email instead" opens their
+ *   email app with the same content. Nothing is sent until the visitor confirms in that app.
  * Prefills `topic` from the query string (?topic=fynex) and the email handed over by the
  * footer via sessionStorage (personal data is never put in URLs).
  */
 import Button from "./ui/Button.astro";
+import Icon from "./ui/Icon.astro";
 import { site } from "../data/site";
 import { products } from "../data/products";
 
@@ -18,9 +20,11 @@ const topics = [
   { value: "other", label: "Something else" },
 ];
 const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
+const waDigits = site.whatsapp.number.replace(/\D/g, "");
+const viaWhatsApp = !endpoint && !!waDigits;
 ---
 
-<form class="cf" data-contact-form data-endpoint={endpoint} data-mailto={site.email} novalidate>
+<form class="cf" data-contact-form data-endpoint={endpoint} data-wa={viaWhatsApp ? waDigits : ""} data-mailto={site.email} novalidate>
   <div class="cf__row">
     <div class="cf__field">
       <label for="cf-name">Name</label>
@@ -51,9 +55,24 @@ const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
     <p class="cf__err" id="cf-message-err" hidden>Please add a short message.</p>
   </div>
   <div class="cf__foot">
-    <Button type="submit" size="lg">Send message</Button>
-    <p class="cf__status" role="status" aria-live="polite" data-status></p>
+    {
+      viaWhatsApp ? (
+        <Button type="submit" size="lg" icon="whatsapp">Send via WhatsApp</Button>
+      ) : (
+        <Button type="submit" size="lg">Send message</Button>
+      )
+    }
+    {
+      !endpoint && (
+        <button type="button" class="cf__alt" data-send-email>
+          <Icon name="mail" size={16} />
+          {viaWhatsApp ? "Send by email instead" : "Send by email"}
+        </button>
+      )
+    }
   </div>
+  {viaWhatsApp && <p class="cf__hint">This opens WhatsApp with your details filled in — just tap Send.</p>}
+  <p class="cf__status" role="status" aria-live="polite" data-status></p>
 </form>
 
 <script>
@@ -88,11 +107,32 @@ const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
       return !firstInvalid;
     };
 
+    const collect = () => Object.fromEntries(new FormData(form)) as Record<string, string>;
+    const topicLabel = () => select.selectedOptions[0].text;
+    const openExternal = (url: string) => {
+      // New tab on desktop (keeps the site open); the OS hands wa.me/mailto to the app on phones
+      const w = window.open(url, "_blank");
+      if (w) w.opener = null;
+      else location.href = url;
+    };
+
+    const sendEmail = () => {
+      const data = collect();
+      const subject = `New enquiry: ${topicLabel()}`;
+      const body = `Name: ${data.name}\nEmail: ${data.email}\nCompany: ${data.company || "-"}\nInterested in: ${topicLabel()}\n\n${data.message}`;
+      location.href = `mailto:${form.dataset.mailto}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      status.textContent = "Opening your email app — send the message from there.";
+    };
+    form.querySelector("[data-send-email]")?.addEventListener("click", () => {
+      if (validate()) sendEmail();
+    });
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!validate()) return;
-      const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+      const data = collect();
       const endpoint = form.dataset.endpoint;
+      const wa = form.dataset.wa;
       if (endpoint) {
         status.textContent = "Sending…";
         try {
@@ -107,11 +147,22 @@ const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
         } catch {
           status.textContent = `Something went wrong. Please email us at ${form.dataset.mailto}.`;
         }
+      } else if (wa) {
+        const text = [
+          "*New enquiry — reofex.com*",
+          "",
+          `*Name:* ${data.name}`,
+          `*Email:* ${data.email}`,
+          `*Company:* ${data.company || "-"}`,
+          `*Interested in:* ${topicLabel()}`,
+          "",
+          "*Message:*",
+          data.message,
+        ].join("\n");
+        openExternal(`https://wa.me/${wa}?text=${encodeURIComponent(text)}`);
+        status.textContent = "WhatsApp is opening with your message — tap Send to deliver it to us.";
       } else {
-        const subject = `Enquiry: ${select.selectedOptions[0].text}`;
-        const body = `Name: ${data.name}\nEmail: ${data.email}\nCompany: ${data.company || "-"}\n\n${data.message}`;
-        location.href = `mailto:${form.dataset.mailto}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        status.textContent = "Opening your email app to send the message…";
+        sendEmail();
       }
     });
   });
@@ -188,9 +239,28 @@ const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
     align-items: center;
     gap: var(--space-5);
   }
+  .cf__alt {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    border-radius: 6px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    color: var(--reofex-orange-ink);
+  }
+  .cf__alt:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .cf__hint,
   .cf__status {
     font-size: var(--fs-sm);
     color: var(--reofex-muted);
+  }
+  .cf__status:empty,
+  .cf:has(.cf__status:not(:empty)) .cf__hint {
+    display: none;
   }
   @media (max-width: 640px) {
     .cf__row {
@@ -198,6 +268,9 @@ const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
     }
     .cf__foot :global(.btn) {
       width: 100%;
+    }
+    .cf__foot {
+      justify-content: center;
     }
   }
 </style>

@@ -20,14 +20,17 @@ export const site = {
   ] as { label: string; icon: IconName; href: string }[],
 };
 
+/** wa.me link to Reofex's WhatsApp with a pre-filled message, or null if no number is configured. */
+export const whatsappLink = (text: string) => {
+  const digits = site.whatsapp.number.replace(/\D/g, "");
+  return digits ? `https://wa.me/${digits}?text=${encodeURIComponent(text)}` : null;
+};
+
 /**
  * "Get Started" destination: opens a WhatsApp chat with Reofex and a pre-filled message.
- * Falls back to the contact page until a WhatsApp number is configured.
+ * Falls back to the contact page if no WhatsApp number is configured.
  */
-export const getStartedHref = (() => {
-  const digits = site.whatsapp.number.replace(/\D/g, "");
-  return digits ? `https://wa.me/${digits}?text=${encodeURIComponent(site.whatsapp.message)}` : "/contact?topic=project";
-})();
+export const getStartedHref = whatsappLink(site.whatsapp.message) ?? "/contact?topic=project";
 
 export const mainNav = [
   { label: "Products", href: "/products", mega: true },

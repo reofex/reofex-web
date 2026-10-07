@@ -329,6 +329,14 @@ const isCurrent = (href: string) => path === href || path.startsWith(href + "/")
     }
   }
   @media (max-width: 1023px) {
+    /* Opaque on phones/tablets: matches the hero, and gives Safari's
+       status-bar tinting a solid colour to sample */
+    .nav {
+      background: var(--reofex-dark-2);
+    }
+    .nav.is-scrolled {
+      background: rgb(11 28 33 / 0.92);
+    }
     .nav__primary,
     .nav__actions {
       display: none;

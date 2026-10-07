@@ -11,7 +11,7 @@ import markSvg from "../ui/logo-paths.svg?raw";
 const events = [
   { slug: "respondly", text: "WhatsApp enquiry answered with your price list", state: "Replied" },
   { slug: "reofex-growth", text: "Campaign draft ready for your review", state: "Needs approval" },
-  { slug: "reofex-sync", text: "Invoice INV-2041 validated and vendor matched", state: "To approve" },
+  { slug: "reofex-sync", text: "Invoice validated, GST extracted, vendor matched", state: "To approve" },
   { slug: "fynex", text: "Visa renewal moved from HR to PRO", state: "In progress" },
 ] as const;
 const bySlug = Object.fromEntries(products.map((p) => [p.slug, p]));
