@@ -10,14 +10,13 @@ export const site = {
   email: "info@reofex.com",
   whatsapp: {
     /** International format, digits only or with +/spaces, e.g. "+971 50 123 4567". Empty = not configured. */
-    number: "", // TODO: add Reofex WhatsApp number
+    number: "+91 8075954537",
     message: "Hi Reofex, I'd like to get started with a project. Can we talk?",
   },
   social: [
-    { label: "LinkedIn", icon: "linkedin", href: "#" }, // TODO: real profile URLs
-    { label: "X", icon: "x", href: "#" },
-    { label: "GitHub", icon: "github", href: "#" },
-    { label: "Instagram", icon: "instagram", href: "#" },
+    { label: "LinkedIn", icon: "linkedin", href: "https://www.linkedin.com/company/reofex" },
+    { label: "Instagram", icon: "instagram", href: "https://instagram.com/reofextech" },
+    { label: "GitHub", icon: "github", href: "https://github.com/reofex" },
   ] as { label: string; icon: IconName; href: string }[],
 };
 

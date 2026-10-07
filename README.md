@@ -33,10 +33,12 @@ Respondly and Fynex copy mirror therespondly.com and gofynex.com (inspected 2026
 
 - [ ] Production domain (`astro.config.mjs` `site` + `src/data/site.ts` `url`)
 - [x] Contact email: `info@reofex.com`
-- [ ] WhatsApp number for "Get Started" (`site.whatsapp.number`) — until set, Get Started links to `/contact`
-- [ ] Social profile URLs (`site.social`, currently `#`)
+- [x] WhatsApp for "Get Started": +91 8075954537 (`site.whatsapp`)
+- [x] Social profiles: LinkedIn, Instagram, GitHub
 - [ ] Case studies (`caseStudies` — all placeholders; no customers or metrics invented)
-- [ ] Privacy Policy & Terms (`src/pages/privacy.astro`, `terms.astro` — placeholders, `noindex`)
+- [x] Privacy Policy & Terms written for India (DPDP Act 2023, IT Act 2000) — have a lawyer review;
+      add registered address + named Grievance Officer when available. Update the policy if analytics,
+      cookies or a form provider are ever added.
 - [ ] About page company story / team / location
 - [ ] Reofex Growth & Reofex Sync CTAs point to `/contact` — swap for product URLs when live
 - [ ] Reofex Sync: confirm which accounting systems are supported, then list them

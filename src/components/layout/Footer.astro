@@ -35,10 +35,10 @@ const year = new Date().getFullYear();
         <Logo tone="light" height={46} />
         <p class="ft__blurb">{site.footerBlurb}</p>
 
-        <form class="ft__form" action="/contact" method="get">
+        <form class="ft__form" action="/contact" method="get" data-ft-form>
           <label for="ft-email" class="ft__label">Start a conversation</label>
           <div class="ft__field">
-            <input id="ft-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required />
+            <input id="ft-email" type="email" placeholder="you@company.com" autocomplete="email" required />
             <button type="submit" aria-label="Continue to contact form">
               <Icon name="arrowRight" size={18} />
             </button>
@@ -75,7 +75,7 @@ const year = new Date().getFullYear();
         {
           site.social.map((s) => (
             <li>
-              <a href={s.href} aria-label={s.label}>
+              <a href={s.href} aria-label={`Reofex on ${s.label} (opens in a new tab)`} target="_blank" rel="noopener me">
                 <Icon name={s.icon} size={18} />
               </a>
             </li>
@@ -88,6 +88,18 @@ const year = new Date().getFullYear();
 </footer>
 
 <script>
+  // Hand the email to the contact form via sessionStorage — never via the URL,
+  // so it doesn't end up in browser history or server logs. (The input has no
+  // name attribute, so the no-JS fallback just opens /contact without it.)
+  document.querySelector<HTMLFormElement>("[data-ft-form]")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const value = (document.getElementById("ft-email") as HTMLInputElement).value.trim();
+    try {
+      if (value) sessionStorage.setItem("reofex:contact-email", value);
+    } catch {}
+    location.href = "/contact";
+  });
+
   // Footer columns are always open on desktop and collapsible accordions on mobile.
   const mq = window.matchMedia("(max-width: 767px)");
   const cols = document.querySelectorAll<HTMLDetailsElement>("[data-ft-col]");

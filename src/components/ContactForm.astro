@@ -4,7 +4,8 @@
  * - If PUBLIC_FORM_ENDPOINT is set (e.g. a Formspree/Basin/own API URL), submits JSON via fetch.
  * - Otherwise falls back to opening the visitor's email client with the message pre-filled,
  *   so the form is never a dead end.
- * Prefills `topic` and `email` from the query string (?topic=fynex&email=...).
+ * Prefills `topic` from the query string (?topic=fynex) and the email handed over by the
+ * footer via sessionStorage (personal data is never put in URLs).
  */
 import Button from "./ui/Button.astro";
 import { site } from "../data/site";
@@ -59,7 +60,11 @@ const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? "";
   document.querySelectorAll<HTMLFormElement>("[data-contact-form]").forEach((form) => {
     const params = new URLSearchParams(location.search);
     const topic = params.get("topic");
-    const email = params.get("email");
+    let email: string | null = null;
+    try {
+      email = sessionStorage.getItem("reofex:contact-email");
+      sessionStorage.removeItem("reofex:contact-email");
+    } catch {}
     const select = form.elements.namedItem("topic") as HTMLSelectElement;
     if (topic && [...select.options].some((o) => o.value === topic)) select.value = topic;
     if (email) (form.elements.namedItem("email") as HTMLInputElement).value = email;

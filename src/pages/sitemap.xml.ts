@@ -10,6 +10,8 @@ const paths = [
   "/about",
   "/case-studies",
   "/contact",
+  "/privacy",
+  "/terms",
 ];
 
 export const GET: APIRoute = ({ site }) => {

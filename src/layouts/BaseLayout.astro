@@ -26,6 +26,7 @@ const orgLd = {
   logo: new URL("/brand/reofex-logo-light-bg.svg", site.url).href,
   description: site.description,
   email: site.email,
+  sameAs: site.social.map((s) => s.href),
 };
 const ld = [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [])];
 ---

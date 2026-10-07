@@ -7,6 +7,7 @@ import SectionHeader from "../../components/ui/SectionHeader.astro";
 import Icon from "../../components/ui/Icon.astro";
 import ProductIcon from "../../components/ui/ProductIcon.astro";
 import CTASection from "../../components/home/CTASection.astro";
+import ScreenshotFrame from "../../components/visuals/ScreenshotFrame.astro";
 import { products, productHref, type Product } from "../../data/products";
 import { site } from "../../data/site";
 
@@ -81,6 +82,12 @@ const jsonLd = [
             </span>
             <h3>{p.highlight.title}</h3>
             <p>{p.highlight.body}</p>
+            {p.highlight.image && (
+              <div class="expl__shot">
+                <ScreenshotFrame shot={p.highlight.image} sizes="(min-width: 1024px) 460px, 92vw" />
+                <p class="expl__shotcap">From the Reofex Growth dashboard</p>
+              </div>
+            )}
           </aside>
         ) : (
           <aside class="expl__callout expl__callout--plain" data-reveal>
@@ -253,6 +260,13 @@ const jsonLd = [
     background: var(--reofex-orange);
     color: var(--reofex-dark);
     margin-bottom: var(--space-2);
+  }
+  .expl__shot {
+    margin-top: var(--space-3);
+  }
+  .expl__shotcap {
+    margin-top: var(--space-2);
+    font-size: var(--fs-xs);
   }
   .expl__callout--plain {
     background:

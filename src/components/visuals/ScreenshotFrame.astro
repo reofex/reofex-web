@@ -1,0 +1,87 @@
+---
+/**
+ * Real product screenshot in a neutral window frame.
+ * Generates responsive AVIF/WebP via astro:assets.
+ */
+import { Picture } from "astro:assets";
+import type { Screenshot } from "../../data/products";
+
+interface Props {
+  shot: Screenshot;
+  /** Hero images load eagerly; everything else lazily */
+  priority?: boolean;
+  sizes?: string;
+  tone?: "light" | "dark";
+  class?: string;
+}
+const { shot, priority = false, sizes = "(min-width: 1200px) 1100px, 100vw", tone = "light", class: className } = Astro.props;
+---
+
+<figure class:list={["sf", `sf--${tone}`, className]}>
+  <div class="sf__bar" aria-hidden="true">
+    <span></span><span></span><span></span>
+    <em>{shot.frameLabel}</em>
+  </div>
+  <Picture
+    src={shot.src}
+    alt={shot.alt}
+    formats={["avif", "webp"]}
+    widths={[640, 960, 1280, 1800, 2400].filter((w) => w <= shot.src.width)}
+    sizes={sizes}
+    loading={priority ? "eager" : "lazy"}
+    fetchpriority={priority ? "high" : "auto"}
+    decoding="async"
+    class="sf__img"
+  />
+</figure>
+
+<style>
+  .sf {
+    margin: 0;
+    overflow: hidden;
+    border-radius: clamp(10px, 0.6rem + 0.5vw, 16px);
+    background: #fff;
+    box-shadow:
+      0 0 0 1px rgb(18 40 47 / 0.08),
+      0 30px 60px -30px rgb(18 40 47 / 0.35);
+  }
+  .sf--dark {
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.1),
+      0 40px 80px -30px rgb(0 0 0 / 0.7);
+  }
+  .sf__bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: #f6f5f1;
+    border-bottom: 1px solid rgb(18 40 47 / 0.07);
+  }
+  .sf__bar span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgb(18 40 47 / 0.15);
+  }
+  .sf__bar em {
+    margin-inline: auto;
+    padding: 3px 14px;
+    border-radius: var(--radius-pill);
+    font-style: normal;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    color: rgb(18 40 47 / 0.6);
+    background: #fff;
+    border: 1px solid rgb(18 40 47 / 0.07);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+  }
+  .sf :global(.sf__img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

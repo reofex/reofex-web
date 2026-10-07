@@ -7,6 +7,7 @@ import Button from "../ui/Button.astro";
 import Icon from "../ui/Icon.astro";
 import ProductIcon from "../ui/ProductIcon.astro";
 import ProductMiniUI from "../visuals/ProductMiniUI.astro";
+import ScreenshotFrame from "../visuals/ScreenshotFrame.astro";
 import BackdropCurves from "../visuals/BackdropCurves.astro";
 import type { Product } from "../../data/products";
 
@@ -45,8 +46,14 @@ const notes = p.features.slice(0, 4);
   </div>
 
   <div class="container pph__showcase" aria-label={`${p.name} interface preview`}>
-    <div class="pph__stage">
-      <ProductMiniUI product={p.slug} size="showcase" />
+    <div class:list={["pph__stage", p.screenshot && "pph__stage--shot"]}>
+      {
+        p.screenshot ? (
+          <ScreenshotFrame shot={p.screenshot} priority tone="dark" sizes="(min-width: 1200px) 1040px, 92vw" />
+        ) : (
+          <ProductMiniUI product={p.slug} size="showcase" />
+        )
+      }
       <ul role="list" class="pph__notes">
         {
           notes.map((n, i) => (
@@ -144,6 +151,22 @@ const notes = p.features.slice(0, 4);
     margin-inline: auto;
     margin-bottom: -2px;
     padding-bottom: clamp(2rem, 1rem + 3vw, 4rem);
+  }
+  .pph__stage--shot {
+    max-width: 1040px;
+  }
+  .pph__stage--shot .pph__noteitem--0,
+  .pph__stage--shot .pph__noteitem--2 {
+    translate: calc(-100% + 56px) 0;
+  }
+  .pph__stage--shot .pph__noteitem--1,
+  .pph__stage--shot .pph__noteitem--3 {
+    translate: calc(100% - 56px) 0;
+  }
+  @media (max-width: 1400px) {
+    .pph__stage--shot .pph__notes {
+      display: none;
+    }
   }
   .pph__stage :global(.mui__frame) {
     box-shadow:

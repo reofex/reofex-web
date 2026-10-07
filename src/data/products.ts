@@ -8,7 +8,12 @@
  *  - Reofex Growth: AI never spends money on its own — human approval is always explicit.
  *  - No invented customers, metrics, partnerships or performance numbers.
  */
+import type { ImageMetadata } from "astro";
 import type { IconName } from "../components/ui/icons";
+import respondlyShot from "../assets/products/respondly.png";
+import fynexShot from "../assets/products/fynex.png";
+import growthDashShot from "../assets/products/growth-dash.png";
+import growthApprovalShot from "../assets/products/growth-approval.png";
 
 export type ProductSlug = "respondly" | "reofex-growth" | "reofex-sync" | "fynex";
 
@@ -16,6 +21,17 @@ export interface Feature {
   icon: IconName;
   title: string;
   body: string;
+}
+
+/**
+ * Real product screenshots. Crops must never include personal data
+ * (emails, user names, client workspace names).
+ */
+export interface Screenshot {
+  src: ImageMetadata;
+  alt: string;
+  /** Neutral label shown in the frame's title bar */
+  frameLabel: string;
 }
 
 export interface Product {
@@ -45,7 +61,9 @@ export interface Product {
   features: Feature[];
   integrations?: { title: string; body: string; items: string[] };
   benefits: string[];
-  highlight?: { title: string; body: string };
+  highlight?: { title: string; body: string; image?: Screenshot };
+  /** Primary real screenshot; product falls back to the illustrated UI when absent */
+  screenshot?: Screenshot;
   seo: { title: string; description: string };
 }
 
@@ -61,6 +79,11 @@ export const products: Product[] = [
     accent: "#1f9d6b",
     accentVar: "--accent-respondly",
     externalUrl: "https://therespondly.com/",
+    screenshot: {
+      src: respondlyShot,
+      alt: "Respondly website: 'AI that replies to your clients the way you would', with a website chat widget answering a property enquiry.",
+      frameLabel: "therespondly.com",
+    },
     hero: {
       eyebrow: "AI WhatsApp & Instagram lead automation",
       title: "AI that replies to your clients",
@@ -127,6 +150,11 @@ export const products: Product[] = [
     icon: "megaphone",
     accent: "#f78d20",
     accentVar: "--accent-growth",
+    screenshot: {
+      src: growthDashShot,
+      alt: "Reofex Growth dashboard: AI Growth Overview with campaign metrics, AI Insights and an Approval Policy panel where every launch and spend change requires approval.",
+      frameLabel: "Reofex Growth · AI Growth Overview",
+    },
     hero: {
       eyebrow: "AI-assisted Meta advertising",
       title: "AI does the work.",
@@ -162,11 +190,17 @@ export const products: Product[] = [
       { icon: "facebook", title: "Facebook & Instagram", body: "Run campaigns across Meta's two biggest platforms." },
       { icon: "lightbulb", title: "Optimisation suggestions", body: "AI recommends changes — you decide what to apply." },
       { icon: "userCheck", title: "Human approval, always", body: "Every launch and every budget change needs your explicit approval." },
+      { icon: "clock", title: "Campaigns start paused", body: "New campaigns are created paused, verified, then switched on — and approval requests expire after 72 hours." },
       { icon: "eye", title: "Clear visibility", body: "See what's running, what it's costing and what AI is proposing." },
     ],
     highlight: {
       title: "AI cannot spend money autonomously.",
-      body: "Reofex Growth is designed so that a human must approve every campaign launch and every budget change. AI prepares and recommends; you decide.",
+      body: "Reofex Growth is designed so that a human must approve every campaign launch and every budget change. New campaigns start paused. AI prepares and recommends; you decide.",
+      image: {
+        src: growthApprovalShot,
+        alt: "Reofex Growth Approval Policy panel: approval mode always on, new campaigns start paused, requests expire after 72 hours.",
+        frameLabel: "Approval Policy",
+      },
     },
     benefits: [
       "Launch professional campaigns without ads-manager expertise",
@@ -254,6 +288,11 @@ export const products: Product[] = [
     accent: "#7357d6",
     accentVar: "--accent-fynex",
     externalUrl: "https://gofynex.com/",
+    screenshot: {
+      src: fynexShot,
+      alt: "Fynex: an Employment Visa Renewal case moving through submission, PRO review, signature, payment and approval, with expiry tracking and wallet balance.",
+      frameLabel: "gofynex.com",
+    },
     hero: {
       eyebrow: "Self-hosted · Built for UAE/GCC service workflows",
       title: "Self-hosted case management",
@@ -305,7 +344,7 @@ export const products: Product[] = [
     },
     highlight: {
       title: "Built for UAE/GCC service workflows.",
-      body: "Designed for visa agencies, PRO & typing centres, licensing consultancies, HR & immigration teams, document clearing services and business setup advisors — not adapted from a generic project-management tool.",
+      body: "Designed for visa agencies, PRO & typing centres, licensing consultancies, HR & immigration teams, document clearing services and business setup advisors. No per-module upsells, no shared tenants, Arabic from day one.",
     },
     benefits: [
       "Replace spreadsheets and shared inboxes with one system",

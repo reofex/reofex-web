@@ -1,34 +1,186 @@
 ---
+/**
+ * Layout for legal documents. Sections are passed as data so the table of
+ * contents and anchors are generated from a single source.
+ */
 import BaseLayout from "./BaseLayout.astro";
 import PageHero from "../components/ui/PageHero.astro";
 
 interface Props {
   title: string;
   description: string;
+  updated: string;
+  intro: string;
+  sections: { id: string; title: string }[];
 }
-const { title, description } = Astro.props;
+const { title, description, updated, intro, sections } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} noindex>
-  <PageHero crumbs={[{ label: title }]} title={title} compact />
-  <section class="section">
-    <div class="container legal">
-      <slot />
+<BaseLayout title={title} description={description}>
+  <PageHero crumbs={[{ label: title }]} eyebrow="Legal" title={title} lead={intro} compact>
+    <p class="lg__updated">Last updated: <time>{updated}</time></p>
+  </PageHero>
+  <section class="section lg">
+    <div class="container lg__grid">
+      <nav class="lg__toc" aria-label="On this page">
+        <p class="lg__toclabel">On this page</p>
+        <ol role="list">
+          {sections.map((s, i) => (
+            <li>
+              <a href={`#${s.id}`}><span>{String(i + 1).padStart(2, "0")}</span>{s.title}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+      <article class="lg__doc">
+        <slot />
+      </article>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .legal {
-    max-width: 760px;
+  .lg__updated {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted-dark);
+  }
+  .lg__grid {
     display: grid;
-    gap: var(--space-5);
+    grid-template-columns: 260px minmax(0, 760px);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
   }
-  .legal :global(h2) {
-    font-size: var(--fs-h3);
-    margin-top: var(--space-6);
+  .lg__toc {
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
   }
-  .legal :global(p) {
+  .lg__toclabel {
+    margin-bottom: var(--space-3);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
     color: var(--reofex-muted);
+  }
+  .lg__toc ol {
+    display: grid;
+    gap: 2px;
+    border-left: 1px solid var(--reofex-border);
+  }
+  .lg__toc a {
+    display: flex;
+    gap: 10px;
+    padding: 6px 0 6px 16px;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted);
+    transition:
+      color var(--dur-fast),
+      border-color var(--dur-fast);
+  }
+  .lg__toc a span {
+    font-variant-numeric: tabular-nums;
+    color: var(--reofex-orange-ink);
+    font-weight: var(--fw-bold);
+  }
+  .lg__toc a:hover {
+    color: var(--reofex-ink);
+    border-left-color: var(--reofex-orange);
+  }
+  .lg__doc {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: #2b3d42;
+  }
+  .lg__doc :global(section) {
+    scroll-margin-top: calc(var(--header-h) + 24px);
+    padding-bottom: var(--space-8);
+    margin-bottom: var(--space-8);
+    border-bottom: 1px solid var(--reofex-border);
+  }
+  .lg__doc :global(section:last-child) {
+    border-bottom: 0;
+  }
+  .lg__doc :global(h2) {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-4);
+    color: var(--reofex-ink);
+  }
+  .lg__doc :global(h3) {
+    font-size: 1.125rem;
+    margin: var(--space-6) 0 var(--space-2);
+    color: var(--reofex-ink);
+  }
+  .lg__doc :global(p + p),
+  .lg__doc :global(p + ul),
+  .lg__doc :global(ul + p),
+  .lg__doc :global(p + table),
+  .lg__doc :global(table + p) {
+    margin-top: var(--space-4);
+  }
+  .lg__doc :global(ul) {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .lg__doc :global(li::marker) {
+    color: var(--reofex-orange-ink);
+  }
+  .lg__doc :global(a) {
+    color: var(--reofex-orange-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .lg__doc :global(strong) {
+    color: var(--reofex-ink);
+  }
+  .lg__doc :global(.lg__table) {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: var(--space-4);
+  }
+  .lg__doc :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+  }
+  .lg__doc :global(th),
+  .lg__doc :global(td) {
+    text-align: left;
+    vertical-align: top;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--reofex-border);
+  }
+  .lg__doc :global(th) {
+    background: var(--reofex-cream-2);
+    color: var(--reofex-ink);
+    font-weight: var(--fw-bold);
+  }
+  .lg__doc :global(.lg__note) {
+    padding: var(--space-5);
+    border-radius: var(--radius-md);
+    background: var(--reofex-white);
+    border: 1px solid var(--reofex-border);
+    border-left: 3px solid var(--reofex-orange);
+    font-size: 1rem;
+  }
+  @media (max-width: 1023px) {
+    .lg__grid {
+      grid-template-columns: 1fr;
+    }
+    .lg__toc {
+      position: static;
+      padding: var(--space-5);
+      border-radius: var(--radius-lg);
+      background: var(--reofex-white);
+      border: 1px solid var(--reofex-border);
+    }
+  }
+  @media (max-width: 767px) {
+    .lg__doc {
+      font-size: 1rem;
+    }
   }
 </style>
