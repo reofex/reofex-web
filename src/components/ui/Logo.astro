@@ -1,0 +1,52 @@
+---
+/**
+ * Official Reofex Technologies logo — vector paths extracted verbatim from the
+ * supplied brand PDF (public/brand/reofex-logo-source.pdf). Never redraw.
+ * The orange mark & "o" are fixed brand orange; the wordmark and
+ * "TECHNOLOGIES" use currentColor, so:
+ *   tone="light" → white wordmark, for dark backgrounds
+ *   tone="dark"  → #12282F wordmark, for light backgrounds
+ */
+import logoSvg from "./logo-paths.svg?raw";
+
+interface Props {
+  tone?: "light" | "dark";
+  height?: number;
+  href?: string | null;
+  class?: string;
+}
+const { tone = "light", height = 40, href = "/", class: className } = Astro.props;
+const svg = logoSvg.replace(
+  "<svg ",
+  `<svg role="img" aria-label="Reofex Technologies" height="${height}" width="${Math.round((height * 742) / 300)}" preserveAspectRatio="xMinYMid meet" `,
+);
+const Tag = href ? "a" : "span";
+---
+
+<Tag
+  class:list={["logo", `logo--${tone}`, className]}
+  href={href ?? undefined}
+  aria-label={href ? "Reofex Technologies — home" : undefined}
+  style={`--logo-h:${height}px`}
+  set:html={svg}
+/>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    border-radius: 6px;
+  }
+  .logo :global(svg) {
+    height: var(--logo-h);
+    width: auto;
+    transition: height var(--dur-base) var(--ease-out);
+  }
+  .logo--light {
+    color: var(--reofex-white);
+  }
+  .logo--dark {
+    color: var(--reofex-dark);
+  }
+</style>

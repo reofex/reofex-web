@@ -1,0 +1,66 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  align?: "start" | "center" | "split";
+  as?: "h1" | "h2";
+  id?: string;
+}
+const { eyebrow, title, lead, align = "start", as: H = "h2", id } = Astro.props;
+// "\n" in titles becomes a desktop line break
+const lines = title.split("\n");
+---
+
+<header class:list={["sh", `sh--${align}`]} data-reveal>
+  <div class="sh__main">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <H class="h2 sh__title" id={id}>
+      {lines.map((l, i) => (i < lines.length - 1 ? <Fragment>{l}<br class="br-desk" /> </Fragment> : l))}
+    </H>
+  </div>
+  {lead && <p class="lead sh__lead">{lead}</p>}
+  <slot />
+</header>
+
+<style>
+  .sh {
+    display: grid;
+    gap: var(--space-5);
+    margin-bottom: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+  .sh__main {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .sh__lead {
+    max-width: 52ch;
+  }
+  .sh--center {
+    text-align: center;
+    justify-items: center;
+  }
+  .sh--center .eyebrow::after {
+    content: "";
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+  @media (min-width: 1024px) {
+    .sh--split {
+      grid-template-columns: 1.2fr 1fr;
+      align-items: end;
+      gap: var(--space-16);
+    }
+    .sh--split .sh__lead {
+      justify-self: end;
+      max-width: 46ch;
+    }
+  }
+  @media (max-width: 767px) {
+    .br-desk {
+      display: none;
+    }
+  }
+</style>

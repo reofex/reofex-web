@@ -1,0 +1,34 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import PageHero from "../components/ui/PageHero.astro";
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} noindex>
+  <PageHero crumbs={[{ label: title }]} title={title} compact />
+  <section class="section">
+    <div class="container legal">
+      <slot />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal {
+    max-width: 760px;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .legal :global(h2) {
+    font-size: var(--fs-h3);
+    margin-top: var(--space-6);
+  }
+  .legal :global(p) {
+    color: var(--reofex-muted);
+  }
+</style>

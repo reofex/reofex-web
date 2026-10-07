@@ -1,0 +1,87 @@
+---
+import Button from "../ui/Button.astro";
+import BackdropCurves from "../visuals/BackdropCurves.astro";
+
+interface Props {
+  title?: string;
+  body?: string;
+  cta?: { label: string; href: string };
+}
+const {
+  title = "Have a problem worth solving?",
+  body = "Let's build the right solution — together.",
+  cta = { label: "Get in touch", href: "/contact" },
+} = Astro.props;
+---
+
+<section class="cta section--dark" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="cta__panel" data-reveal>
+      <BackdropCurves variant="cta" />
+      <div class="cta__glow" aria-hidden="true"></div>
+      <div class="cta__copy">
+        <p class="eyebrow">Let's build together</p>
+        <h2 class="h2" id="cta-title">{title}</h2>
+        <p class="lead">{body}</p>
+      </div>
+      <div class="cta__actions">
+        <Button href={cta.href} size="lg">{cta.label}</Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-block: clamp(1rem, 0.5rem + 1vw, 2rem) clamp(3rem, 2rem + 4vw, 6rem);
+    background: var(--reofex-cream);
+  }
+  .cta__panel {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-8);
+    padding: clamp(2rem, 1rem + 5vw, 5rem);
+    border-radius: clamp(20px, 1rem + 1vw, 32px);
+    background:
+      radial-gradient(70% 120% at 100% 100%, rgb(26 70 78 / 0.9), transparent 70%),
+      var(--reofex-dark);
+    color: #fff;
+    isolation: isolate;
+  }
+  .cta__panel > :global(.bc) {
+    z-index: -1;
+  }
+  .cta__glow {
+    position: absolute;
+    z-index: -1;
+    right: -120px;
+    bottom: -200px;
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(closest-side, rgb(247 141 32 / 0.28), transparent);
+    animation: glow 8s ease-in-out infinite alternate;
+  }
+  .cta__copy {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .cta__copy .lead {
+    color: var(--reofex-muted-dark);
+  }
+  @keyframes glow {
+    to {
+      transform: translate(-60px, -40px) scale(1.1);
+    }
+  }
+  @media (max-width: 767px) {
+    .cta__panel {
+      grid-template-columns: 1fr;
+    }
+    .cta__actions :global(.btn) {
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,304 @@
+---
+import Logo from "../ui/Logo.astro";
+import Icon from "../ui/Icon.astro";
+import { site, services } from "../../data/site";
+import { products, productHref } from "../../data/products";
+
+const columns = [
+  { title: "Products", links: products.map((p) => ({ label: p.name, href: productHref(p.slug) })) },
+  { title: "Solutions", links: services.map((s) => ({ label: s.name, href: `/solutions#${s.slug}` })) },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "How We Build", href: "/how-we-build" },
+      { label: "Case Studies", href: "/case-studies" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Service", href: "/terms" },
+    ],
+  },
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="ft on-dark">
+  <div class="ft__glow" aria-hidden="true"></div>
+  <div class="container container--wide">
+    <div class="ft__top">
+      <div class="ft__brand">
+        <Logo tone="light" height={46} />
+        <p class="ft__blurb">{site.footerBlurb}</p>
+
+        <form class="ft__form" action="/contact" method="get">
+          <label for="ft-email" class="ft__label">Start a conversation</label>
+          <div class="ft__field">
+            <input id="ft-email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required />
+            <button type="submit" aria-label="Continue to contact form">
+              <Icon name="arrowRight" size={18} />
+            </button>
+          </div>
+        </form>
+
+        <a class="ft__mail" href={`mailto:${site.email}`}><Icon name="mail" size={16} />{site.email}</a>
+      </div>
+
+      <nav class="ft__cols" aria-label="Footer">
+        {
+          columns.map((col) => (
+            <details class="ft__col" open data-ft-col>
+              <summary class="ft__heading">
+                {col.title}
+                <Icon name="plus" size={16} class="ft__toggle" />
+              </summary>
+              <ul role="list">
+                {col.links.map((l) => (
+                  <li>
+                    <a href={l.href}>{l.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ))
+        }
+      </nav>
+    </div>
+
+    <div class="ft__bottom">
+      <p>&copy; {year} Reofex Technologies. All rights reserved.</p>
+      <ul role="list" class="ft__social">
+        {
+          site.social.map((s) => (
+            <li>
+              <a href={s.href} aria-label={s.label}>
+                <Icon name={s.icon} size={18} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="ft__motto">Build · Automate · Grow</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Footer columns are always open on desktop and collapsible accordions on mobile.
+  const mq = window.matchMedia("(max-width: 767px)");
+  const cols = document.querySelectorAll<HTMLDetailsElement>("[data-ft-col]");
+  const sync = () => cols.forEach((d) => (d.open = !mq.matches));
+  sync();
+  mq.addEventListener("change", sync);
+  cols.forEach((d) =>
+    d.querySelector("summary")!.addEventListener("click", (e) => {
+      if (!mq.matches) e.preventDefault();
+    }),
+  );
+</script>
+
+<style>
+  .ft {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--reofex-dark) 0%, var(--reofex-dark-2) 100%);
+    color: #fff;
+    padding-top: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+    border-top: 1px solid var(--reofex-border-dark);
+  }
+  .ft__glow {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    left: -250px;
+    top: -380px;
+    background: radial-gradient(closest-side, rgb(247 141 32 / 0.12), transparent);
+    pointer-events: none;
+  }
+  .ft__top {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) 2fr;
+    gap: clamp(2.5rem, 1rem + 5vw, 6rem);
+    padding-bottom: clamp(3rem, 2rem + 3vw, 4.5rem);
+  }
+  .ft__brand {
+    display: grid;
+    align-content: start;
+    gap: var(--space-6);
+  }
+  .ft__blurb {
+    max-width: 34ch;
+    color: var(--reofex-muted-dark);
+  }
+  .ft__label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+  }
+  .ft__field {
+    display: flex;
+    max-width: 360px;
+    padding: 5px 5px 5px 18px;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.05);
+    border: 1px solid var(--reofex-border-dark-strong);
+    transition: border-color var(--dur-fast);
+  }
+  .ft__field:focus-within {
+    border-color: var(--reofex-orange);
+  }
+  .ft__field input {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: 0;
+    outline: 0;
+    font-size: var(--fs-sm);
+  }
+  .ft__field input::placeholder {
+    color: rgb(255 255 255 / 0.4);
+  }
+  .ft__field button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--reofex-orange);
+    color: var(--reofex-dark);
+    transition: background-color var(--dur-fast);
+  }
+  .ft__field button:hover {
+    background: var(--reofex-orange-hover);
+  }
+  .ft__mail {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-self: start;
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted-dark);
+    transition: color var(--dur-fast);
+  }
+  .ft__mail:hover {
+    color: var(--reofex-orange);
+  }
+  .ft__cols {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-8);
+  }
+  .ft__heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-5);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.5);
+    list-style: none;
+    cursor: default;
+  }
+  .ft__heading::-webkit-details-marker {
+    display: none;
+  }
+  .ft__heading :global(.ft__toggle) {
+    display: none;
+  }
+  .ft__col ul {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .ft__col a {
+    font-size: var(--fs-sm);
+    color: rgb(255 255 255 / 0.82);
+    transition: color var(--dur-fast);
+  }
+  .ft__col a:hover {
+    color: var(--reofex-orange);
+  }
+  .ft__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--reofex-border-dark);
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted-dark);
+  }
+  .ft__social {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .ft__social a {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--reofex-border-dark);
+    color: rgb(255 255 255 / 0.8);
+    transition:
+      color var(--dur-fast),
+      border-color var(--dur-fast);
+  }
+  .ft__social a:hover {
+    color: var(--reofex-orange);
+    border-color: var(--reofex-orange);
+  }
+  .ft__motto {
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 1023px) {
+    .ft__top {
+      grid-template-columns: 1fr;
+    }
+    .ft__bottom {
+      flex-wrap: wrap;
+    }
+  }
+  @media (max-width: 767px) {
+    .ft__cols {
+      grid-template-columns: 1fr;
+      gap: 0;
+      border-top: 1px solid var(--reofex-border-dark);
+    }
+    .ft__col {
+      border-bottom: 1px solid var(--reofex-border-dark);
+    }
+    .ft__heading {
+      margin: 0;
+      min-height: 56px;
+      cursor: pointer;
+      font-size: var(--fs-sm);
+      color: #fff;
+    }
+    .ft__heading :global(.ft__toggle) {
+      display: block;
+      transition: transform var(--dur-base) var(--ease-out);
+    }
+    .ft__col[open] :global(.ft__toggle) {
+      transform: rotate(45deg);
+    }
+    .ft__col ul {
+      padding-bottom: var(--space-5);
+    }
+    .ft__bottom {
+      flex-direction: column-reverse;
+      align-items: flex-start;
+    }
+    .ft__motto {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+import SectionHeader from "../ui/SectionHeader.astro";
+import ProductCard from "../product/ProductCard.astro";
+import { products } from "../../data/products";
+
+interface Props {
+  showHeader?: boolean;
+}
+const { showHeader = true } = Astro.props;
+---
+
+<section class:list={["section pg", !showHeader && "pg--flush"]} id="products" aria-labelledby={showHeader ? "products-title" : undefined} aria-label={showHeader ? undefined : "Products"}>
+  <div class="container">
+    {
+      showHeader && (
+        <SectionHeader
+          id="products-title"
+          eyebrow="Our products"
+          title={"Four products. Different problems.\nOne technology company."}
+          lead="Each product is built with the same engineering excellence, AI expertise and product thinking — designed to solve real business problems."
+          align="split"
+        />
+      )
+    }
+    <div class="pg__grid">
+      {products.map((p, i) => <ProductCard product={p} index={i} headingLevel={showHeader ? "h3" : "h2"} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .pg--flush {
+    padding-top: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
+  }
+  .pg__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 0.5rem + 1.2vw, 1.5rem);
+  }
+  @media (max-width: 767px) {
+    .pg__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+    }
+  }
+</style>

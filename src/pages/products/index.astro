@@ -1,0 +1,94 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHero from "../../components/ui/PageHero.astro";
+import ProductGrid from "../../components/home/ProductGrid.astro";
+import CTASection from "../../components/home/CTASection.astro";
+import Icon from "../../components/ui/Icon.astro";
+import { products, productHref } from "../../data/products";
+import { site } from "../../data/site";
+
+const principles = [
+  { icon: "userCheck", title: "Humans stay in control", body: "AI drafts, reads and recommends. People approve what matters — especially money and decisions." },
+  { icon: "target", title: "Built around real workflows", body: "Each product starts from a specific business process, not a generic feature list." },
+  { icon: "plug", title: "Fits existing systems", body: "WhatsApp, email, CRMs, accounting software — products connect to the tools businesses already use." },
+] as const;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  itemListElement: products.map((p, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: p.name,
+    url: new URL(productHref(p.slug), site.url).href,
+  })),
+};
+---
+
+<BaseLayout
+  title="Products"
+  description="Respondly, Reofex Growth, Reofex Sync and Fynex — four Reofex products for customer communication, advertising, invoice automation and service workflows."
+  jsonLd={jsonLd}
+>
+  <PageHero
+    crumbs={[{ label: "Products" }]}
+    eyebrow="Our products"
+    title="Four products. Different problems."
+    titleAccent="One technology company."
+    lead="Each product is built with the same engineering excellence, AI expertise and product thinking — designed to solve real business problems."
+  />
+  <ProductGrid showHeader={false} />
+
+  <section class="section section--white" aria-labelledby="principles-title">
+    <div class="container">
+      <h2 class="h2 pr__title" id="principles-title" data-reveal>What every Reofex product shares.</h2>
+      <ul role="list" class="pr">
+        {
+          principles.map((p, i) => (
+            <li data-reveal style={`--reveal-i:${i}`}>
+              <span class="pr__icon">
+                <Icon name={p.icon} size={22} />
+              </span>
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CTASection title="Need something none of these do?" body="We also build custom software, automation and integrations." cta={{ label: "Build with Reofex", href: "/contact?topic=project" }} />
+</BaseLayout>
+
+<style>
+  .pr__title {
+    max-width: 18ch;
+    margin-bottom: var(--space-12);
+  }
+  .pr {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-8);
+  }
+  .pr li {
+    display: grid;
+    gap: var(--space-3);
+    padding-top: var(--space-6);
+    border-top: 2px solid var(--reofex-dark);
+  }
+  .pr__icon {
+    color: var(--reofex-orange-ink);
+  }
+  .pr h3 {
+    font-size: 1.125rem;
+  }
+  .pr p {
+    color: var(--reofex-muted);
+  }
+  @media (max-width: 767px) {
+    .pr {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

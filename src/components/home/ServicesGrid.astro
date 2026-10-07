@@ -1,0 +1,180 @@
+---
+import Icon from "../ui/Icon.astro";
+import Button from "../ui/Button.astro";
+import { services } from "../../data/site";
+
+interface Props {
+  /** Home uses a split layout; the solutions page renders the grid with details */
+  variant?: "home" | "full";
+}
+const { variant = "home" } = Astro.props;
+const H = variant === "full" ? "h2" : "h3";
+---
+
+<section class:list={["section section--white sv", `sv--${variant}`]} aria-labelledby={variant === "home" ? "solutions-title" : undefined} aria-label={variant === "home" ? undefined : "Services"}>
+  <div class="container sv__inner">
+    {
+      variant === "home" && (
+        <div class="sv__intro" data-reveal>
+          <p class="eyebrow">Our solutions</p>
+          <h2 class="h2" id="solutions-title">
+            More than products.
+            <br />
+            We build what you need.
+          </h2>
+          <p class="lead">
+            From custom software to AI automation, we help businesses solve real problems with practical, scalable and
+            maintainable solutions.
+          </p>
+          <Button href="/solutions">Explore our solutions</Button>
+        </div>
+      )
+    }
+    <ul role="list" class="sv__grid">
+      {
+        services.map((s, i) => (
+          <li class="sv__item" id={variant === "full" ? s.slug : undefined} style={`--reveal-i:${i % 3}`} data-reveal>
+            <span class="sv__icon">
+              <Icon name={s.icon} size={22} />
+            </span>
+            <H class="sv__name">{s.name}</H>
+            <p class="sv__summary">{s.summary}</p>
+            {variant === "full" && (
+              <>
+                <p class="sv__detail">{s.detail}</p>
+                <ul role="list" class="sv__includes">
+                  {s.includes.map((x) => (
+                    <li>
+                      <Icon name="check" size={14} />
+                      {x}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .sv__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 4.5fr) minmax(0, 7fr);
+    gap: clamp(2.5rem, 1rem + 5vw, 6rem);
+    align-items: start;
+  }
+  .sv--full .sv__inner {
+    grid-template-columns: 1fr;
+  }
+  .sv__intro .h2 {
+    font-size: clamp(1.875rem, 1.3rem + 1.5vw, 2.625rem);
+  }
+  .sv__intro {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+    position: sticky;
+    top: calc(var(--header-h) + 32px);
+  }
+  .sv__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid var(--reofex-border);
+    border-left: 1px solid var(--reofex-border);
+  }
+  .sv__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+    border-right: 1px solid var(--reofex-border);
+    border-bottom: 1px solid var(--reofex-border);
+    transition: background-color var(--dur-base) var(--ease-out);
+    scroll-margin-top: calc(var(--header-h) + 24px);
+  }
+  .sv__item:hover {
+    background: var(--reofex-cream);
+  }
+  .sv__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: var(--space-2);
+    border-radius: var(--radius-md);
+    background: var(--reofex-dark);
+    color: var(--reofex-orange);
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .sv__item:hover .sv__icon {
+    transform: translateY(-2px) rotate(-4deg);
+  }
+  .sv__name {
+    font-size: 1.0625rem;
+    letter-spacing: -0.015em;
+  }
+  .sv__summary {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted);
+  }
+  .sv__detail {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted);
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--reofex-border);
+  }
+  .sv__includes {
+    display: grid;
+    gap: var(--space-2);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+  }
+  .sv__includes li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .sv__includes :global(.icon) {
+    color: var(--reofex-orange-ink);
+  }
+  .sv--full .sv__summary {
+    font-size: var(--fs-base);
+    color: var(--reofex-ink);
+    font-weight: var(--fw-medium);
+  }
+
+  @media (max-width: 1023px) {
+    .sv__inner {
+      grid-template-columns: 1fr;
+    }
+    .sv__intro {
+      position: static;
+    }
+    .sv__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 767px) {
+    .sv--home .sv__grid {
+      grid-template-columns: 1fr;
+      border-left: 0;
+    }
+    .sv--home .sv__item {
+      grid-template-columns: 44px 1fr;
+      column-gap: var(--space-4);
+      row-gap: 2px;
+      padding-inline: 0;
+      border-right: 0;
+    }
+    .sv--home .sv__icon {
+      grid-row: span 2;
+      margin: 0;
+    }
+    .sv--full .sv__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

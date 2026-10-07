@@ -1,0 +1,157 @@
+---
+import Button from "../ui/Button.astro";
+import EcosystemVisual from "../visuals/EcosystemVisual.astro";
+import BackdropCurves from "../visuals/BackdropCurves.astro";
+---
+
+<section class="hero section--dark" aria-labelledby="hero-title">
+  <BackdropCurves variant="hero" />
+  <div class="hero__inner container container--wide">
+    <div class="hero__copy">
+      <p class="eyebrow eyebrow--plain hero__eyebrow">Software products <i>/</i> AI <i>/</i> IT solutions</p>
+      <h1 class="h1 hero__title" id="hero-title">
+        <span>We build software</span>{" "}
+        <span>that makes businesses</span>{" "}
+        <span class="accent">move.</span>
+      </h1>
+      <p class="lead hero__lead">
+        Reofex Technologies builds SaaS products, intelligent automation and custom software that help businesses
+        operate smarter, faster and with less friction.
+      </p>
+      <div class="hero__ctas">
+        <Button href="#products" size="lg">Explore our products</Button>
+        <Button href="/contact?topic=project" size="lg" variant="secondary" icon={null}>Build with Reofex</Button>
+      </div>
+      <ul role="list" class="hero__proof">
+        <li><b>4</b> software products</li>
+        <li><b>6</b> engineering services</li>
+        <li><b>AI</b> with humans in control</li>
+      </ul>
+    </div>
+    <div class="hero__visual">
+      <EcosystemVisual />
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-top: calc(var(--header-h) + clamp(2.5rem, 1rem + 5vw, 5.5rem));
+    padding-bottom: clamp(3.5rem, 2rem + 5vw, 7rem);
+    background:
+      radial-gradient(70% 60% at 85% 35%, rgb(26 66 74 / 0.9), transparent 70%),
+      linear-gradient(180deg, var(--reofex-dark-2) 0%, var(--reofex-dark) 100%);
+  }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 1rem + 3vw, 4.5rem);
+  }
+  .hero__copy {
+    display: grid;
+    gap: var(--space-6);
+    animation: hero-in 800ms var(--ease-out) both;
+  }
+  .hero__eyebrow {
+    display: block;
+    color: var(--reofex-muted-dark) !important;
+  }
+  .hero__eyebrow i {
+    font-style: normal;
+    color: var(--reofex-orange);
+  }
+  .hero__title {
+    font-size: clamp(2.5rem, 1.1rem + 3.3vw, 4rem);
+  }
+  .hero__title span {
+    display: block;
+    white-space: nowrap;
+  }
+  .hero__title .accent {
+    position: relative;
+    justify-self: start;
+    width: fit-content;
+  }
+  .hero__lead {
+    max-width: 46ch;
+  }
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  .hero__proof {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-8);
+    margin-top: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--reofex-border-dark);
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted-dark);
+  }
+  .hero__proof b {
+    color: #fff;
+    font-size: 1rem;
+    margin-right: 4px;
+  }
+  .hero__visual {
+    margin-right: calc(var(--gutter) * -1);
+  }
+  @media (min-width: 1440px) {
+    .hero__visual {
+      margin-right: -64px;
+      margin-left: -24px;
+    }
+  }
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .hero__inner {
+      grid-template-columns: 1fr;
+    }
+    .hero__title {
+      font-size: clamp(2.5rem, 1rem + 6vw, 4rem);
+    }
+    .hero__visual {
+      margin: var(--space-4) auto 0;
+      width: min(100%, 680px);
+    }
+  }
+  @media (max-width: 767px) {
+    .hero__title span {
+      display: inline;
+      white-space: normal;
+    }
+    .hero__title .accent {
+      display: block;
+    }
+    .hero__ctas :global(.btn) {
+      flex: 1 1 auto;
+    }
+    .hero__proof {
+      display: none;
+    }
+  }
+  @media (max-width: 400px) {
+    .hero__eyebrow {
+      font-size: 0.6875rem;
+      letter-spacing: 0.1em;
+    }
+  }
+  @media (max-width: 420px) {
+    .hero__ctas :global(.btn) {
+      width: 100%;
+    }
+  }
+</style>

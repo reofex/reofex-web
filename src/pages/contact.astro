@@ -1,0 +1,153 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/ui/PageHero.astro";
+import ContactForm from "../components/ContactForm.astro";
+import Icon from "../components/ui/Icon.astro";
+import { site } from "../data/site";
+
+const steps = [
+  "We read every message and reply personally.",
+  "A short call to understand the problem and constraints.",
+  "A clear proposal: approach, scope and next steps.",
+];
+---
+
+<BaseLayout
+  title="Contact"
+  description="Talk to Reofex Technologies about a software project, AI and automation, integrations or any of our products."
+  jsonLd={{ "@context": "https://schema.org", "@type": "ContactPage", name: "Contact Reofex Technologies" }}
+>
+  <PageHero
+    crumbs={[{ label: "Contact" }]}
+    eyebrow="Contact"
+    title="Have a problem"
+    titleAccent="worth solving?"
+    lead="Tell us what you're working on. Let's build the right solution — together."
+    compact
+  />
+
+  <section class="section ct" aria-label="Contact form">
+    <div class="container ct__grid">
+      <div class="ct__form">
+        <ContactForm />
+      </div>
+      <aside class="ct__aside">
+        <div class="ct__card">
+          <h2 class="ct__h">What happens next</h2>
+          <ol role="list" class="ct__steps">
+            {
+              steps.map((s, i) => (
+                <li>
+                  <span>{i + 1}</span>
+                  {s}
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+        <div class="ct__card ct__card--dark">
+          <h2 class="ct__h">Prefer email?</h2>
+          <a href={`mailto:${site.email}`} class="ct__mail"><Icon name="mail" size={18} />{site.email}</a>
+          <ul role="list" class="ct__social">
+            {
+              site.social.map((s) => (
+                <li>
+                  <a href={s.href} aria-label={s.label}>
+                    <Icon name={s.icon} size={18} />
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .ct__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+  .ct__form {
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border-radius: var(--radius-xl);
+    background: var(--reofex-white);
+    border: 1px solid var(--reofex-border);
+    box-shadow: var(--shadow-md);
+  }
+  .ct__aside {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .ct__card {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--reofex-border);
+  }
+  .ct__card--dark {
+    background: var(--reofex-dark);
+    color: #fff;
+    border-color: transparent;
+  }
+  .ct__h {
+    font-size: 1.125rem;
+  }
+  .ct__steps {
+    display: grid;
+    gap: var(--space-4);
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted);
+  }
+  .ct__steps li {
+    display: flex;
+    gap: var(--space-3);
+  }
+  .ct__steps span {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    background: var(--reofex-orange-soft);
+    color: var(--reofex-orange-ink);
+  }
+  .ct__mail {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: var(--fw-bold);
+  }
+  .ct__mail:hover {
+    color: var(--reofex-orange);
+  }
+  .ct__social {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .ct__social a {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--reofex-border-dark-strong);
+  }
+  .ct__social a:hover {
+    color: var(--reofex-orange);
+    border-color: var(--reofex-orange);
+  }
+  @media (max-width: 1023px) {
+    .ct__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

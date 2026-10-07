@@ -1,0 +1,374 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProductPageHero from "../../components/product/ProductPageHero.astro";
+import WorkflowDiagram from "../../components/product/WorkflowDiagram.astro";
+import FeatureGrid from "../../components/product/FeatureGrid.astro";
+import SectionHeader from "../../components/ui/SectionHeader.astro";
+import Icon from "../../components/ui/Icon.astro";
+import ProductIcon from "../../components/ui/ProductIcon.astro";
+import CTASection from "../../components/home/CTASection.astro";
+import { products, productHref, type Product } from "../../data/products";
+import { site } from "../../data/site";
+
+export function getStaticPaths() {
+  return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+}
+
+interface Props {
+  product: Product;
+}
+const { product: p } = Astro.props;
+const others = products.filter((x) => x.slug !== p.slug);
+const url = new URL(productHref(p.slug), site.url).href;
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: p.name,
+    applicationCategory: "BusinessApplication",
+    description: p.description,
+    url: p.externalUrl ?? url,
+    publisher: { "@type": "Organization", name: site.name, url: site.url },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: site.url },
+      { "@type": "ListItem", position: 2, name: "Products", item: new URL("/products", site.url).href },
+      { "@type": "ListItem", position: 3, name: p.name, item: url },
+    ],
+  },
+];
+---
+
+<BaseLayout title={p.seo.title} rawTitle description={p.seo.description} jsonLd={jsonLd}>
+  <ProductPageHero product={p} />
+
+  <!-- Problem -->
+  <section class="section" aria-labelledby="problem-title">
+    <div class="container prob">
+      <div class="prob__head" data-reveal>
+        <p class="eyebrow">The problem</p>
+        <h2 class="h2" id="problem-title">{p.problem.title}</h2>
+      </div>
+      <ul role="list" class="prob__list">
+        {
+          p.problem.points.map((pt, i) => (
+            <li data-reveal style={`--reveal-i:${i}`}>
+              <span class="prob__n">{String(i + 1).padStart(2, "0")}</span>
+              <p>{pt}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Explanation + highlight -->
+  <section class="section section--white" aria-labelledby="explain-title" style={`--acc:${p.accent}`}>
+    <div class="container expl">
+      <div class="expl__copy" data-reveal>
+        <p class="eyebrow">How {p.name} works</p>
+        <h2 class="h2" id="explain-title">{p.explanation.title}</h2>
+        <p class="lead">{p.explanation.body}</p>
+      </div>
+      {
+        p.highlight ? (
+          <aside class="expl__callout" data-reveal>
+            <span class="expl__badge">
+              <Icon name="userCheck" size={22} />
+            </span>
+            <h3>{p.highlight.title}</h3>
+            <p>{p.highlight.body}</p>
+          </aside>
+        ) : (
+          <aside class="expl__callout expl__callout--plain" data-reveal>
+            <ProductIcon product={p} size={48} />
+            <h3>{p.tagline}</h3>
+            <p>{p.description}</p>
+          </aside>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Workflow -->
+  <section class="section" aria-labelledby="workflow-title">
+    <div class="container">
+      <SectionHeader id="workflow-title" eyebrow="Workflow" title={p.workflow.title} lead={p.workflow.body} />
+      <WorkflowDiagram steps={p.workflow.steps} accent={p.accent} />
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section section--white" aria-labelledby="features-title">
+    <div class="container">
+      <SectionHeader
+        id="features-title"
+        eyebrow="Features"
+        title={`What ${p.name} does.`}
+        lead={p.description}
+        align="split"
+      />
+      <FeatureGrid features={p.features} accent={p.accent} />
+    </div>
+  </section>
+
+  <!-- Integrations + benefits -->
+  <section class="section section--dark ib" aria-labelledby="benefits-title" style={`--acc:${p.accent}`}>
+    <div class="container ib__grid">
+      {
+        p.integrations && (
+          <div class="ib__col" data-reveal>
+            <p class="eyebrow">Integrations & architecture</p>
+            <h2 class="h3 ib__title">{p.integrations.title}</h2>
+            <p class="muted">{p.integrations.body}</p>
+            <ul role="list" class="ib__chips">
+              {p.integrations.items.map((x) => (
+                <li>{x}</li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+      <div class="ib__col" data-reveal>
+        <p class="eyebrow">Benefits</p>
+        <h2 class="h3 ib__title" id="benefits-title">Why teams choose {p.name}.</h2>
+        <ul role="list" class="ib__benefits">
+          {
+            p.benefits.map((b) => (
+              <li>
+                <span>
+                  <Icon name="check" size={14} />
+                </span>
+                {b}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Other products -->
+  <section class="section" aria-labelledby="more-title">
+    <div class="container">
+      <h2 class="h3 more__title" id="more-title">More from Reofex</h2>
+      <ul role="list" class="more">
+        {
+          others.map((o) => (
+            <li>
+              <a href={productHref(o.slug)} class="more__card">
+                <ProductIcon product={o} size={40} />
+                <span>
+                  <b>{o.name}</b>
+                  <small>{o.tagline}</small>
+                </span>
+                <Icon name="arrowRight" size={18} class="more__arrow" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CTASection
+    title={`Ready to see ${p.name} in action?`}
+    body="Tell us about your business and we'll show you how it fits."
+    cta={p.externalUrl ? { label: p.hero.primaryCta.label, href: p.externalUrl } : p.hero.primaryCta}
+  />
+</BaseLayout>
+
+<style>
+  /* Problem */
+  .prob {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: start;
+  }
+  .prob__head {
+    display: grid;
+    gap: var(--space-4);
+    position: sticky;
+    top: calc(var(--header-h) + 32px);
+  }
+  .prob__list {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .prob__list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-5);
+    align-items: baseline;
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--reofex-white);
+    border: 1px solid var(--reofex-border);
+    font-size: var(--fs-md);
+  }
+  .prob__n {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    color: var(--reofex-orange-ink);
+  }
+
+  /* Explanation */
+  .expl {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+    align-items: center;
+  }
+  .expl__copy {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .expl__callout {
+    display: grid;
+    gap: var(--space-3);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(100% 80% at 100% 0%, rgb(247 141 32 / 0.2), transparent 60%),
+      var(--reofex-dark);
+    color: #fff;
+    box-shadow: var(--shadow-lg);
+  }
+  .expl__callout h3 {
+    font-size: var(--fs-h3);
+  }
+  .expl__callout p {
+    color: var(--reofex-muted-dark);
+  }
+  .expl__badge {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: var(--reofex-orange);
+    color: var(--reofex-dark);
+    margin-bottom: var(--space-2);
+  }
+  .expl__callout--plain {
+    background:
+      radial-gradient(100% 80% at 100% 0%, color-mix(in srgb, var(--acc) 30%, transparent), transparent 60%),
+      var(--reofex-dark);
+  }
+
+  /* Integrations + benefits */
+  .ib__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: var(--space-6);
+  }
+  .ib__col {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--reofex-border-dark);
+    background: rgb(255 255 255 / 0.03);
+  }
+  .ib__title {
+    font-size: var(--fs-h3);
+  }
+  .ib__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+  .ib__chips li {
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    border: 1px solid var(--reofex-border-dark-strong);
+    background: rgb(255 255 255 / 0.04);
+  }
+  .ib__benefits {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+  .ib__benefits li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-weight: var(--fw-medium);
+  }
+  .ib__benefits span {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--reofex-orange);
+    color: var(--reofex-dark);
+  }
+
+  /* More */
+  .more__title {
+    margin-bottom: var(--space-6);
+  }
+  .more {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  .more__card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    height: 100%;
+    padding: var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--reofex-white);
+    border: 1px solid var(--reofex-border);
+    transition:
+      border-color var(--dur-base),
+      transform var(--dur-base) var(--ease-out);
+  }
+  .more__card:hover {
+    border-color: var(--reofex-orange);
+    transform: translateY(-2px);
+  }
+  .more__card span {
+    display: grid;
+    flex: 1;
+    line-height: 1.4;
+  }
+  .more__card small {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted);
+  }
+  .more__card :global(.more__arrow) {
+    color: var(--reofex-orange-ink);
+  }
+
+  @media (max-width: 1023px) {
+    .prob,
+    .expl {
+      grid-template-columns: 1fr;
+    }
+    .prob__head {
+      position: static;
+    }
+    .more {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .prob__list li {
+      padding: var(--space-5);
+      font-size: var(--fs-base);
+    }
+  }
+</style>

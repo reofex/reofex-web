@@ -1,0 +1,170 @@
+---
+import Icon from "../ui/Icon.astro";
+import Button from "../ui/Button.astro";
+import CaseStudyCard from "./CaseStudyCard.astro";
+import { caseStudies } from "../../data/site";
+---
+
+<section class="section csx" aria-labelledby="cases-title" data-carousel>
+  <div class="container">
+    <div class="csx__head" data-reveal>
+      <div class="csx__intro">
+        <p class="eyebrow">Case studies</p>
+        <h2 class="h2" id="cases-title">Real problems. Practical solutions.</h2>
+        <p class="lead">See how we help businesses turn challenges into working software and measurable outcomes.</p>
+      </div>
+      <div class="csx__controls">
+        <Button href="/case-studies" variant="secondary" size="sm">View case studies</Button>
+        <div class="csx__arrows">
+          <button class="csx__arrow" aria-label="Previous case study" data-prev><Icon name="chevronLeft" size={18} /></button>
+          <button class="csx__arrow" aria-label="Next case study" data-next><Icon name="chevronRight" size={18} /></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="csx__track" data-track tabindex="0" role="region" aria-label="Case studies carousel">
+    {
+      caseStudies.map((s, i) => (
+        <div class="csx__slide" aria-roledescription="slide" aria-label={`${i + 1} of ${caseStudies.length}`}>
+          <CaseStudyCard study={s} />
+        </div>
+      ))
+    }
+  </div>
+  <div class="csx__dots container" aria-hidden="true">
+    {caseStudies.map((_, i) => <span class:list={[i === 0 && "is-on"]} />)}
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-carousel]").forEach((root) => {
+    const track = root.querySelector<HTMLElement>("[data-track]")!;
+    const slides = [...track.children] as HTMLElement[];
+    const dots = [...root.querySelectorAll<HTMLElement>(".csx__dots span")];
+    const prev = root.querySelector<HTMLButtonElement>("[data-prev]")!;
+    const next = root.querySelector<HTMLButtonElement>("[data-next]")!;
+    const current = () => {
+      const x = track.scrollLeft + track.clientWidth * 0.3;
+      let idx = 0;
+      slides.forEach((s, i) => s.offsetLeft - slides[0].offsetLeft <= x && (idx = i));
+      return idx;
+    };
+    const go = (i: number) => {
+      const target = slides[Math.max(0, Math.min(slides.length - 1, i))];
+      track.scrollTo({ left: target.offsetLeft - slides[0].offsetLeft, behavior: "smooth" });
+    };
+    const update = () => {
+      const i = current();
+      dots.forEach((d, j) => d.classList.toggle("is-on", i === j));
+      prev.disabled = track.scrollLeft < 4;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    };
+    prev.addEventListener("click", () => go(current() - 1));
+    next.addEventListener("click", () => go(current() + 1));
+    track.addEventListener("scroll", () => requestAnimationFrame(update), { passive: true });
+    update();
+  });
+</script>
+
+<style>
+  .csx {
+    overflow: hidden;
+  }
+  .csx__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-8);
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+  .csx__intro {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 640px;
+  }
+  .csx__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .csx__arrows {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .csx__arrow {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--reofex-border);
+    background: var(--reofex-white);
+    transition:
+      border-color var(--dur-fast),
+      color var(--dur-fast),
+      opacity var(--dur-fast);
+  }
+  .csx__arrow:hover:not(:disabled) {
+    border-color: var(--reofex-orange);
+    color: var(--reofex-orange-ink);
+  }
+  .csx__arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .csx__track {
+    --pad: max(var(--gutter), (100vw - var(--container)) / 2);
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(100%, var(--container));
+    grid-auto-columns: calc(100vw - var(--pad) * 2);
+    gap: var(--space-5);
+    padding-inline: var(--pad);
+    scroll-padding-inline: var(--pad);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .csx__track::-webkit-scrollbar {
+    display: none;
+  }
+  .csx__track:focus-visible {
+    outline-offset: -2px;
+  }
+  .csx__slide {
+    scroll-snap-align: start;
+  }
+  .csx__dots {
+    display: flex;
+    gap: 6px;
+    margin-top: var(--space-6);
+  }
+  .csx__dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--reofex-border);
+    transition:
+      width var(--dur-base) var(--ease-out),
+      background-color var(--dur-base);
+  }
+  .csx__dots span.is-on {
+    width: 24px;
+    background: var(--reofex-orange);
+  }
+  @media (max-width: 767px) {
+    .csx__head {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .csx__controls {
+      justify-content: space-between;
+    }
+    .csx__track {
+      grid-auto-columns: calc(100vw - var(--pad) * 2 - 24px);
+      gap: var(--space-3);
+    }
+  }
+</style>

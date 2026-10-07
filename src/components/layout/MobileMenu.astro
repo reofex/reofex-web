@@ -1,0 +1,217 @@
+---
+/** Full-screen mobile navigation. Native <dialog> gives focus trapping and Esc-to-close. */
+import Logo from "../ui/Logo.astro";
+import Icon from "../ui/Icon.astro";
+import Button from "../ui/Button.astro";
+import ProductIcon from "../ui/ProductIcon.astro";
+import { mainNav, site, getStartedHref } from "../../data/site";
+import { products, productHref } from "../../data/products";
+---
+
+<dialog class="mm" id="mobile-menu" aria-label="Menu" data-menu>
+  <div class="mm__top container">
+    <Logo tone="light" height={32} />
+    <button class="mm__close" aria-label="Close menu" data-menu-close autofocus>
+      <Icon name="close" size={22} />
+    </button>
+  </div>
+
+  <nav class="mm__body container" aria-label="Mobile">
+    <ul role="list" class="mm__list">
+      {
+        mainNav.map((item) =>
+          item.mega ? (
+            <li>
+              <details class="mm__group" open>
+                <summary class="mm__link">
+                  {item.label}
+                  <Icon name="chevronDown" size={18} class="mm__chev" />
+                </summary>
+                <ul role="list" class="mm__products">
+                  {products.map((p) => (
+                    <li>
+                      <a href={productHref(p.slug)} class="mm__product">
+                        <ProductIcon product={p} size={36} />
+                        <span>
+                          <b>{p.name}</b>
+                          <small>{p.category}</small>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                  <li>
+                    <a href="/products" class="mm__all">
+                      All products <Icon name="arrowRight" size={14} />
+                    </a>
+                  </li>
+                </ul>
+              </details>
+            </li>
+          ) : (
+            <li>
+              <a href={item.href} class="mm__link">
+                {item.label}
+              </a>
+            </li>
+          ),
+        )
+      }
+      <li><a href="/contact" class="mm__link">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="mm__foot container">
+    <Button href={getStartedHref} size="lg" class="mm__cta">Get Started</Button>
+    <a href={`mailto:${site.email}`} class="mm__mail"><Icon name="mail" size={16} /> {site.email}</a>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>("[data-menu]")!;
+  const openBtn = document.querySelector<HTMLButtonElement>("[data-menu-open]");
+  const closeBtn = dialog.querySelector<HTMLButtonElement>("[data-menu-close]")!;
+  const close = () => dialog.close();
+  openBtn?.addEventListener("click", () => {
+    dialog.showModal();
+    openBtn.setAttribute("aria-expanded", "true");
+    document.documentElement.style.overflow = "hidden";
+  });
+  closeBtn.addEventListener("click", close);
+  dialog.addEventListener("close", () => {
+    openBtn?.setAttribute("aria-expanded", "false");
+    document.documentElement.style.overflow = "";
+    openBtn?.focus();
+  });
+  dialog.querySelectorAll("a").forEach((a) => a.addEventListener("click", close));
+  // Close if the viewport grows to desktop while open
+  window.matchMedia("(min-width: 1024px)").addEventListener("change", (e) => e.matches && dialog.open && close());
+</script>
+
+<style>
+  .mm {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: none;
+    flex-direction: column;
+    background:
+      radial-gradient(90% 50% at 100% 0%, rgb(247 141 32 / 0.14), transparent 60%),
+      var(--reofex-dark);
+    color: #fff;
+    overflow-y: auto;
+  }
+  .mm[open] {
+    display: flex;
+    animation: mm-in var(--dur-base) var(--ease-out);
+  }
+  .mm::backdrop {
+    background: rgb(0 0 0 / 0.4);
+  }
+  .mm__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    flex-shrink: 0;
+  }
+  .mm__close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    border-radius: var(--radius-md);
+  }
+  .mm__body {
+    flex: 1;
+    padding-block: var(--space-4);
+  }
+  .mm__list > li {
+    border-bottom: 1px solid var(--reofex-border-dark);
+  }
+  .mm__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 60px;
+    font-size: 1.25rem;
+    font-weight: var(--fw-bold);
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    list-style: none;
+  }
+  .mm__link::-webkit-details-marker {
+    display: none;
+  }
+  .mm__link:hover {
+    color: var(--reofex-orange);
+  }
+  .mm__group[open] :global(.mm__chev) {
+    transform: rotate(180deg);
+  }
+  :global(.mm__chev) {
+    transition: transform var(--dur-base) var(--ease-out);
+    opacity: 0.6;
+  }
+  .mm__products {
+    display: grid;
+    gap: 4px;
+    padding-bottom: var(--space-4);
+  }
+  .mm__product {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px;
+    margin-inline: -10px;
+    border-radius: var(--radius-md);
+  }
+  .mm__product:hover {
+    background: rgb(255 255 255 / 0.05);
+  }
+  .mm__product span {
+    display: grid;
+    line-height: 1.35;
+  }
+  .mm__product small {
+    color: var(--reofex-muted-dark);
+    font-size: var(--fs-sm);
+  }
+  .mm__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 0;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    color: var(--reofex-orange);
+  }
+  .mm__foot {
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-6) calc(var(--space-6) + env(safe-area-inset-bottom));
+  }
+  .mm__foot :global(.mm__cta) {
+    width: 100%;
+  }
+  .mm__mail {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted-dark);
+  }
+  @keyframes mm-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+</style>

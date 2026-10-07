@@ -1,0 +1,142 @@
+---
+import Icon from "../ui/Icon.astro";
+import ProductMiniUI from "../visuals/ProductMiniUI.astro";
+import type { CaseStudy } from "../../data/site";
+
+interface Props {
+  study: CaseStudy;
+  headingLevel?: "h2" | "h3";
+}
+const { study: s, headingLevel: H = "h3" } = Astro.props;
+const visualMap = { sync: "reofex-sync", fynex: "fynex", respondly: "respondly" } as const;
+const clean = (t: string) => t.replace(/^\[Placeholder\]\s*/, "");
+const parts = [
+  { k: "Problem", v: clean(s.problem) },
+  { k: "Approach", v: clean(s.approach) },
+  { k: "Solution", v: clean(s.solution) },
+  { k: "Outcome", v: clean(s.outcome) },
+];
+---
+
+<article class="cs" id={s.slug}>
+  <div class="cs__visual">
+    <ProductMiniUI product={visualMap[s.visual]} />
+  </div>
+  <div class="cs__content">
+    <div class="cs__meta">
+      <p class="eyebrow eyebrow--plain">{s.label}</p>
+      {s.placeholder && <span class="placeholder-tag"><Icon name="file" size={12} /> Placeholder — awaiting approved case study</span>}
+    </div>
+    <H class="cs__title">{s.title}</H>
+    <dl class="cs__grid">
+      {
+        parts.map((p) => (
+          <div class:list={["cs__part", s.placeholder && "is-placeholder"]}>
+            <dt>{p.k}</dt>
+            <dd>{p.v}</dd>
+          </div>
+        ))
+      }
+      <div class="cs__part cs__part--tech">
+        <dt>Technology</dt>
+        <dd>
+          <ul role="list">{s.technology.map((t) => <li>{t}</li>)}</ul>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</article>
+
+<style>
+  .cs {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    border-radius: var(--radius-xl);
+    background: var(--reofex-white);
+    border: 1px solid var(--reofex-border);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    height: 100%;
+  }
+  .cs__visual {
+    display: grid;
+    place-items: center;
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+    background:
+      radial-gradient(80% 60% at 20% 0%, rgb(247 141 32 / 0.2), transparent 60%),
+      var(--reofex-dark);
+  }
+  .cs__visual > :global(*) {
+    max-width: 420px;
+  }
+  .cs__content {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  }
+  .cs__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .cs__title {
+    font-size: var(--fs-h3);
+    letter-spacing: -0.025em;
+  }
+  .cs__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  .cs__part {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--reofex-cream);
+  }
+  .cs__part.is-placeholder {
+    background: transparent;
+    border: 1px dashed var(--reofex-border);
+  }
+  .cs__part dt {
+    margin-bottom: 4px;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--reofex-orange-ink);
+  }
+  .cs__part dd {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted);
+    line-height: 1.55;
+  }
+  .cs__part--tech {
+    grid-column: 1 / -1;
+  }
+  .cs__part--tech ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .cs__part--tech li {
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    background: var(--reofex-white);
+    border: 1px solid var(--reofex-border);
+    color: var(--reofex-ink);
+    font-weight: var(--fw-medium);
+  }
+  @media (max-width: 1023px) {
+    .cs {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .cs__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

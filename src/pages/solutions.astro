@@ -1,0 +1,90 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/ui/PageHero.astro";
+import Button from "../components/ui/Button.astro";
+import ServicesGrid from "../components/home/ServicesGrid.astro";
+import SectionHeader from "../components/ui/SectionHeader.astro";
+import CTASection from "../components/home/CTASection.astro";
+
+const models = [
+  { title: "Project delivery", body: "A defined scope, built end-to-end by Reofex — from discovery to launch." },
+  { title: "Product partnership", body: "We act as your product and engineering team while you focus on the business." },
+  { title: "Team extension", body: "Experienced engineers join your team and work inside your process." },
+];
+---
+
+<BaseLayout
+  title="Solutions — Custom software, SaaS, AI & automation"
+  description="Reofex builds custom software, SaaS products, AI & automation, integrations and provides development assistance and IT solutions — focused on business outcomes."
+>
+  <PageHero
+    crumbs={[{ label: "Solutions" }]}
+    eyebrow="Solutions"
+    title="More than products."
+    titleAccent="We build what you need."
+    lead="The same team that builds Reofex products builds software for other businesses — custom applications, SaaS platforms, automation and integrations."
+  >
+    <Button href="/contact?topic=project" size="lg">Start a project</Button>
+  </PageHero>
+
+  <ServicesGrid variant="full" />
+
+  <section class="section" aria-labelledby="models-title">
+    <div class="container">
+      <SectionHeader id="models-title" eyebrow="Ways to work together" title="Engagements that fit the problem." align="split" lead="Every engagement follows the same disciplined process — what changes is how we plug into your team." />
+      <ol role="list" class="em">
+        {
+          models.map((m, i) => (
+            <li data-reveal style={`--reveal-i:${i}`}>
+              <span>{String(i + 1).padStart(2, "0")}</span>
+              <h3>{m.title}</h3>
+              <p>{m.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="em__link"><Button href="/how-we-build" variant="ghost">See how we build</Button></p>
+    </div>
+  </section>
+
+  <CTASection />
+</BaseLayout>
+
+<style>
+  .em {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+  .em li {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-8);
+    border-radius: var(--radius-xl);
+    background: var(--reofex-white);
+    border: 1px solid var(--reofex-border);
+  }
+  .em span {
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    color: var(--reofex-orange-ink);
+  }
+  .em h3 {
+    font-size: 1.25rem;
+  }
+  .em p {
+    color: var(--reofex-muted);
+  }
+  .em__link {
+    margin-top: var(--space-8);
+  }
+  @media (max-width: 900px) {
+    .em {
+      grid-template-columns: 1fr;
+    }
+    .em li {
+      padding: var(--space-6);
+    }
+  }
+</style>

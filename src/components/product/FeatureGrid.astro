@@ -1,0 +1,66 @@
+---
+import Icon from "../ui/Icon.astro";
+import type { Feature } from "../../data/products";
+
+interface Props {
+  features: Feature[];
+  accent?: string;
+}
+const { features, accent = "var(--reofex-orange)" } = Astro.props;
+---
+
+<ul role="list" class="fg" style={`--acc:${accent}`}>
+  {
+    features.map((f, i) => (
+      <li class="fg__item" data-reveal style={`--reveal-i:${i % 4}`}>
+        <span class="fg__icon">
+          <Icon name={f.icon} size={20} />
+        </span>
+        <h3 class="fg__title">{f.title}</h3>
+        <p class="fg__body">{f.body}</p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .fg {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
+    gap: var(--space-4);
+  }
+  .fg__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--reofex-white);
+    border: 1px solid var(--reofex-border);
+    transition:
+      border-color var(--dur-base),
+      transform var(--dur-base) var(--ease-out);
+  }
+  .fg__item:hover {
+    border-color: color-mix(in srgb, var(--acc) 45%, var(--reofex-border));
+    transform: translateY(-2px);
+  }
+  .fg__icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: var(--space-3);
+    border-radius: var(--radius-md);
+    color: color-mix(in srgb, var(--acc) 80%, black);
+    background: color-mix(in srgb, var(--acc) 12%, white);
+  }
+  .fg__title {
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+  }
+  .fg__body {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted);
+  }
+</style>

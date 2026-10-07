@@ -1,0 +1,84 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/ui/PageHero.astro";
+import ProcessTimeline from "../components/home/ProcessTimeline.astro";
+import SectionHeader from "../components/ui/SectionHeader.astro";
+import Icon from "../components/ui/Icon.astro";
+import CTASection from "../components/home/CTASection.astro";
+
+const principles = [
+  { icon: "target", title: "Problem first", body: "We start with the business problem and the people affected — technology choices come after." },
+  { icon: "layers", title: "Architecture that lasts", body: "Systems designed to be maintained, extended and scaled, not rewritten next year." },
+  { icon: "userCheck", title: "Humans in the loop", body: "Where AI acts on money, customers or decisions, people stay in control by design." },
+  { icon: "shieldCheck", title: "Quality by default", body: "Testing, reviews and monitoring are part of the build, not an optional extra." },
+  { icon: "eye", title: "Transparent progress", body: "Working software early and often, so you can see and steer what's being built." },
+  { icon: "rocket", title: "Shipping is the start", body: "After launch we measure, learn and keep improving." },
+] as const;
+---
+
+<BaseLayout
+  title="How We Build — Process & engineering principles"
+  description="Understand, architect, prototype, build, integrate, launch and improve — the structured process Reofex uses to build reliable, scalable software."
+>
+  <PageHero
+    crumbs={[{ label: "How We Build" }]}
+    eyebrow="How we build"
+    title="Thoughtful process."
+    titleAccent="Solid engineering."
+    lead="A structured approach that turns ideas into reliable, scalable and maintainable software — the same one we use for our own products."
+    compact
+  />
+  <ProcessTimeline showCta={false} />
+
+  <section class="section section--white" aria-labelledby="principles-title">
+    <div class="container">
+      <SectionHeader id="principles-title" eyebrow="Engineering principles" title="How we make decisions." align="split" lead="The principles behind every product we ship and every system we build for clients." />
+      <ul role="list" class="ep">
+        {
+          principles.map((p, i) => (
+            <li data-reveal style={`--reveal-i:${i % 3}`}>
+              <Icon name={p.icon} size={22} />
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CTASection />
+</BaseLayout>
+
+<style>
+  .ep {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-10) var(--space-8);
+  }
+  .ep li {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+  .ep :global(.icon) {
+    color: var(--reofex-orange-ink);
+  }
+  .ep h3 {
+    font-size: 1.125rem;
+  }
+  .ep p {
+    color: var(--reofex-muted);
+  }
+  @media (max-width: 900px) {
+    .ep {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 600px) {
+    .ep {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+    }
+  }
+</style>

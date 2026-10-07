@@ -1,0 +1,37 @@
+---
+import { icons, type IconName } from "./icons";
+
+interface Props {
+  name: IconName;
+  size?: number;
+  class?: string;
+  label?: string;
+}
+const { name, size = 20, class: className, label } = Astro.props;
+const raw: string = icons[name];
+const solid = raw.startsWith("fill:");
+const body = solid ? raw.slice(5) : raw;
+---
+
+<svg
+  class:list={["icon", className]}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill={solid ? "currentColor" : "none"}
+  stroke={solid ? "none" : "currentColor"}
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  role={label ? "img" : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : "true"}
+  focusable="false"
+  set:html={body}
+/>
+
+<style>
+  .icon {
+    flex-shrink: 0;
+  }
+</style>

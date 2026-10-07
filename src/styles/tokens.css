@@ -1,0 +1,98 @@
+/*
+ * Reofex Technologies — design tokens.
+ * Brand colors are sampled directly from the official logo vectors
+ * (public/brand/reofex-logo-source.pdf):
+ *   orange  rgb(247,141,32)  #F78D20
+ *   dark    rgb(18,40,47)    #12282F
+ *   white   #FFFFFF
+ * Everything else is derived from those three.
+ */
+:root {
+  /* ---- Brand ---- */
+  --reofex-orange: #f78d20;
+  --reofex-orange-hover: #ff9e3d;
+  --reofex-orange-ink: #a85300; /* orange for text on light surfaces (AA on cream/white) */
+  --reofex-orange-soft: rgb(247 141 32 / 0.12);
+  --reofex-dark: #12282f;
+  --reofex-dark-2: #0b1c21; /* deeper shade for gradients and footer */
+  --reofex-dark-soft: #1a3740; /* raised surfaces on dark */
+  --reofex-white: #ffffff;
+  --reofex-cream: #f6f4ef;
+  --reofex-cream-2: #efece4;
+
+  /* ---- Neutrals / text ---- */
+  --reofex-ink: var(--reofex-dark);
+  --reofex-muted: #55676c; /* body text on light — 5.6:1 on cream */
+  --reofex-muted-dark: #a3b4b7; /* body text on dark — 7.4:1 on dark */
+  --reofex-border: #e2dfd6;
+  --reofex-border-dark: rgb(255 255 255 / 0.1);
+  --reofex-border-dark-strong: rgb(255 255 255 / 0.18);
+
+  /* ---- Product secondary accents (used sparingly inside product cards) ---- */
+  --accent-respondly: #1f9d6b;
+  --accent-growth: #f78d20;
+  --accent-sync: #138a8a;
+  --accent-fynex: #7357d6;
+
+  /* ---- Typography ---- */
+  --font-sans: "Manrope Variable", "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fw-regular: 450;
+  --fw-medium: 600;
+  --fw-bold: 750;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: clamp(1.125rem, 1rem + 0.4vw, 1.25rem);
+  --fs-h3: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  --fs-h2: clamp(1.875rem, 1.4rem + 1.9vw, 3rem);
+  --fs-h1: clamp(2.5rem, 1.6rem + 3.9vw, 4.5rem);
+  --lh-tight: 1.06;
+  --lh-snug: 1.2;
+  --lh-body: 1.65;
+  --tracking-tight: -0.035em;
+  --tracking-eyebrow: 0.14em;
+
+  /* ---- Spacing (4px base) ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --section-y: clamp(4.5rem, 3rem + 6vw, 8rem);
+
+  /* ---- Layout ---- */
+  --container: 1200px;
+  --container-wide: 1320px;
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --header-h: 72px;
+
+  /* ---- Radius ---- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* ---- Shadows (restrained) ---- */
+  --shadow-sm: 0 1px 2px rgb(18 40 47 / 0.06);
+  --shadow-md: 0 1px 2px rgb(18 40 47 / 0.05), 0 8px 24px -8px rgb(18 40 47 / 0.12);
+  --shadow-lg: 0 2px 4px rgb(18 40 47 / 0.04), 0 24px 48px -16px rgb(18 40 47 / 0.18);
+  --shadow-dark: 0 24px 60px -20px rgb(0 0 0 / 0.55);
+
+  /* ---- Motion ---- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-base: 240ms;
+  --dur-slow: 600ms;
+
+  /* ---- Focus ---- */
+  --focus-ring: 0 0 0 3px var(--reofex-orange);
+}

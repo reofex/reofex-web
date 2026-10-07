@@ -1,0 +1,208 @@
+---
+/**
+ * Product hero + UI showcase. Centered copy with the product UI rising out
+ * of the hero, annotated with the product's first three features.
+ */
+import Button from "../ui/Button.astro";
+import Icon from "../ui/Icon.astro";
+import ProductIcon from "../ui/ProductIcon.astro";
+import ProductMiniUI from "../visuals/ProductMiniUI.astro";
+import BackdropCurves from "../visuals/BackdropCurves.astro";
+import type { Product } from "../../data/products";
+
+interface Props {
+  product: Product;
+}
+const { product: p } = Astro.props;
+const notes = p.features.slice(0, 4);
+---
+
+<section class="pph section--dark" style={`--acc:${p.accent}`} aria-labelledby="page-title">
+  <BackdropCurves variant="hero" />
+  <div class="pph__glow" aria-hidden="true"></div>
+  <div class="container pph__inner">
+    <nav aria-label="Breadcrumb" class="pph__crumbs">
+      <ol role="list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><span aria-current="page">{p.name}</span></li>
+      </ol>
+    </nav>
+    <div class="pph__brand">
+      <ProductIcon product={p} size={48} />
+      <span>{p.name}</span>
+    </div>
+    <p class="eyebrow eyebrow--plain">{p.hero.eyebrow}</p>
+    <h1 class="h1 pph__title" id="page-title">
+      {p.hero.title} <span class="accent">{p.hero.titleAccent}</span>
+    </h1>
+    <p class="lead pph__lead">{p.hero.body}</p>
+    <div class="pph__ctas">
+      <Button href={p.hero.primaryCta.href} size="lg">{p.hero.primaryCta.label}</Button>
+      <Button href="/contact?topic=project" size="lg" variant="secondary" icon={null}>Talk to Reofex</Button>
+    </div>
+    {p.hero.note && <p class="pph__note">{p.hero.note}</p>}
+  </div>
+
+  <div class="container pph__showcase" aria-label={`${p.name} interface preview`}>
+    <div class="pph__stage">
+      <ProductMiniUI product={p.slug} size="showcase" />
+      <ul role="list" class="pph__notes">
+        {
+          notes.map((n, i) => (
+            <li class={`pph__noteitem pph__noteitem--${i}`}>
+              <Icon name={n.icon} size={16} />
+              {n.title}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pph {
+    position: relative;
+    overflow: hidden;
+    padding-top: calc(var(--header-h) + clamp(2.5rem, 1.5rem + 4vw, 5rem));
+    background:
+      radial-gradient(50% 60% at 50% 100%, color-mix(in srgb, var(--acc) 22%, transparent), transparent 70%),
+      linear-gradient(180deg, var(--reofex-dark-2), var(--reofex-dark));
+  }
+  .pph__glow {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    width: 900px;
+    height: 600px;
+    translate: -50% 0;
+    background: radial-gradient(closest-side, rgb(247 141 32 / 0.1), transparent);
+    pointer-events: none;
+  }
+  .pph__inner {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--space-5);
+  }
+  .pph__crumbs ol {
+    display: flex;
+    gap: 6px;
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted-dark);
+  }
+  .pph__crumbs li + li::before {
+    content: "/";
+    margin-right: 6px;
+    opacity: 0.5;
+  }
+  .pph__crumbs a:hover {
+    color: var(--reofex-orange);
+  }
+  .pph__crumbs [aria-current] {
+    color: #fff;
+  }
+  .pph__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: var(--space-4);
+    font-size: 1.25rem;
+    font-weight: var(--fw-bold);
+    letter-spacing: -0.02em;
+  }
+  .pph .eyebrow {
+    color: color-mix(in srgb, var(--acc) 55%, white);
+  }
+  .pph__title {
+    max-width: 20ch;
+    font-size: clamp(2.25rem, 1.4rem + 3.2vw, 4rem);
+  }
+  .pph__lead {
+    max-width: 62ch;
+  }
+  .pph__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  .pph__note {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted-dark);
+  }
+  .pph__showcase {
+    position: relative;
+    margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
+  }
+  .pph__stage {
+    position: relative;
+    max-width: 680px;
+    margin-inline: auto;
+    margin-bottom: -2px;
+    padding-bottom: clamp(2rem, 1rem + 3vw, 4rem);
+  }
+  .pph__stage :global(.mui__frame) {
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.1),
+      0 40px 80px -30px rgb(0 0 0 / 0.7);
+  }
+  .pph__notes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .pph__noteitem {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    white-space: nowrap;
+    color: #fff;
+    background: rgb(20 46 54 / 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    box-shadow: 0 16px 32px -16px rgb(0 0 0 / 0.6);
+    animation: note-in 700ms var(--ease-out) both;
+  }
+  .pph__noteitem :global(.icon) {
+    color: color-mix(in srgb, var(--acc) 60%, white);
+  }
+  /* Pills hang off the frame edges with a consistent 28px overlap */
+  .pph__noteitem--0 { left: 0; top: 14%; translate: calc(-100% + 28px) 0; animation-delay: 200ms; }
+  .pph__noteitem--1 { right: 0; top: 30%; translate: calc(100% - 28px) 0; animation-delay: 350ms; }
+  .pph__noteitem--2 { left: 0; top: 60%; translate: calc(-100% + 28px) 0; animation-delay: 500ms; }
+  .pph__noteitem--3 { right: 0; top: 74%; translate: calc(100% - 28px) 0; animation-delay: 650ms; }
+  @keyframes note-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  @media (max-width: 1100px) {
+    .pph__notes {
+      display: none;
+    }
+  }
+  @media (max-width: 767px) {
+    .pph__inner {
+      text-align: left;
+      justify-items: start;
+    }
+    .pph__ctas {
+      justify-content: flex-start;
+      width: 100%;
+    }
+    .pph__ctas :global(.btn) {
+      flex: 1 1 100%;
+    }
+  }
+</style>

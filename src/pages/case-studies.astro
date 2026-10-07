@@ -1,0 +1,34 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHero from "../components/ui/PageHero.astro";
+import CaseStudyCard from "../components/casestudy/CaseStudyCard.astro";
+import CTASection from "../components/home/CTASection.astro";
+import { caseStudies } from "../data/site";
+---
+
+<BaseLayout
+  title="Case Studies"
+  description="How Reofex Technologies approaches real business problems — problem, approach, solution, technology and outcome."
+>
+  <PageHero
+    crumbs={[{ label: "Case Studies" }]}
+    eyebrow="Case studies"
+    title="Real problems."
+    titleAccent="Practical solutions."
+    lead="Every case study follows the same structure: the problem, our approach, the solution we built, the technology behind it and the outcome."
+    compact
+  />
+  <section class="section" aria-label="Case studies">
+    <div class="container cl">
+      {caseStudies.map((s) => <div data-reveal><CaseStudyCard study={s} headingLevel="h2" /></div>)}
+    </div>
+  </section>
+  <CTASection title="Have a problem worth solving?" body="Your project could be the next case study." />
+</BaseLayout>
+
+<style>
+  .cl {
+    display: grid;
+    gap: var(--space-8);
+  }
+</style>

@@ -1,0 +1,347 @@
+---
+import Logo from "../ui/Logo.astro";
+import Icon from "../ui/Icon.astro";
+import Button from "../ui/Button.astro";
+import ProductIcon from "../ui/ProductIcon.astro";
+import MobileMenu from "./MobileMenu.astro";
+import { mainNav, getStartedHref } from "../../data/site";
+import { products, productHref } from "../../data/products";
+
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isCurrent = (href: string) => path === href || path.startsWith(href + "/");
+---
+
+<header class="nav" data-nav>
+  <div class="nav__inner container container--wide">
+    <Logo tone="light" height={46} class="nav__logo" />
+
+    <nav class="nav__primary" aria-label="Main">
+      <ul role="list" class="nav__list">
+        {
+          mainNav.map((item) =>
+            item.mega ? (
+              <li class="nav__mega" data-mega>
+                <button
+                  class:list={["nav__link", isCurrent(item.href) && "is-current"]}
+                  aria-expanded="false"
+                  aria-controls="mega-products"
+                  data-mega-trigger
+                >
+                  {item.label}
+                  <Icon name="chevronDown" size={14} class="nav__chev" />
+                </button>
+                <div class="mega" id="mega-products" data-mega-panel hidden>
+                  <div class="mega__grid">
+                    <ul role="list" class="mega__products">
+                      {products.map((p) => (
+                        <li>
+                          <a href={productHref(p.slug)} class="mega__item" style={`--acc:${p.accent}`}>
+                            <ProductIcon product={p} size={40} />
+                            <span>
+                              <b>{p.name}</b>
+                              <small>{p.tagline}</small>
+                            </span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                    <div class="mega__aside">
+                      <p class="eyebrow eyebrow--plain">Reofex products</p>
+                      <p class="mega__copy">
+                        Four products built on the same engineering, AI and product thinking.
+                      </p>
+                      <a href="/products" class="mega__all">
+                        View all products <Icon name="arrowRight" size={14} />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ) : (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={["nav__link", isCurrent(item.href) && "is-current"]}
+                  aria-current={isCurrent(item.href) ? "page" : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ),
+          )
+        }
+      </ul>
+    </nav>
+
+    <div class="nav__actions">
+      <Button href="/contact" variant="secondary" size="sm" icon={null} class="nav__contact">Contact</Button>
+      <Button href={getStartedHref} size="sm">Get Started</Button>
+    </div>
+
+    <button class="nav__burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu" data-menu-open>
+      <Icon name="menu" size={22} />
+    </button>
+  </div>
+</header>
+
+<MobileMenu />
+
+<script>
+  const nav = document.querySelector<HTMLElement>("[data-nav]")!;
+  const onScroll = () => nav.classList.toggle("is-scrolled", window.scrollY > 8);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  // Products mega menu: hover (with intent delay) + click + keyboard
+  const mega = document.querySelector<HTMLElement>("[data-mega]");
+  if (mega) {
+    const trigger = mega.querySelector<HTMLButtonElement>("[data-mega-trigger]")!;
+    const panel = mega.querySelector<HTMLElement>("[data-mega-panel]")!;
+    let closeTimer: number | undefined;
+    const setOpen = (open: boolean) => {
+      trigger.setAttribute("aria-expanded", String(open));
+      panel.hidden = !open;
+      nav.classList.toggle("has-mega", open);
+    };
+    let hoverOpenedAt = 0;
+    trigger.addEventListener("click", () => {
+      // A click right after hover-open shouldn't immediately close the menu
+      if (Date.now() - hoverOpenedAt < 600) return;
+      setOpen(trigger.getAttribute("aria-expanded") !== "true");
+    });
+    const canHover = window.matchMedia("(hover: hover)").matches;
+    if (canHover) {
+      mega.addEventListener("mouseenter", () => {
+        clearTimeout(closeTimer);
+        if (panel.hidden) hoverOpenedAt = Date.now();
+        setOpen(true);
+      });
+      mega.addEventListener("mouseleave", () => {
+        closeTimer = window.setTimeout(() => setOpen(false), 160);
+      });
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !panel.hidden) {
+        setOpen(false);
+        trigger.focus();
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (!mega.contains(e.target as Node)) setOpen(false);
+    });
+    mega.addEventListener("focusout", (e) => {
+      if (!mega.contains(e.relatedTarget as Node)) setOpen(false);
+    });
+  }
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    color: var(--reofex-white);
+    transition:
+      background-color var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out),
+      backdrop-filter var(--dur-base) var(--ease-out);
+    border-bottom: 1px solid transparent;
+  }
+  .nav.is-scrolled,
+  .nav.has-mega {
+    background: rgb(14 34 40 / 0.9);
+    backdrop-filter: saturate(140%) blur(16px);
+    -webkit-backdrop-filter: saturate(140%) blur(16px);
+    border-bottom-color: var(--reofex-border-dark);
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    height: var(--header-h);
+    transition: height var(--dur-base) var(--ease-out);
+  }
+  .nav.is-scrolled .nav__inner {
+    height: 62px;
+  }
+  .nav.is-scrolled :global(.nav__logo) {
+    --logo-h: 40px !important;
+  }
+  .nav__primary {
+    margin-inline: auto;
+  }
+  .nav__list {
+    display: flex;
+    gap: var(--space-1);
+  }
+  .nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    color: rgb(255 255 255 / 0.78);
+    transition:
+      color var(--dur-fast),
+      background-color var(--dur-fast);
+  }
+  .nav__link:hover,
+  .nav__link[aria-expanded="true"] {
+    color: #fff;
+    background: rgb(255 255 255 / 0.07);
+  }
+  .nav__link.is-current {
+    color: #fff;
+  }
+  .nav__link.is-current::after {
+    content: "";
+    width: 4px;
+    height: 4px;
+    margin-left: 4px;
+    border-radius: 50%;
+    background: var(--reofex-orange);
+  }
+  .nav__link :global(.nav__chev) {
+    opacity: 0.7;
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .nav__link[aria-expanded="true"] :global(.nav__chev) {
+    transform: rotate(180deg);
+  }
+  .nav__actions {
+    display: flex;
+    gap: var(--space-3);
+  }
+  .nav__burger {
+    display: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    border-radius: var(--radius-md);
+    color: #fff;
+  }
+
+  /* ---- Mega menu ---- */
+  .nav__mega {
+    position: relative;
+  }
+  .mega {
+    position: absolute;
+    top: calc(100% + 14px);
+    left: 50%;
+    width: min(760px, 90vw);
+    translate: -50% 0;
+    padding: 10px;
+    border-radius: var(--radius-xl);
+    background: #fff;
+    color: var(--reofex-dark);
+    box-shadow:
+      0 0 0 1px rgb(18 40 47 / 0.06),
+      0 30px 60px -20px rgb(0 0 0 / 0.45);
+    animation: mega-in var(--dur-base) var(--ease-out);
+  }
+  .mega::before {
+    /* hover bridge */
+    content: "";
+    position: absolute;
+    inset: -16px 0 auto;
+    height: 16px;
+  }
+  .mega__grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 10px;
+  }
+  .mega__products {
+    display: grid;
+    gap: 2px;
+  }
+  .mega__item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    transition: background-color var(--dur-fast);
+  }
+  .mega__item:hover,
+  .mega__item:focus-visible {
+    background: color-mix(in srgb, var(--acc) 8%, white);
+  }
+  .mega__item span {
+    display: grid;
+    line-height: 1.35;
+  }
+  .mega__item b {
+    font-size: 0.9375rem;
+  }
+  .mega__item small {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted);
+  }
+  .mega__aside {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgb(247 141 32 / 0.18), transparent 60%),
+      var(--reofex-dark);
+    color: #fff;
+  }
+  .mega__aside .eyebrow {
+    color: var(--reofex-orange);
+  }
+  .mega__copy {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted-dark);
+  }
+  .mega__all {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    color: var(--reofex-orange);
+  }
+  .mega__all:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  @keyframes mega-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .nav__link {
+      padding-inline: 10px;
+    }
+    .nav__actions :global(.nav__contact) {
+      display: none;
+    }
+  }
+  @media (max-width: 1023px) {
+    .nav__primary,
+    .nav__actions {
+      display: none;
+    }
+    .nav__burger {
+      display: grid;
+      margin-left: auto;
+    }
+    .nav__inner {
+      height: 64px;
+    }
+    .nav :global(.nav__logo) {
+      --logo-h: 38px !important;
+    }
+  }
+</style>

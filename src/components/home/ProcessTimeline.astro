@@ -1,0 +1,279 @@
+---
+import Icon from "../ui/Icon.astro";
+import Button from "../ui/Button.astro";
+import BackdropCurves from "../visuals/BackdropCurves.astro";
+import { processSteps, capabilities } from "../../data/site";
+
+interface Props {
+  showCta?: boolean;
+  headingLevel?: "h1" | "h2";
+}
+const { showCta = true, headingLevel: H = "h2" } = Astro.props;
+---
+
+<section class="section section--dark pt" aria-labelledby="process-title">
+  <BackdropCurves variant="process" />
+  <div class="container container--wide pt__inner">
+    <div class="pt__intro" data-reveal>
+      <div class="pt__titles">
+        <p class="eyebrow">How we build</p>
+        <H class="h2" id="process-title">
+          Thoughtful process.
+          <br />
+          Solid engineering.
+        </H>
+      </div>
+      <div class="pt__side">
+        <p class="lead">
+          We follow a structured approach to turn ideas into reliable, scalable and maintainable software.
+        </p>
+        {showCta && <Button href="/how-we-build" variant="secondary" icon="arrowRight">Our process</Button>}
+      </div>
+    </div>
+
+    <ol class="pt__steps" data-steps>
+      {
+        processSteps.map((s, i) => (
+          <li class="pt__step" style={`--i:${i}`}>
+            <span class="pt__num">{s.n}</span>
+            <h3 class="pt__title">{s.title}</h3>
+            <p class="pt__body">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="pt__caps" data-reveal>
+      <p class="pt__capslabel">Technology & capabilities</p>
+      <ul role="list" class="pt__capslist">
+        {
+          capabilities.map((c) => (
+            <li>
+              <Icon name={c.icon} size={20} />
+              <span>{c.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Step-by-step progression when the timeline enters the viewport.
+  document.querySelectorAll<HTMLElement>("[data-steps]").forEach((el) => {
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          el.classList.add("is-active");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(el);
+  });
+</script>
+
+<style>
+  .pt {
+    overflow: hidden;
+    background:
+      radial-gradient(60% 80% at 0% 0%, rgb(26 66 74 / 0.7), transparent 70%),
+      var(--reofex-dark);
+  }
+  .pt__inner {
+    position: relative;
+    display: grid;
+    gap: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
+  }
+  .pt__intro {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    align-items: end;
+    gap: var(--space-8);
+  }
+  .pt__titles,
+  .pt__side {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+  .pt__steps {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--space-6);
+    position: relative;
+    align-self: start;
+    padding-top: var(--space-2);
+  }
+  /* connecting rail */
+  .pt__steps::before,
+  .pt__steps::after {
+    content: "";
+    position: absolute;
+    top: calc(var(--space-2) + 17px);
+    left: 18px;
+    right: 18px;
+    height: 1px;
+    background: var(--reofex-border-dark-strong);
+  }
+  .pt__steps::after {
+    background: linear-gradient(90deg, var(--reofex-orange), rgb(247 141 32 / 0.3));
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1.6s var(--ease-out);
+  }
+  .pt__steps.is-active::after {
+    transform: scaleX(1);
+  }
+  .pt__step {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+  .pt__num {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin-bottom: var(--space-3);
+    border-radius: 50%;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    background: var(--reofex-dark);
+    border: 1px solid var(--reofex-border-dark-strong);
+    color: var(--reofex-muted-dark);
+    transition:
+      border-color var(--dur-slow) var(--ease-out),
+      color var(--dur-slow) var(--ease-out),
+      box-shadow var(--dur-slow) var(--ease-out);
+    transition-delay: calc(var(--i) * 200ms);
+  }
+  .is-active .pt__num {
+    border-color: var(--reofex-orange);
+    color: var(--reofex-orange);
+    box-shadow: 0 0 0 4px rgb(247 141 32 / 0.12);
+  }
+  .pt__title {
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+  }
+  .pt__body {
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    color: var(--reofex-muted-dark);
+  }
+  .pt__caps {
+    grid-column: 1 / -1;
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--reofex-border-dark);
+    background: rgb(255 255 255 / 0.025);
+  }
+  .pt__capslabel {
+    margin-bottom: var(--space-5);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--reofex-muted-dark);
+  }
+  .pt__capslist {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+  .pt__capslist li {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-1);
+    border-radius: var(--radius-md);
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    text-align: center;
+    color: rgb(255 255 255 / 0.85);
+    transition: background-color var(--dur-fast);
+  }
+  .pt__capslist li:hover {
+    background: rgb(255 255 255 / 0.05);
+  }
+  .pt__capslist :global(.icon) {
+    color: var(--reofex-orange);
+  }
+
+  @media (max-width: 899px) {
+    .pt__intro {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 1023px) {
+    .pt__capslist {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+  /* Vertical timeline on mobile / small tablet */
+  @media (max-width: 899px) {
+    .pt__steps {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding-top: 0;
+    }
+    .pt__steps::before,
+    .pt__steps::after {
+      top: 18px;
+      bottom: 18px;
+      left: 18px;
+      right: auto;
+      width: 1px;
+      height: auto;
+    }
+    .pt__steps::after {
+      background: linear-gradient(180deg, var(--reofex-orange), rgb(247 141 32 / 0.3));
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+    .pt__steps.is-active::after {
+      transform: scaleY(1);
+    }
+    .pt__step {
+      grid-template-columns: 36px 1fr;
+      column-gap: var(--space-5);
+      row-gap: 2px;
+      padding-bottom: var(--space-6);
+    }
+    .pt__step:last-child {
+      padding-bottom: 0;
+    }
+    .pt__num {
+      grid-row: span 2;
+      margin: 0;
+    }
+    .pt__title {
+      padding-top: 6px;
+    }
+  }
+  @media (max-width: 767px) {
+    .pt__caps {
+      padding: var(--space-5);
+    }
+    .pt__capslist {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .pt__capslist li {
+      grid-template-columns: 20px 1fr;
+      justify-items: start;
+      text-align: left;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      font-size: var(--fs-sm);
+    }
+  }
+</style>

@@ -1,0 +1,139 @@
+---
+import Icon from "./Icon.astro";
+import type { IconName } from "./icons";
+
+interface Props {
+  href?: string;
+  variant?: "primary" | "secondary" | "ghost" | "dark";
+  size?: "sm" | "md" | "lg";
+  icon?: IconName | null;
+  type?: "button" | "submit";
+  class?: string;
+  external?: boolean;
+  [key: string]: unknown;
+}
+const {
+  href,
+  variant = "primary",
+  size = "md",
+  icon = "arrowRight",
+  type = "button",
+  class: className,
+  external = href?.startsWith("http"),
+  ...rest
+} = Astro.props;
+const classes = ["btn", `btn--${variant}`, `btn--${size}`, className];
+---
+
+{
+  href ? (
+    <a
+      href={href}
+      class:list={classes}
+      {...(external ? { target: "_blank", rel: "noopener" } : {})}
+      {...rest}
+    >
+      <span>
+        <slot />
+      </span>
+      {icon && <Icon name={external ? "arrowUpRight" : icon} size={16} class="btn__icon" />}
+      {external && <span class="sr-only">(opens in a new tab)</span>}
+    </a>
+  ) : (
+    <button type={type} class:list={classes} {...rest}>
+      <span>
+        <slot />
+      </span>
+      {icon && <Icon name={icon} size={16} class="btn__icon" />}
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    --btn-h: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: var(--btn-h);
+    padding-inline: 22px;
+    border-radius: var(--radius-pill);
+    font-weight: var(--fw-bold);
+    font-size: 0.9375rem;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
+  }
+  .btn--sm {
+    --btn-h: 38px;
+    padding-inline: 16px;
+    font-size: var(--fs-sm);
+  }
+  .btn--lg {
+    --btn-h: 54px;
+    padding-inline: 28px;
+    font-size: 1rem;
+  }
+  .btn :global(.btn__icon) {
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .btn:hover :global(.btn__icon) {
+    transform: translateX(3px);
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+
+  /* Orange CTA — dark ink text keeps AA contrast on the brand orange */
+  .btn--primary {
+    background: var(--reofex-orange);
+    color: var(--reofex-dark);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.25),
+      0 8px 24px -10px rgb(247 141 32 / 0.6);
+  }
+  .btn--primary:hover {
+    background: var(--reofex-orange-hover);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.3),
+      0 12px 32px -10px rgb(247 141 32 / 0.75);
+  }
+  /* Outline — adapts to the surface via currentColor */
+  .btn--secondary {
+    border-color: color-mix(in srgb, currentColor 28%, transparent);
+    color: inherit;
+  }
+  .btn--secondary:hover {
+    border-color: var(--reofex-orange);
+    color: inherit;
+    background: color-mix(in srgb, currentColor 6%, transparent);
+  }
+  .btn--dark {
+    background: var(--reofex-dark);
+    color: var(--reofex-white);
+  }
+  .btn--dark:hover {
+    background: var(--reofex-dark-soft);
+  }
+  .btn--ghost {
+    padding-inline: 0;
+    height: auto;
+    border-radius: 4px;
+    color: var(--reofex-orange-ink);
+  }
+  :global(.section--dark) .btn--ghost,
+  :global(.on-dark) .btn--ghost {
+    color: var(--reofex-orange);
+  }
+  .btn--ghost:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>

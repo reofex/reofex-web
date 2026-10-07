@@ -1,0 +1,705 @@
+---
+/**
+ * Illustrative product UI, rendered in HTML/CSS (no screenshots).
+ * Everything is sized in `em` and the root font-size scales with the
+ * container width, so one design renders crisply at any size.
+ * Content shows workflow states only — never performance metrics.
+ */
+import Icon from "../ui/Icon.astro";
+import type { ProductSlug } from "../../data/products";
+
+interface Props {
+  product: ProductSlug;
+  size?: "card" | "showcase";
+  class?: string;
+}
+const { product, size = "card", class: className } = Astro.props;
+---
+
+<div class:list={["mui", `mui--${product}`, `mui--${size}`, className]} aria-hidden="true">
+  <div class="mui__frame">
+    <div class="mui__bar">
+      <span></span><span></span><span></span>
+      <em class="mui__url">
+        {
+          { respondly: "Respondly · Inbox", "reofex-growth": "Growth · Campaigns", "reofex-sync": "Sync · Invoices", fynex: "Fynex · Requests" }[
+            product
+          ]
+        }
+      </em>
+    </div>
+
+    {
+      product === "respondly" && (
+        <div class="mui__body rsp">
+          <aside class="rsp__list">
+            <div class="rsp__item is-active">
+              <i class="av av--a">S</i>
+              <div>
+                <b>Sara M.</b>
+                <small>Do you deliver today?</small>
+              </div>
+              <Icon name="whatsapp" size={10} class="ch ch--wa" />
+            </div>
+            <div class="rsp__item">
+              <i class="av av--b">R</i>
+              <div>
+                <b>Rahul K.</b>
+                <small>Price for the large…</small>
+              </div>
+              <Icon name="instagram" size={10} class="ch ch--ig" />
+            </div>
+            <div class="rsp__item">
+              <i class="av av--c">L</i>
+              <div>
+                <b>Lina A.</b>
+                <small>Opening hours?</small>
+              </div>
+              <Icon name="globe" size={10} class="ch" />
+            </div>
+          </aside>
+          <div class="rsp__chat">
+            <p class="bub bub--in">Hi! Do you deliver today? 📦</p>
+            <p class="bub bub--out">
+              <span class="ai">
+                <Icon name="sparkles" size={9} /> AI reply
+              </span>
+              Yes — orders before 4 pm are delivered today. Want me to place one for you?
+            </p>
+            <p class="bub bub--in">Yes please, 2 boxes</p>
+            <div class="rsp__handover">
+              <Icon name="bell" size={10} /> Team notified · <b>Take over</b>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    {
+      product === "reofex-growth" && (
+        <div class="mui__body grw">
+          <div class="grw__ad">
+            <div class="grw__adhead">
+              <i class="av av--g">B</i>
+              <div>
+                <b>Your Business</b>
+                <small>Sponsored</small>
+              </div>
+            </div>
+            <div class="grw__creative">
+              <span />
+            </div>
+            <div class="grw__cta">
+              <Icon name="whatsapp" size={10} /> Send WhatsApp message
+            </div>
+          </div>
+          <div class="grw__panel">
+            <span class="tag tag--ai">
+              <Icon name="sparkles" size={9} /> AI draft
+            </span>
+            <b class="grw__title">Weekend offer campaign</b>
+            <div class="grw__row">
+              <span>Platforms</span>
+              <em>
+                <Icon name="facebook" size={10} />
+                <Icon name="instagram" size={10} />
+              </em>
+            </div>
+            <div class="grw__row">
+              <span>Destination</span>
+              <em>WhatsApp</em>
+            </div>
+            <div class="grw__row">
+              <span>Daily budget</span>
+              <em>Set by you</em>
+            </div>
+            <div class="grw__approve">
+              <Icon name="userCheck" size={10} /> Approve & launch
+            </div>
+            <small class="grw__note">Nothing goes live without your approval</small>
+          </div>
+        </div>
+      )
+    }
+
+    {
+      product === "reofex-sync" && (
+        <div class="mui__body syn">
+          <div class="syn__doc">
+            <div class="syn__dochead">
+              <b>INVOICE</b>
+              <span class="tag">
+                <Icon name="mail" size={9} /> Email
+              </span>
+            </div>
+            <div class="syn__field">
+              <span>Vendor</span>
+              <em class="hl">Gulf Supplies LLC</em>
+            </div>
+            <div class="syn__field">
+              <span>Invoice no.</span>
+              <em class="hl">INV-2041</em>
+            </div>
+            <div class="syn__field">
+              <span>Total</span>
+              <em class="hl">AED 4,250.00</em>
+            </div>
+            <div class="syn__lines">
+              <i />
+              <i />
+              <i />
+            </div>
+          </div>
+          <ol class="syn__steps">
+            <li class="done">
+              <Icon name="check" size={9} /> Data extracted
+            </li>
+            <li class="done">
+              <Icon name="check" size={9} /> Vendor matched
+            </li>
+            <li class="done">
+              <Icon name="check" size={9} /> Validated
+            </li>
+            <li class="now">
+              <i /> Awaiting approval
+            </li>
+            <li>
+              <i /> Accounting entry
+            </li>
+          </ol>
+        </div>
+      )
+    }
+
+    {
+      product === "fynex" && (
+        <div class="mui__body fnx">
+          <div class="fnx__head">
+            <b>Visa renewal · #R-1182</b>
+            <span class="tag tag--fx">In progress</span>
+          </div>
+          <ol class="fnx__chain">
+            <li class="done">
+              <i>
+                <Icon name="check" size={9} />
+              </i>
+              <span>HR</span>
+            </li>
+            <li class="now">
+              <i>2</i>
+              <span>PRO</span>
+            </li>
+            <li>
+              <i>3</i>
+              <span>Finance</span>
+            </li>
+          </ol>
+          <div class="fnx__rows">
+            <div>
+              <Icon name="file" size={10} /> Passport copy <em class="ok">Uploaded</em>
+            </div>
+            <div>
+              <Icon name="form" size={10} /> Emirates ID <em class="ok">Uploaded</em>
+            </div>
+            <div>
+              <Icon name="bell" size={10} /> Expiry alert <em class="warn">30 days</em>
+            </div>
+          </div>
+          <div class="fnx__foot">
+            <span>
+              <Icon name="wallet" size={10} /> Wallet debit on submit
+            </span>
+            <span class="ar" lang="ar" dir="rtl">
+              تجديد التأشيرة
+            </span>
+          </div>
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .mui {
+    container-type: inline-size;
+    width: 100%;
+    --acc: var(--reofex-orange);
+  }
+  .mui--respondly { --acc: var(--accent-respondly); }
+  .mui--reofex-growth { --acc: var(--accent-growth); }
+  .mui--reofex-sync { --acc: var(--accent-sync); }
+  .mui--fynex { --acc: var(--accent-fynex); }
+
+  .mui__frame {
+    /* base design width ≈ 34em → scales with container */
+    font-size: calc(100cqi / 34);
+    background: #fff;
+    border-radius: 0.9em;
+    border: 1px solid rgb(18 40 47 / 0.1);
+    box-shadow: 0 0.2em 0.4em rgb(18 40 47 / 0.04), 0 1.6em 3.2em -1.2em rgb(18 40 47 / 0.25);
+    overflow: hidden;
+    color: var(--reofex-dark);
+    line-height: 1.35;
+  }
+  .mui__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.7em 0.9em;
+    border-bottom: 1px solid rgb(18 40 47 / 0.07);
+    background: #fbfaf7;
+  }
+  .mui__bar > span {
+    width: 0.55em;
+    height: 0.55em;
+    border-radius: 50%;
+    background: rgb(18 40 47 / 0.14);
+  }
+  .mui__url {
+    margin-left: 0.6em;
+    font-style: normal;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .mui__body {
+    padding: 1em;
+    min-height: 15.5em;
+    font-size: 1em;
+  }
+  b {
+    font-weight: 700;
+  }
+  small {
+    font-size: 0.82em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.25em 0.6em;
+    border-radius: 99px;
+    font-size: 0.78em;
+    font-weight: 700;
+    background: rgb(18 40 47 / 0.06);
+    color: rgb(18 40 47 / 0.7);
+  }
+  .tag--ai,
+  .tag--fx {
+    background: color-mix(in srgb, var(--acc) 14%, white);
+    color: color-mix(in srgb, var(--acc) 75%, black);
+  }
+  .mui :global(.icon) {
+    width: 1.05em;
+    height: 1.05em;
+  }
+  .av {
+    display: grid;
+    place-items: center;
+    width: 2.2em;
+    height: 2.2em;
+    border-radius: 50%;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.85em;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .av--a { background: #1f9d6b; }
+  .av--b { background: #c46a2b; }
+  .av--c { background: #3c6e8f; }
+  .av--g { background: var(--reofex-dark); }
+
+  /* ---------- Respondly ---------- */
+  .rsp {
+    display: grid;
+    grid-template-columns: 11.5em 1fr;
+    gap: 0.9em;
+  }
+  .rsp__list {
+    display: grid;
+    align-content: start;
+    gap: 0.35em;
+  }
+  .rsp__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.55em;
+    padding: 0.5em;
+    border-radius: 0.6em;
+    font-size: 0.85em;
+  }
+  .rsp__item div {
+    display: grid;
+    min-width: 0;
+  }
+  .rsp__item small {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rsp__item.is-active {
+    background: color-mix(in srgb, var(--acc) 9%, white);
+  }
+  .rsp :global(.ch) {
+    color: rgb(18 40 47 / 0.4);
+  }
+  .rsp :global(.ch--wa) {
+    color: #25d366;
+  }
+  .rsp :global(.ch--ig) {
+    color: #d6249f;
+  }
+  .rsp__chat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 0.8em;
+    border-radius: 0.7em;
+    background: #f4f2ec;
+  }
+  .bub {
+    max-width: 85%;
+    padding: 0.55em 0.75em;
+    border-radius: 0.8em;
+    font-size: 0.85em;
+  }
+  .bub--in {
+    align-self: flex-start;
+    background: #fff;
+    border-bottom-left-radius: 0.25em;
+  }
+  .bub--out {
+    align-self: flex-end;
+    background: color-mix(in srgb, var(--acc) 16%, white);
+    border-bottom-right-radius: 0.25em;
+  }
+  .ai {
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    font-size: 0.8em;
+    font-weight: 700;
+    color: color-mix(in srgb, var(--acc) 75%, black);
+    margin-bottom: 0.15em;
+  }
+  .rsp__handover {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-size: 0.78em;
+    color: rgb(18 40 47 / 0.6);
+  }
+  .rsp__handover b {
+    color: color-mix(in srgb, var(--acc) 80%, black);
+  }
+
+  /* ---------- Growth ---------- */
+  .grw {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 0.9em;
+  }
+  .grw__ad {
+    border: 1px solid rgb(18 40 47 / 0.08);
+    border-radius: 0.7em;
+    padding: 0.6em;
+    display: grid;
+    gap: 0.55em;
+    align-content: start;
+  }
+  .grw__adhead {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.82em;
+  }
+  .grw__adhead div {
+    display: grid;
+  }
+  .grw__creative {
+    aspect-ratio: 4 / 3;
+    border-radius: 0.5em;
+    background:
+      radial-gradient(circle at 70% 30%, rgb(255 255 255 / 0.5), transparent 40%),
+      linear-gradient(135deg, #f7a54a, #f78d20 45%, #c35f06);
+    position: relative;
+    overflow: hidden;
+  }
+  .grw__creative span {
+    position: absolute;
+    left: 0.7em;
+    bottom: 0.7em;
+    width: 55%;
+    height: 0.6em;
+    border-radius: 99px;
+    background: rgb(255 255 255 / 0.85);
+    box-shadow: 0 0.9em 0 -0.05em rgb(255 255 255 / 0.55);
+    transform: translateY(-0.9em);
+  }
+  .grw__cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em;
+    padding: 0.5em;
+    border-radius: 0.5em;
+    background: #25d366;
+    color: #fff;
+    font-size: 0.78em;
+    font-weight: 700;
+  }
+  .grw__panel {
+    display: grid;
+    align-content: start;
+    gap: 0.5em;
+  }
+  .grw__panel .tag {
+    justify-self: start;
+  }
+  .grw__title {
+    font-size: 1.05em;
+    letter-spacing: -0.01em;
+  }
+  .grw__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 0.35em;
+    border-bottom: 1px dashed rgb(18 40 47 / 0.1);
+    font-size: 0.82em;
+  }
+  .grw__row span {
+    color: rgb(18 40 47 / 0.55);
+  }
+  .grw__row em {
+    font-style: normal;
+    font-weight: 700;
+    display: flex;
+    gap: 0.3em;
+  }
+  .grw__approve {
+    margin-top: 0.3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4em;
+    padding: 0.6em;
+    border-radius: 0.55em;
+    background: var(--reofex-dark);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85em;
+    box-shadow: 0 0 0 0.25em rgb(247 141 32 / 0.25);
+  }
+  .grw__note {
+    text-align: center;
+    font-size: 0.72em;
+  }
+
+  /* ---------- Sync ---------- */
+  .syn {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 0.9em;
+    align-items: start;
+  }
+  .syn__doc {
+    border: 1px solid rgb(18 40 47 / 0.09);
+    border-radius: 0.6em;
+    padding: 0.8em;
+    display: grid;
+    gap: 0.45em;
+    background: linear-gradient(#fff, #fcfbf8);
+  }
+  .syn__dochead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85em;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.2em;
+  }
+  .syn__field {
+    display: grid;
+    gap: 0.1em;
+    font-size: 0.8em;
+  }
+  .syn__field span {
+    color: rgb(18 40 47 / 0.5);
+    font-size: 0.9em;
+  }
+  .hl {
+    font-style: normal;
+    font-weight: 700;
+    justify-self: start;
+    padding: 0.1em 0.35em;
+    border-radius: 0.3em;
+    background: color-mix(in srgb, var(--acc) 12%, white);
+    outline: 1px solid color-mix(in srgb, var(--acc) 40%, white);
+  }
+  .syn__lines {
+    display: grid;
+    gap: 0.35em;
+    margin-top: 0.3em;
+  }
+  .syn__lines i {
+    height: 0.45em;
+    border-radius: 99px;
+    background: rgb(18 40 47 / 0.07);
+  }
+  .syn__lines i:nth-child(2) { width: 80%; }
+  .syn__lines i:nth-child(3) { width: 60%; }
+  .syn__steps {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.25em;
+    position: relative;
+  }
+  .syn__steps li {
+    display: flex;
+    align-items: center;
+    gap: 0.55em;
+    padding: 0.5em 0.6em;
+    border-radius: 0.5em;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: rgb(18 40 47 / 0.45);
+  }
+  .syn__steps li i {
+    width: 1.05em;
+    height: 1.05em;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    flex-shrink: 0;
+  }
+  .syn__steps li.done {
+    color: var(--reofex-dark);
+  }
+  .syn__steps li.done :global(.icon) {
+    padding: 0.15em;
+    border-radius: 50%;
+    background: var(--acc);
+    color: #fff;
+  }
+  .syn__steps li.now {
+    color: var(--reofex-dark);
+    background: rgb(247 141 32 / 0.12);
+  }
+  .syn__steps li.now i {
+    border-color: var(--reofex-orange);
+    background: radial-gradient(circle, var(--reofex-orange) 35%, transparent 40%);
+  }
+
+  /* ---------- Fynex ---------- */
+  .fnx {
+    display: grid;
+    gap: 0.8em;
+    align-content: start;
+  }
+  .fnx__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+  }
+  .fnx__chain {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    position: relative;
+  }
+  .fnx__chain::before {
+    content: "";
+    position: absolute;
+    top: 0.85em;
+    left: 16%;
+    right: 16%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--acc) 50%, rgb(18 40 47 / 0.1) 50%);
+  }
+  .fnx__chain li {
+    display: grid;
+    justify-items: center;
+    gap: 0.3em;
+    font-size: 0.8em;
+    font-weight: 700;
+    position: relative;
+  }
+  .fnx__chain i {
+    display: grid;
+    place-items: center;
+    width: 2.1em;
+    height: 2.1em;
+    border-radius: 50%;
+    font-style: normal;
+    background: #fff;
+    border: 1.5px solid rgb(18 40 47 / 0.15);
+    color: rgb(18 40 47 / 0.5);
+  }
+  .fnx__chain .done i {
+    background: var(--acc);
+    border-color: var(--acc);
+    color: #fff;
+  }
+  .fnx__chain .now i {
+    border-color: var(--acc);
+    color: var(--acc);
+    box-shadow: 0 0 0 0.3em color-mix(in srgb, var(--acc) 15%, transparent);
+  }
+  .fnx__chain li:not(.done):not(.now) span {
+    color: rgb(18 40 47 / 0.45);
+  }
+  .fnx__rows {
+    display: grid;
+    border: 1px solid rgb(18 40 47 / 0.08);
+    border-radius: 0.6em;
+  }
+  .fnx__rows div {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.55em 0.7em;
+    font-size: 0.8em;
+    font-weight: 600;
+  }
+  .fnx__rows div + div {
+    border-top: 1px solid rgb(18 40 47 / 0.06);
+  }
+  .fnx__rows em {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 0.9em;
+    padding: 0.15em 0.55em;
+    border-radius: 99px;
+  }
+  .ok {
+    background: rgb(31 157 107 / 0.12);
+    color: #146a48;
+  }
+  .warn {
+    background: rgb(247 141 32 / 0.15);
+    color: #8a4700;
+  }
+  .fnx__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75em;
+    color: rgb(18 40 47 / 0.6);
+  }
+  .fnx__foot span {
+    display: flex;
+    align-items: center;
+    gap: 0.35em;
+  }
+  .ar {
+    font-weight: 700;
+    color: color-mix(in srgb, var(--acc) 80%, black);
+  }
+</style>
