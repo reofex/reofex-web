@@ -17,7 +17,10 @@ interface Props {
 const { shot, priority = false, sizes = "(min-width: 1200px) 1100px, 100vw", tone = "light", class: className } = Astro.props;
 ---
 
-<figure class:list={["sf", `sf--${tone}`, className]}>
+<figure
+  class:list={["sf", `sf--${tone}`, shot.mobileFocus && "sf--focus", className]}
+  style={shot.mobileFocus ? `--sf-focus:${shot.mobileFocus}` : undefined}
+>
   <div class="sf__bar" aria-hidden="true">
     <span></span><span></span><span></span>
     <em>{shot.frameLabel}</em>
@@ -83,5 +86,14 @@ const { shot, priority = false, sizes = "(min-width: 1200px) 1100px, 100vw", ton
     display: block;
     width: 100%;
     height: auto;
+  }
+  /* Phones: a full desktop screen at ~400px is unreadable, so show a closer
+     portrait crop around the screenshot's focal area instead. */
+  @media (max-width: 767px) {
+    .sf--focus :global(.sf__img) {
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      object-position: var(--sf-focus, 50% 50%);
+    }
   }
 </style>

@@ -136,23 +136,23 @@ const isCurrent = (href: string) => path === href || path.startsWith(href + "/")
 </script>
 
 <style>
+  /*
+   * Fully opaque in every state: a see-through header picks up the colours
+   * scrolling beneath it and stops matching the surrounding dark. Heroes start
+   * with a band of the same --reofex-dark-2 so it still blends in at the top.
+   */
   .nav {
     position: fixed;
     inset: 0 0 auto;
     z-index: 50;
     color: var(--reofex-white);
-    transition:
-      background-color var(--dur-base) var(--ease-out),
-      border-color var(--dur-base) var(--ease-out),
-      backdrop-filter var(--dur-base) var(--ease-out);
-    border-bottom: 1px solid transparent;
+    background: var(--reofex-dark-2);
+    border-bottom: 1px solid var(--reofex-dark-2);
+    transition: border-color var(--dur-base) var(--ease-out);
   }
   .nav.is-scrolled,
   .nav.has-mega {
-    background: rgb(14 34 40 / 0.9);
-    backdrop-filter: saturate(140%) blur(16px);
-    -webkit-backdrop-filter: saturate(140%) blur(16px);
-    border-bottom-color: var(--reofex-border-dark);
+    border-bottom-color: #1f3237; /* solid hairline, no alpha */
   }
   .nav__inner {
     display: flex;
@@ -329,14 +329,6 @@ const isCurrent = (href: string) => path === href || path.startsWith(href + "/")
     }
   }
   @media (max-width: 1023px) {
-    /* Opaque on phones/tablets: matches the hero, and gives Safari's
-       status-bar tinting a solid colour to sample */
-    .nav {
-      background: var(--reofex-dark-2);
-    }
-    .nav.is-scrolled {
-      background: rgb(11 28 33 / 0.92);
-    }
     .nav__primary,
     .nav__actions {
       display: none;

@@ -33,6 +33,11 @@ export interface Screenshot {
   alt: string;
   /** Neutral label shown in the frame's title bar */
   frameLabel: string;
+  /**
+   * Phones show a closer portrait crop instead of the whole desktop screen.
+   * CSS object-position for that crop, e.g. "0% 50%" = left edge.
+   */
+  mobileFocus?: string;
 }
 
 export interface Product {
@@ -84,6 +89,7 @@ export const products: Product[] = [
       src: respondlyShot,
       alt: "Respondly website: 'AI that replies to your clients the way you would', with a website chat widget answering a property enquiry.",
       frameLabel: "therespondly.com",
+      mobileFocus: "50% 50%",
     },
     hero: {
       eyebrow: "AI WhatsApp & Instagram lead automation",
@@ -155,6 +161,7 @@ export const products: Product[] = [
       src: growthDashShot,
       alt: "Reofex Growth dashboard: AI Growth Overview with campaign metrics, AI Insights and an Approval Policy panel where every launch and spend change requires approval.",
       frameLabel: "Reofex Growth · AI Growth Overview",
+      mobileFocus: "0% 50%",
     },
     hero: {
       eyebrow: "AI-assisted Meta advertising",
@@ -229,6 +236,7 @@ export const products: Product[] = [
       src: syncShot,
       alt: "Reofex Sync, AI for Accounts: auto-read invoices from email, extract GST details, match vendors and catch duplicates, and post to Zoho Books — shown with the invoice inbox on a laptop.",
       frameLabel: "Reofex Sync · AI for Accounts",
+      mobileFocus: "85% 50%",
     },
     hero: {
       eyebrow: "AI invoice automation",
@@ -299,6 +307,7 @@ export const products: Product[] = [
       src: fynexShot,
       alt: "Fynex: an Employment Visa Renewal case moving through submission, PRO review, signature, payment and approval, with expiry tracking and wallet balance.",
       frameLabel: "gofynex.com",
+      mobileFocus: "100% 50%",
     },
     hero: {
       eyebrow: "Self-hosted · Built for UAE/GCC service workflows",

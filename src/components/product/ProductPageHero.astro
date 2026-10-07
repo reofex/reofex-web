@@ -49,7 +49,7 @@ const notes = p.features.slice(0, 4);
     <div class:list={["pph__stage", p.screenshot && "pph__stage--shot"]}>
       {
         p.screenshot ? (
-          <ScreenshotFrame shot={p.screenshot} priority tone="dark" sizes="(min-width: 1200px) 1040px, 92vw" />
+          <ScreenshotFrame shot={p.screenshot} priority tone="dark" sizes="(max-width: 767px) 200vw, (min-width: 1200px) 1040px, 92vw" />
         ) : (
           <ProductMiniUI product={p.slug} size="showcase" />
         )
