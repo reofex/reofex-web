@@ -8,15 +8,28 @@ interface Props {
   class?: string;
 }
 const { product, size = 44, class: className } = Astro.props;
+const logo = product.logo;
 ---
 
-<span
-  class:list={["picon", className]}
-  style={`--acc:${product.accent};--s:${size}px`}
-  aria-hidden="true"
->
-  <Icon name={product.icon} size={Math.round(size * 0.5)} />
-</span>
+{
+  logo ? (
+    <span
+      class:list={["picon", "picon--logo", { "picon--tile": logo.tile }, className]}
+      style={`--s:${size}px`}
+      aria-hidden="true"
+    >
+      <img src={logo.src} alt="" width={size} height={size} loading="lazy" decoding="async" />
+    </span>
+  ) : (
+    <span
+      class:list={["picon", className]}
+      style={`--acc:${product.accent};--s:${size}px`}
+      aria-hidden="true"
+    >
+      <Icon name={product.icon} size={Math.round(size * 0.5)} />
+    </span>
+  )
+}
 
 <style>
   .picon {
@@ -33,5 +46,28 @@ const { product, size = 44, class: className } = Astro.props;
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.25),
       0 6px 16px -6px color-mix(in srgb, var(--acc) 70%, transparent);
+  }
+
+  .picon--logo {
+    background: none;
+    box-shadow: none;
+    overflow: hidden;
+  }
+  .picon--logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Marks without their own background sit on a white app-icon tile */
+  .picon--tile {
+    background: #fff;
+    box-shadow:
+      inset 0 0 0 1px rgb(15 23 42 / 0.08),
+      0 6px 16px -8px rgb(15 23 42 / 0.25);
+  }
+  .picon--tile img {
+    width: 74%;
+    height: 74%;
   }
 </style>

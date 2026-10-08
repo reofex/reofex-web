@@ -49,6 +49,12 @@ export interface Product {
   /** One-paragraph explanation */
   description: string;
   icon: IconName;
+  /**
+   * Official product mark (copied from the product's own repo). When set it
+   * replaces the generic icon badge; `tile` sits it on a white tile for
+   * marks that have no background of their own.
+   */
+  logo?: { src: string; tile?: boolean };
   /** CSS custom property name for the product's secondary accent */
   accent: string;
   accentVar: string;
@@ -82,6 +88,7 @@ export const products: Product[] = [
     description:
       "Respondly understands customer queries on WhatsApp, Instagram and your website, and responds with your actual business data — products, prices, services and opening hours — 24 hours a day.",
     icon: "chat",
+    logo: { src: "/brand/products/respondly.svg", tile: true },
     accent: "#1f9d6b",
     accentVar: "--accent-respondly",
     externalUrl: "https://therespondly.com/",
@@ -155,6 +162,7 @@ export const products: Product[] = [
     description:
       "An AI-assisted Meta advertising platform for small businesses. Run Facebook and Instagram ads where every ad opens a WhatsApp conversation with your business — and nothing goes live or changes budget without your approval.",
     icon: "megaphone",
+    logo: { src: "/brand/products/reofex-growth.svg", tile: true },
     accent: "#f78d20",
     accentVar: "--accent-growth",
     screenshot: {
@@ -230,6 +238,7 @@ export const products: Product[] = [
     description:
       "An AI-powered invoice automation system. Invoices arriving by email or WhatsApp are read, extracted, matched to vendors, validated and routed for approval — then posted into your connected accounting software.",
     icon: "invoice",
+    logo: { src: "/brand/products/reofex-sync.svg" },
     accent: "#138a8a",
     accentVar: "--accent-sync",
     screenshot: {
@@ -300,6 +309,7 @@ export const products: Product[] = [
     description:
       "Every visa, license and PRO case — run on your own servers. Fynex replaces spreadsheets and shared inboxes with configurable intake forms, step-list approval workflows, wallet-based billing and expiry tracking.",
     icon: "workflow",
+    logo: { src: "/brand/products/fynex.svg" },
     accent: "#7357d6",
     accentVar: "--accent-fynex",
     externalUrl: "https://gofynex.com/",
