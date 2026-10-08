@@ -37,7 +37,7 @@ export const mainNav = [
   { label: "Solutions", href: "/solutions" },
   { label: "How We Build", href: "/how-we-build" },
   { label: "About", href: "/about" },
-  { label: "Case Studies", href: "/case-studies" },
+  // { label: "Case Studies", href: "/case-studies" }, // hidden until approved case studies are ready
 ];
 
 export interface Service {

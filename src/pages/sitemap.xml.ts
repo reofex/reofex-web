@@ -8,7 +8,7 @@ const paths = [
   "/solutions",
   "/how-we-build",
   "/about",
-  "/case-studies",
+  // "/case-studies", // hidden until approved case studies are ready
   "/contact",
   "/privacy",
   "/terms",

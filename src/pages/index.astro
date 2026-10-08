@@ -4,7 +4,8 @@ import Hero from "../components/home/Hero.astro";
 import ProductGrid from "../components/home/ProductGrid.astro";
 import ServicesGrid from "../components/home/ServicesGrid.astro";
 import ProcessTimeline from "../components/home/ProcessTimeline.astro";
-import CaseStudySection from "../components/casestudy/CaseStudySection.astro";
+// Case studies hidden until approved content is ready.
+// import CaseStudySection from "../components/casestudy/CaseStudySection.astro";
 import CTASection from "../components/home/CTASection.astro";
 import { site } from "../data/site";
 ---
@@ -19,6 +20,6 @@ import { site } from "../data/site";
   <ProductGrid />
   <ServicesGrid />
   <ProcessTimeline />
-  <CaseStudySection />
+  {/* <CaseStudySection /> — hidden until approved case studies are ready */}
   <CTASection />
 </BaseLayout>
