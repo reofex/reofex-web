@@ -4,7 +4,8 @@
  *
  * Content rules (see brief §25):
  *  - Respondly copy mirrors https://therespondly.com and Fynex copy mirrors
- *    https://gofynex.com (both inspected 2026-10-07).
+ *    https://gofynex.com (both inspected 2026-10-07); Sync copy mirrors
+ *    https://sync.reofex.com (inspected 2026-11-12).
  *  - Reofex Growth: AI never spends money on its own — human approval is always explicit.
  *  - No invented customers, metrics, partnerships or performance numbers.
  */
@@ -14,7 +15,7 @@ import respondlyShot from "../assets/products/respondly.png";
 import fynexShot from "../assets/products/fynex.png";
 import growthDashShot from "../assets/products/growth-dash.png";
 import growthApprovalShot from "../assets/products/growth-approval.png";
-import syncShot from "../assets/products/sync.png";
+import syncShot from "../assets/products/sync-dashboard.jpg";
 
 export type ProductSlug = "respondly" | "reofex-growth" | "reofex-sync" | "fynex";
 
@@ -233,72 +234,86 @@ export const products: Product[] = [
   {
     slug: "reofex-sync",
     name: "Reofex Sync",
-    tagline: "From invoice receipt to accounting entry — automated.",
+    tagline: "Purchase invoices that enter themselves.",
     category: "Finance & Accounting",
     description:
-      "An AI-powered invoice automation system. Invoices arriving by email or WhatsApp are read, extracted, matched to vendors, validated and routed for approval — then posted into your connected accounting software.",
+      "Purchase invoice automation for Zoho Books and Tally. Vendors send bills on WhatsApp and email — Reofex Sync reads them, checks the tax, catches duplicates, gets approval on the phone and posts the bill to Zoho Books or Tally.",
     icon: "invoice",
     logo: { src: "/brand/products/reofex-sync.svg" },
-    accent: "#138a8a",
+    accent: "#2563eb",
     accentVar: "--accent-sync",
+    externalUrl: "https://sync.reofex.com/",
     screenshot: {
       src: syncShot,
-      alt: "Reofex Sync, AI for Accounts: auto-read invoices from email, extract GST details, match vendors and catch duplicates, and post to Zoho Books — shown with the invoice inbox on a laptop.",
-      frameLabel: "Reofex Sync · AI for Accounts",
-      mobileFocus: "85% 50%",
+      alt: "Reofex Sync home screen: invoices waiting for approval or review, a new vendor to confirm, Gmail, WhatsApp, Zoho Books and AI provider connections, and this month's posted amount, GST on posted bills and time saved.",
+      frameLabel: "sync.reofex.com",
+      mobileFocus: "0% 0%",
     },
     hero: {
-      eyebrow: "AI invoice automation",
-      title: "From invoice receipt to accounting entry —",
-      titleAccent: "automated.",
-      body: "Reofex Sync picks up invoices from email and WhatsApp, reads them with AI, validates the data, runs your approval workflow and creates the accounting entry in your connected software.",
-      primaryCta: { label: "Book a walkthrough", href: "/contact?topic=reofex-sync" },
+      eyebrow: "For businesses on Zoho Books & Tally",
+      title: "Purchase invoices that",
+      titleAccent: "enter themselves.",
+      body: "Vendors send bills on WhatsApp and email. Reofex Sync reads them, checks the tax, catches duplicates, asks the right person to approve on their phone, and posts the bill to Zoho Books or Tally.",
+      primaryCta: { label: "Visit sync.reofex.com", href: "https://sync.reofex.com/" },
+      note: "14-day free trial · Runs on your own computer · No signup for the demo",
     },
     problem: {
-      title: "Invoice processing is still mostly copy and paste.",
+      title: "Purchase invoices are still mostly copy and paste.",
       points: [
-        "Invoices arrive as email attachments and WhatsApp photos in every possible format.",
-        "Someone retypes vendor, amounts and tax lines into the accounting system by hand.",
-        "Manual entry means errors, chasing approvals and slow month-end close.",
+        "Bills arrive as Gmail attachments and WhatsApp photos — someone has to download and forward them.",
+        "Vendor, GSTIN, line items and the CGST/SGST/IGST split get retyped into Zoho Books or Tally by hand.",
+        "Wrong tax rates, totals that don't add up and duplicate bills slip through to the books.",
       ],
     },
     explanation: {
-      title: "One pipeline from inbox to ledger.",
-      body: "Reofex Sync watches the channels where invoices arrive, uses AI to read and understand each document, matches it against your vendors, validates it, and sends it through the approval workflow you define before posting to accounting.",
+      title: "Invoice in, bill out.",
+      body: "Reofex Sync extracts the vendor, GSTIN, invoice number, line items with HSN/SAC and the tax split, then checks everything before anything posts. Routine bills post automatically; anything over your limit, from a new vendor or a possible duplicate waits for a manager's one-tap approval.",
     },
     workflow: {
-      title: "Every step of the invoice journey, handled.",
+      title: "Live in four steps — set up in an afternoon.",
       steps: [
-        { label: "Invoice received", detail: "Email or WhatsApp" },
-        { label: "AI reads invoice" },
-        { label: "Data extracted" },
-        { label: "Invoice understood" },
-        { label: "Vendor matched" },
-        { label: "Invoice validated" },
-        { label: "Approval workflow" },
-        { label: "Accounting entry" },
-        { label: "Connected accounting software" },
+        { label: "Install", detail: "One command on Windows, Mac or Linux — or we do it with you on a 2-hour call" },
+        { label: "Connect", detail: "Sign in to Gmail, add your WhatsApp number, connect Zoho Books or Tally, paste your AI key" },
+        { label: "Set your rules", detail: "Pick an approval limit and who approves" },
+        { label: "Forget the data entry", detail: "You only see the invoices that need you" },
       ],
     },
     features: [
-      { icon: "mail", title: "Email & WhatsApp intake", body: "Capture invoices from the channels vendors already use." },
-      { icon: "scan", title: "AI document reading", body: "Extract vendor, line items, totals and tax from varied layouts." },
-      { icon: "invoice", title: "GST extraction", body: "Extract GST details from every invoice, ready for your books." },
-      { icon: "link", title: "Vendor matching & duplicates", body: "Match each invoice to the right vendor and catch duplicates before they're posted." },
-      { icon: "shieldCheck", title: "Automated validation", body: "Catch missing fields and inconsistencies before they reach your books." },
-      { icon: "userCheck", title: "Approval workflows", body: "Route invoices to the right people for sign-off." },
-      { icon: "database", title: "Post to Zoho Books", body: "Post approved entries to Zoho Books in one click." },
+      { icon: "mail", title: "Invoices arrive on their own", body: "Gmail attachments and photos sent to your WhatsApp Business number land in one inbox — no downloading or forwarding." },
+      { icon: "scan", title: "Invoice in, bill out", body: "Reads vendor, GSTIN, invoice number, line items with HSN/SAC and the CGST/SGST/IGST split." },
+      { icon: "shieldCheck", title: "Tax & total checks", body: "Validates tax IDs (GSTIN, TRN, VAT), tax rates and that totals add up — before anything posts." },
+      { icon: "link", title: "Duplicates & new vendors", body: "Catches duplicates across email and WhatsApp, and confirms new vendors once." },
+      { icon: "userCheck", title: "Approve from anywhere", body: "Bills over your limit (say ₹25,000), from a new vendor or possible duplicates wait for a manager — one tap in the app or from the email link. Everything else posts by itself." },
+      { icon: "file", title: "Every step on record", body: "A full history per invoice: arrival, checks, who edited or approved, and where it was posted." },
+      { icon: "chart", title: "The month at a glance", body: "Posted amount, waiting items, GST on posted bills, duplicates caught and time saved." },
+      { icon: "globe", title: "Tax rules built in", body: "India, UAE, Saudi Arabia, Oman, Bahrain, Qatar, Kuwait, the UK and the US. Anywhere else, taxes are read as printed and totals checked." },
+      { icon: "database", title: "Zoho Books or Tally", body: "Bills are created in Zoho Books through Zoho's API, or in TallyPrime through Tally's built-in HTTP connector on your own network." },
+      { icon: "server", title: "Not another cloud service", body: "Runs on your own Windows, Mac or Linux machine — the Tally PC works. Passwords and API keys are stored encrypted on your machine." },
+      { icon: "sparkles", title: "Your AI, your key", body: "Choose Claude or OpenAI and pay the provider directly — about ₹0.07 per invoice on Claude Haiku. Larger models read poor scans better." },
+      { icon: "shield", title: "Backups & safe updates", body: "Nightly backups to a folder you control. Updates are one command, and you can go back a version." },
     ],
     integrations: {
       title: "Fits between your inbox and your ledger.",
-      body: "Intake channels on one side, your accounting system on the other — with AI reading, validation and approvals in between.",
-      items: ["Email", "WhatsApp", "GST", "Approval workflow", "Zoho Books"],
+      body: "Reofex Sync connects to your own Gmail, WhatsApp, Zoho Books or Tally, and your own AI provider account — with no Reofex servers in between.",
+      items: ["Gmail", "WhatsApp Business", "Zoho Books", "TallyPrime", "Claude", "OpenAI"],
     },
-    benefits: ["Less manual work", "Fewer errors", "Faster invoice processing", "Automated validation", "Approval workflows", "Accounting integration"],
+    highlight: {
+      title: "Your invoices never leave your machine.",
+      body: "Reofex Sync runs on your own computer or server (the Tally PC works). Invoices go only to the AI provider you choose, under your own account; passwords and API keys are stored encrypted on your machine; nightly backups go to a folder you control. No Reofex servers in between — Reofex never receives your invoices, passwords or keys.",
+    },
+    benefits: [
+      "No more retyping purchase bills",
+      "Tax and totals checked before posting",
+      "Duplicates caught across email and WhatsApp",
+      "Approvals from your phone, routine bills post automatically",
+      "Posts straight to Zoho Books or Tally",
+      "Unlimited users and channels on every plan",
+      "14-day free trial — try the live demo with no signup",
+    ],
     seo: {
-      title: "Reofex Sync — AI invoice automation to accounting",
+      title: "Reofex Sync — Purchase invoice automation for Zoho Books & Tally",
       description:
-        "Reofex Sync reads invoices from email and WhatsApp with AI, matches vendors, validates, routes approvals and posts entries to your accounting software.",
+        "Reofex Sync reads purchase invoices from WhatsApp and email, checks GST/VAT, catches duplicates, gets phone approvals and posts bills to Zoho Books or Tally. Runs on your own computer.",
     },
   },
   {
