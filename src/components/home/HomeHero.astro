@@ -44,8 +44,18 @@ const list = products.filter((p) => p.screenshot);
             </div>
           </div>
 
-          <div class="hh__products" id="products">
+          <div class="hh__products" id="products" data-hh-m>
+            <div class="hh__mpin">
             <h2 class="h2 hh__h2">Four products, each built for one job.</h2>
+            <div class="hh__mstage" aria-hidden="true">
+              {
+                list.map((p, i) => (
+                  <div class="hh__mcard" data-hh-mcard style={`--k:${i}`}>
+                    <ScreenshotFrame crop={false} shot={p.screenshot!} tone="dark" sizes="92vw" class="hh__shot" />
+                  </div>
+                ))
+              }
+            </div>
             <ol class="hh__list">
               {
                 list.map((p, i) => (
@@ -72,6 +82,7 @@ const list = products.filter((p) => p.screenshot);
                 ))
               }
             </ol>
+            </div>
           </div>
         </div>
 
@@ -214,9 +225,63 @@ const list = products.filter((p) => p.screenshot);
       window.scrollTo({ top: top - HEADER + p * travel, behavior: reduce.matches ? "auto" : "smooth" });
     };
 
+    /* ---- Phones: the products block pins and deals its own deck ---- */
+    const mTrack = root.querySelector<HTMLElement>("[data-hh-m]")!;
+    const mPin = mTrack.querySelector<HTMLElement>(".hh__mpin")!;
+    const mCards = Array.from(root.querySelectorAll<HTMLElement>("[data-hh-mcard]"));
+    let mFlat = false;
+    const mMetrics = () => {
+      const r = mTrack.getBoundingClientRect();
+      return { top: r.top + window.scrollY, travel: Math.max(1, r.height - (window.innerHeight - HEADER)) };
+    };
+    const mFits = () => {
+      root.classList.remove("hh--mflat");
+      // measure the settled layout, not one mid-way through the accordion transition
+      root.classList.add("hh--measure");
+      void mPin.offsetHeight;
+      const ok = mPin.scrollHeight <= mPin.clientHeight + 2;
+      root.classList.remove("hh--measure");
+      root.classList.toggle("hh--mflat", !ok);
+      return ok;
+    };
+    const mUpdate = () => {
+      if (desktop.matches || reduce.matches || mFlat) return;
+      const { top, travel } = mMetrics();
+      const p = clamp((window.scrollY + HEADER - top) / travel);
+      const u = clamp(p * n - 0.5, 0, n - 1);
+      const i = Math.floor(u);
+      const t = i + smooth(0.3, 0.7, u - i);
+      mCards.forEach((c, k) => {
+        const b = dealPose(k - t);
+        c.style.transform = `perspective(1400px) translate3d(${b.x}%, ${b.y}%, ${b.z * 0.6}px) rotateY(${b.ry * 0.6}deg) rotateX(${b.rx}deg)`;
+        c.style.opacity = b.o.toFixed(3);
+        c.style.setProperty("--haze", b.haze.toFixed(3));
+        c.style.zIndex = String(100 - Math.round((k - t) * 10));
+      });
+      const next = Math.round(t);
+      if (next !== active) {
+        active = next;
+        btns.forEach((b, j) => (j === next ? b.setAttribute("aria-current", "true") : b.removeAttribute("aria-current")));
+      }
+    };
+    const mSetup = () => {
+      const on = !desktop.matches && !reduce.matches;
+      root.classList.toggle("hh--mseq", on);
+      mFlat = on ? !mFits() : false;
+      if (on && mFlat) root.classList.remove("hh--mseq");
+      if (on && !mFlat) {
+        active = -2;
+        mUpdate();
+      }
+    };
+
     btns.forEach((b, i) =>
       b.addEventListener("click", () => {
         if (desktop.matches) scrollToP(progressFor(i));
+        else if (root.classList.contains("hh--mseq")) {
+          const { top, travel } = mMetrics();
+          window.scrollTo({ top: top - HEADER + ((i + 0.5) / n) * travel, behavior: "smooth" });
+        }
       }),
     );
     root.querySelector<HTMLAnchorElement>("[data-hh-products]")?.addEventListener("click", (e) => {
@@ -227,7 +292,10 @@ const list = products.filter((p) => p.screenshot);
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+    window.addEventListener("scroll", () => requestAnimationFrame(mUpdate), { passive: true });
+    window.addEventListener("resize", () => requestAnimationFrame(mSetup));
     update();
+    mSetup();
 
     // Desktop upgrade: the same deck drawn with WebGL (real perspective, light,
     // soft shadows). Loaded after the page is idle; the CSS deck stays as the fallback.
@@ -404,6 +472,15 @@ const list = products.filter((p) => p.screenshot);
   .hh__inline {
     display: none;
   }
+  .hh__mpin {
+    display: contents;
+  }
+  .hh--measure :global(*) {
+    transition: none !important;
+  }
+  .hh__mstage {
+    display: none;
+  }
 
   /* ---- Deck ---- */
   .hh__stage {
@@ -522,20 +599,91 @@ const list = products.filter((p) => p.screenshot);
       right: 10%;
       top: 22%;
     }
-    .hh__btn {
+    /* static fallback (no JS, reduced motion, very short screens): every product open, with its screen */
+    .hh:not(.hh--mseq) .hh__btn {
       opacity: 1;
       cursor: default;
     }
-    .hh__body {
+    .hh:not(.hh--mseq) .hh__body {
       grid-template-rows: 1fr;
     }
-    .hh__body > div {
+    .hh:not(.hh--mseq) .hh__body > div {
       padding-left: 0;
       padding-bottom: var(--space-6);
     }
-    .hh__inline {
+    .hh:not(.hh--mseq) .hh__inline {
       display: block;
       margin-block: var(--space-2);
+    }
+
+    /* the pinned deck below replaces the hero's static one, so the screens appear once */
+    .hh--mseq .hh__stage {
+      display: none;
+    }
+
+    /* the sequence: heading, a dealing deck and the list share one pinned screen */
+    .hh--mseq .hh__products {
+      height: calc(var(--n) * 65svh + 100svh);
+      margin-top: var(--space-6);
+    }
+    .hh--mseq .hh__mpin {
+      position: sticky;
+      top: var(--header-h);
+      height: calc(100svh - var(--header-h));
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      padding-top: var(--space-4);
+      overflow: clip;
+    }
+    .hh--mseq .hh__h2 {
+      font-size: 1.5rem;
+    }
+    /* the open row already says what each product does */
+    .hh--mseq .hh__btn small {
+      display: none;
+    }
+    .hh--mseq .hh__mstage {
+      display: block;
+      position: relative;
+      /* takes whatever height is left once the heading and list are placed */
+      flex: 1 1 0;
+      min-height: 150px;
+      max-height: 340px;
+      aspect-ratio: 16 / 13;
+      max-width: 100%;
+      margin-inline: auto;
+    }
+    .hh__mcard {
+      position: absolute;
+      left: 2%;
+      right: 14%;
+      top: 15%;
+      transform-origin: 50% 100%;
+      will-change: transform, opacity;
+    }
+    .hh__mcard::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: clamp(10px, 0.6rem + 0.5vw, 16px);
+      background: var(--reofex-dark-2);
+      opacity: var(--haze, 0);
+      pointer-events: none;
+    }
+    .hh__mcard :global(.hh__shot .sf__img) {
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      object-position: 0 0;
+    }
+    .hh--mseq .hh__btn {
+      padding-block: var(--space-2);
+    }
+    .hh--mseq .hh__body > div {
+      padding-left: calc(34px + var(--space-4));
+    }
+    .hh--mseq .hh__btn[aria-current] + .hh__body > div {
+      padding-bottom: var(--space-3);
     }
   }
   @media (max-width: 767px) {

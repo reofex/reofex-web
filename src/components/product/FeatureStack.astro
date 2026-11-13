@@ -1,7 +1,7 @@
 ---
 /**
  * Product page "What X does" as stacking cards. Each card pairs a group of
- * features with a crop of the product's own screenshot. On wide screens the
+ * features with a crop of the product's own screenshot. On every screen the
  * cards stick one below the header and the next card slides over the
  * previous one, which eases back (slightly smaller and darker) as it's
  * covered. Normal scrolling throughout: nothing is pinned or hijacked.
@@ -73,20 +73,22 @@ const shot = p.screenshot!;
 <script>
   // As the next card slides over a stuck card, ease the stuck one back.
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const wide = window.matchMedia("(min-width: 900px)");
   document.querySelectorAll<HTMLElement>("[data-fs]").forEach((root) => {
     const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-fs-card]"));
     let ticking = false;
     const fits = () => {
       const header = 72;
       const tallest = Math.max(...cards.map((c) => c.offsetHeight));
-      return tallest + header + 24 + cards.length * 14 <= window.innerHeight;
+      // same offsets as the CSS: phones stick 12px below the header with 10px steps, wider screens 24px / 14px
+      const phone = window.matchMedia("(max-width: 899px)").matches;
+      const offset = phone ? 12 + cards.length * 10 : 24 + cards.length * 14;
+      return tallest + header + offset <= window.innerHeight;
     };
     const update = () => {
       ticking = false;
       const flat = !fits();
       root.classList.toggle("fs--flat", flat);
-      const on = wide.matches && !reduce.matches && !flat;
+      const on = !reduce.matches && !flat;
       cards.forEach((card, i) => {
         const next = cards[i + 1];
         if (!on || !next) {
@@ -208,28 +210,61 @@ const shot = p.screenshot!;
       0 30px 60px -24px rgb(0 0 0 / 0.65);
   }
 
-  /* ---- Stacking (wide screens) ---- */
-  @media (min-width: 900px) {
-    /* stacking only once the script has checked the cards fit the screen */
-    :global(.js) .fs:not(.fs--flat) {
-      gap: 14vh;
-      padding-bottom: 6vh;
-      /* every card as tall as the tallest, so a covered card never sticks out below the next */
-      grid-auto-rows: 1fr;
-    }
-    :global(.js) .fs:not(.fs--flat) .fs__card {
-      position: sticky;
-      top: calc(var(--header-h) + 24px + var(--i) * 14px);
-      transform-origin: 50% 0;
-      transform: scale(calc(1 - var(--t) * 0.05));
-      filter: brightness(calc(1 - var(--t) * 0.4));
-    }
+  /* ---- Stacking (every screen size, once the script has checked the cards fit) ---- */
+  :global(.js) .fs:not(.fs--flat) {
+    gap: 14vh;
+    padding-bottom: 6vh;
+    /* every card as tall as the tallest, so a covered card never sticks out below the next */
+    grid-auto-rows: 1fr;
+  }
+  :global(.js) .fs:not(.fs--flat) .fs__card {
+    position: sticky;
+    top: calc(var(--header-h) + 24px + var(--i) * 14px);
+    transform-origin: 50% 0;
+    transform: scale(calc(1 - var(--t) * 0.05));
+    filter: brightness(calc(1 - var(--t) * 0.4));
   }
 
   /* ---- Phones and tablets: a plain sequence, visual first ---- */
   @media (max-width: 899px) {
+    /* stacked on a phone: a compact card that fits one screen (feature names, no descriptions) */
+    :global(.js) .fs:not(.fs--flat) {
+      gap: 10vh;
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__card {
+      top: calc(var(--header-h) + 12px + var(--i) * 10px);
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__list small {
+      display: none;
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__list {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2) var(--space-4);
+      padding-block: var(--space-4);
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__copy {
+      gap: var(--space-2);
+      padding-block: var(--space-5) var(--space-4);
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__title {
+      font-size: 1.375rem;
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__body {
+      font-size: var(--fs-sm);
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__visual {
+      padding: var(--space-4);
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__visual :global(.fs__shot) {
+      width: min(100%, calc(170px * var(--cr)));
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__visual :global(.rc),
+    :global(.js) .fs:not(.fs--flat) .fs__visual :global(.st) {
+      zoom: 0.7;
+    }
     .fs__card {
       grid-template-columns: 1fr;
+      grid-template-areas: "visual" "copy" "list";
       grid-template-areas: "visual" "copy" "list";
       grid-template-rows: auto;
     }
@@ -238,6 +273,19 @@ const shot = p.screenshot!;
     }
     .fs__visual :global(.fs__shot) {
       width: min(100%, calc(300px * var(--cr)));
+    }
+  }
+  /* short phones: drop the sentence and shrink the visual so a stacked card still fits */
+  @media (max-width: 899px) and (max-height: 780px) {
+    :global(.js) .fs:not(.fs--flat) .fs__body {
+      display: none;
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__visual :global(.fs__shot) {
+      width: min(100%, calc(130px * var(--cr)));
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__visual :global(.rc),
+    :global(.js) .fs:not(.fs--flat) .fs__visual :global(.st) {
+      zoom: 0.58;
     }
   }
   @media (prefers-reduced-motion: reduce) {
