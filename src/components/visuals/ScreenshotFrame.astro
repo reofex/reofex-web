@@ -13,13 +13,18 @@ interface Props {
   sizes?: string;
   tone?: "light" | "dark";
   class?: string;
+  /** Starts tilted back in 3D and flattens as it scrolls into view */
+  tilt?: boolean;
+  /** Zoom into one region of the screen (see Screenshot.heroZoom) */
+  zoom?: { scale: number; origin: string };
 }
-const { shot, priority = false, sizes = "(min-width: 1200px) 1100px, 100vw", tone = "light", class: className } = Astro.props;
+const { shot, priority = false, sizes = "(min-width: 1200px) 1100px, 100vw", tone = "light", class: className, tilt = false, zoom } = Astro.props;
+const styles = [shot.mobileFocus && `--sf-focus:${shot.mobileFocus}`, zoom && `--sf-zoom:${zoom.scale};--sf-origin:${zoom.origin}`].filter(Boolean).join(";");
 ---
 
 <figure
-  class:list={["sf", `sf--${tone}`, shot.mobileFocus && "sf--focus", className]}
-  style={shot.mobileFocus ? `--sf-focus:${shot.mobileFocus}` : undefined}
+  class:list={["sf", `sf--${tone}`, shot.mobileFocus && !zoom && "sf--focus", tilt && "sf--tilt", zoom && "sf--zoom", className]}
+  style={styles || undefined}
 >
   <div class="sf__bar" aria-hidden="true">
     <span></span><span></span><span></span>
@@ -94,6 +99,43 @@ const { shot, priority = false, sizes = "(min-width: 1200px) 1100px, 100vw", ton
       aspect-ratio: 4 / 5;
       object-fit: cover;
       object-position: var(--sf-focus, 50% 50%);
+    }
+  }
+  .sf--zoom :global(picture) {
+    display: block;
+    overflow: hidden;
+  }
+  .sf--zoom :global(.sf__img) {
+    transform: scale(var(--sf-zoom));
+    transform-origin: var(--sf-origin);
+  }
+  /* Scroll-driven 3D settle (CSS scroll timelines; browsers without support show it flat) */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .sf--tilt {
+        transform-origin: 50% 0%;
+        animation: sf-settle linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 50%;
+      }
+    }
+  }
+  @keyframes sf-settle {
+    from {
+      transform: perspective(1800px) rotateX(24deg) scale(0.9) translateY(-2%);
+    }
+    to {
+      transform: perspective(1800px) rotateX(0deg) scale(1) translateY(0);
+    }
+  }
+  @media (max-width: 767px) {
+    @keyframes sf-settle {
+      from {
+        transform: perspective(1200px) rotateX(14deg) scale(0.95);
+      }
+      to {
+        transform: perspective(1200px) rotateX(0deg) scale(1);
+      }
     }
   }
 </style>

@@ -2,6 +2,10 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProductPageHero from "../../components/product/ProductPageHero.astro";
 import WorkflowDiagram from "../../components/product/WorkflowDiagram.astro";
+import SyncStory from "../../components/product/SyncStory.astro";
+import RespondlyStory from "../../components/product/RespondlyStory.astro";
+import GrowthStory from "../../components/product/GrowthStory.astro";
+import FynexStory from "../../components/product/FynexStory.astro";
 import FeatureGrid from "../../components/product/FeatureGrid.astro";
 import SectionHeader from "../../components/ui/SectionHeader.astro";
 import Icon from "../../components/ui/Icon.astro";
@@ -50,14 +54,12 @@ const jsonLd = [
   <section class="section" aria-labelledby="problem-title">
     <div class="container prob">
       <div class="prob__head" data-reveal>
-        <p class="eyebrow">The problem</p>
         <h2 class="h2" id="problem-title">{p.problem.title}</h2>
       </div>
       <ul role="list" class="prob__list">
         {
           p.problem.points.map((pt, i) => (
             <li data-reveal style={`--reveal-i:${i}`}>
-              <span class="prob__n">{String(i + 1).padStart(2, "0")}</span>
               <p>{pt}</p>
             </li>
           ))
@@ -68,9 +70,8 @@ const jsonLd = [
 
   <!-- Explanation + highlight -->
   <section class="section section--white" aria-labelledby="explain-title" style={`--acc:${p.accent}`}>
-    <div class="container expl">
+    <div class:list={["container expl", !p.highlight && "expl--solo"]}>
       <div class="expl__copy" data-reveal>
-        <p class="eyebrow">How {p.name} works</p>
         <h2 class="h2" id="explain-title">{p.explanation.title}</h2>
         <p class="lead">{p.explanation.body}</p>
       </div>
@@ -89,21 +90,20 @@ const jsonLd = [
               </div>
             )}
           </aside>
-        ) : (
-          <aside class="expl__callout expl__callout--plain" data-reveal>
-            <ProductIcon product={p} size={48} />
-            <h3>{p.tagline}</h3>
-            <p>{p.description}</p>
-          </aside>
-        )
+        ) : null
       }
     </div>
   </section>
 
+  {p.slug === "respondly" && <RespondlyStory />}
+  {p.slug === "reofex-growth" && <GrowthStory />}
+  {p.slug === "reofex-sync" && <SyncStory />}
+  {p.slug === "fynex" && <FynexStory />}
+
   <!-- Workflow -->
   <section class="section" aria-labelledby="workflow-title">
     <div class="container">
-      <SectionHeader id="workflow-title" eyebrow="Workflow" title={p.workflow.title} lead={p.workflow.body} />
+      <SectionHeader id="workflow-title" title={p.workflow.title} lead={p.workflow.body} />
       <WorkflowDiagram steps={p.workflow.steps} accent={p.accent} />
     </div>
   </section>
@@ -113,7 +113,6 @@ const jsonLd = [
     <div class="container">
       <SectionHeader
         id="features-title"
-        eyebrow="Features"
         title={`What ${p.name} does.`}
         lead={p.description}
         align="split"
@@ -128,7 +127,6 @@ const jsonLd = [
       {
         p.integrations && (
           <div class="ib__col" data-reveal>
-            <p class="eyebrow">Integrations & architecture</p>
             <h2 class="h3 ib__title">{p.integrations.title}</h2>
             <p class="muted">{p.integrations.body}</p>
             <ul role="list" class="ib__chips">
@@ -140,7 +138,6 @@ const jsonLd = [
         )
       }
       <div class="ib__col" data-reveal>
-        <p class="eyebrow">Benefits</p>
         <h2 class="h3 ib__title" id="benefits-title">Why teams choose {p.name}.</h2>
         <ul role="list" class="ib__benefits">
           {
@@ -204,17 +201,13 @@ const jsonLd = [
   }
   .prob__list {
     display: grid;
-    gap: var(--space-3);
+    border-top: 1px solid var(--reofex-border);
   }
   .prob__list li {
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-5);
-    align-items: baseline;
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    background: var(--reofex-white);
-    border: 1px solid var(--reofex-border);
+    gap: var(--space-4);
+    padding-block: var(--space-6);
+    border-bottom: 1px solid var(--reofex-border);
     font-size: var(--fs-md);
   }
   .prob__n {
@@ -233,6 +226,12 @@ const jsonLd = [
   .expl__copy {
     display: grid;
     gap: var(--space-5);
+  }
+  .expl--solo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .expl--solo .expl__copy {
+    max-width: 62ch;
   }
   .expl__callout {
     display: grid;
@@ -278,16 +277,24 @@ const jsonLd = [
   .ib__grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
-    gap: var(--space-6);
+    gap: clamp(2.5rem, 1.5rem + 4vw, 5rem);
   }
   .ib__col {
     display: grid;
     align-content: start;
     gap: var(--space-4);
-    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--reofex-border-dark);
-    background: rgb(255 255 255 / 0.03);
+  }
+  .ib__col + .ib__col {
+    padding-left: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    border-left: 1px solid var(--reofex-border-dark);
+  }
+  @media (max-width: 860px) {
+    .ib__col + .ib__col {
+      padding-left: 0;
+      padding-top: var(--space-8);
+      border-left: 0;
+      border-top: 1px solid var(--reofex-border-dark);
+    }
   }
   .ib__title {
     font-size: var(--fs-h3);
@@ -323,9 +330,7 @@ const jsonLd = [
     flex-shrink: 0;
     width: 24px;
     height: 24px;
-    border-radius: 50%;
-    background: var(--reofex-orange);
-    color: var(--reofex-dark);
+    color: var(--reofex-orange);
   }
 
   /* More */

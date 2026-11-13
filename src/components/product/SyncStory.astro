@@ -1,0 +1,943 @@
+---
+/**
+ * Pinned scroll story for Reofex Sync: one example invoice travels from a
+ * WhatsApp photo to a posted bill. Scroll position picks the stage (0–4); the
+ * scene is decorative (aria-hidden) and the step list carries the content.
+ *
+ * Without JS the section is a plain list. Reduced motion keeps the stage
+ * switching (it's user-driven) but drops the timed micro-animations.
+ */
+import Icon from "../ui/Icon.astro";
+import StoryShell from "./story/StoryShell.astro";
+
+const steps = [
+  {
+    title: "Arrives on its own",
+    body: "A vendor sends a photo of the bill on WhatsApp, or a PDF lands in Gmail. Reofex Sync picks it up. Nobody downloads or forwards anything.",
+  },
+  {
+    title: "Read in seconds",
+    body: "The AI provider you choose reads the vendor, GSTIN, invoice number, line items with HSN/SAC and the CGST/SGST split.",
+  },
+  {
+    title: "Checked before it posts",
+    body: "Tax IDs, tax rates and totals are validated, and duplicates are caught across email and WhatsApp.",
+  },
+  {
+    title: "Approved on a phone",
+    body: "Over your limit, from a new vendor or a possible duplicate? The right person approves with one tap. Routine bills skip this step.",
+  },
+  {
+    title: "Posted to your books",
+    body: "The bill is created in Zoho Books or Tally, with every step kept on record.",
+  },
+];
+
+// Example invoice (illustrative data, sums are consistent)
+const lines = [
+  { item: "Laptop stand × 12", amt: "14,400.00" },
+  { item: "USB-C hub × 20", amt: "17,800.00" },
+  { item: "Cable kit × 30", amt: "8,650.00" },
+];
+const fields = [
+  ["Vendor", "Sharma Traders"],
+  ["GSTIN", "29ABCDE1234F1Z5"],
+  ["Invoice no.", "ST/26-27/0482"],
+  ["Line items", "3 · HSN 8473"],
+  ["Taxable", "₹40,850.00"],
+  ["CGST 9% + SGST 9%", "₹7,353.00"],
+  ["Total", "₹48,203.00"],
+];
+const checks = [
+  "GSTIN format is valid",
+  "Tax split matches the line items",
+  "Line items add up to the total",
+  "Not a duplicate in email or WhatsApp",
+];
+---
+
+<StoryShell
+  id="ss-title"
+  eyebrow="Follow one invoice"
+  title={"From a WhatsApp photo\nto a posted bill."}
+  lead="Scroll to see what happens to a single purchase invoice: no retyping, and nothing posts until it's checked."
+  steps={steps}
+  accent="#2563eb"
+  caption="Example invoice"
+>
+  <div class="ss__stage">
+    <!-- The invoice -->
+    <div class="ss-doc">
+      <div class="ss-doc__paper">
+        <div class="ss-doc__top">
+          <span class="ss-doc__kind">Tax invoice</span>
+          <span class="ss-hl ss-hl--inv">ST/26-27/0482</span>
+        </div>
+        <b class="ss-hl ss-hl--vendor ss-doc__vendor">Sharma Traders</b>
+        <i class="ss-doc__addr"></i>
+        <i class="ss-doc__addr ss-doc__addr--short"></i>
+        <span class="ss-hl ss-hl--gstin ss-doc__gstin">GSTIN 29ABCDE1234F1Z5<Icon name="check" size={12} class="ss-ok" /></span>
+        <div class="ss-hl ss-hl--lines ss-doc__lines">
+          {
+            lines.map((l) => (
+              <div>
+                <span>{l.item}</span>
+                <span>{l.amt}</span>
+              </div>
+            ))
+          }
+        </div>
+        <div class="ss-doc__sum">
+          <div><span>Taxable</span><span>40,850.00</span></div>
+          <div><span>CGST 9%</span><span>3,676.50</span></div>
+          <div><span>SGST 9%</span><span>3,676.50</span></div>
+          <div class="ss-hl ss-hl--total"><b>Total</b><b>₹48,203.00<Icon name="check" size={12} class="ss-ok" /></b></div>
+        </div>
+        <span class="ss-stamp ss-stamp--wait">Waiting for approval</span>
+        <span class="ss-stamp ss-stamp--ok">Approved</span>
+        <span class="ss-stamp ss-stamp--done">Posted</span>
+      </div>
+      <span class="ss-scan"></span>
+    </div>
+
+    <!-- 0 · Sources -->
+    <div class="ss-panel" data-s="0">
+      <div class="ss-card ss-chat">
+        <div class="ss-chat__head">
+          <span class="ss-ava">ST</span>
+          <div><b>Sharma Traders</b><small>WhatsApp Business</small></div>
+          <Icon name="whatsapp" size={16} />
+        </div>
+        <div class="ss-chat__body">
+          <div class="ss-bubble">
+            <div class="ss-thumb"><i></i><i></i><i></i><i></i></div>
+            <span>Bill for this week's order</span>
+            <time>10:42</time>
+          </div>
+        </div>
+      </div>
+      <div class="ss-card ss-mail">
+        <Icon name="mail" size={16} />
+        <div><b>Kumar Supplies</b><small>Invoice KS-2207.pdf</small></div>
+        <time>10:44</time>
+      </div>
+      <div class="ss-pill ss-pill--blue"><i></i>2 new invoices picked up</div>
+    </div>
+
+    <!-- 1 · Extracted fields -->
+    <div class="ss-panel" data-s="1">
+      <div class="ss-card ss-list">
+        <div class="ss-list__head">
+          <Icon name="scan" size={16} />
+          <b>Read from the invoice</b>
+        </div>
+        <ul>
+          {
+            fields.map(([k, v], i) => (
+              <li style={`--k:${i}`}>
+                <span>{k}</span>
+                <b>{v}</b>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2 · Checks -->
+    <div class="ss-panel" data-s="2">
+      <div class="ss-card ss-list ss-checks">
+        <div class="ss-list__head">
+          <Icon name="shieldCheck" size={16} />
+          <b>Checks before posting</b>
+        </div>
+        <ul>
+          {
+            checks.map((c, i) => (
+              <li style={`--k:${i}`}>
+                <span class="ss-tick"><Icon name="check" size={12} /></span>
+                <span>{c}</span>
+              </li>
+            ))
+          }
+          <li class="ss-checks__flag" style={`--k:${checks.length}`}>
+            <span class="ss-tick ss-tick--warn"><Icon name="userCheck" size={12} /></span>
+            <span><b>₹48,203 is over your ₹25,000 limit</b> Sent to Finance for approval</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3 · Phone approval -->
+    <div class="ss-panel ss-panel--phone" data-s="3">
+      <div class="ss-phone">
+        <div class="ss-phone__notch"></div>
+        <div class="ss-phone__app">
+          <small class="ss-phone__brand">Reofex Sync</small>
+          <div class="ss-appr">
+            <span class="ss-pill ss-pill--orange">Approval needed</span>
+            <b class="ss-appr__vendor">Sharma Traders</b>
+            <b class="ss-appr__amt">₹48,203.00</b>
+            <small>Over your ₹25,000 limit</small>
+            <div class="ss-appr__thumb"><i></i><i></i><i></i></div>
+            <div class="ss-appr__btns">
+              <span class="ss-btn ss-btn--ghost">Reject</span>
+              <span class="ss-btn ss-btn--go">Approve<span class="ss-tap"></span></span>
+            </div>
+            <div class="ss-appr__done">
+              <span class="ss-tick ss-tick--big"><Icon name="check" size={18} /></span>
+              <b>Approved</b>
+              <small>by Anita, Finance</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 · Posted -->
+    <div class="ss-panel" data-s="4">
+      <div class="ss-card ss-ledger">
+        <div class="ss-ledger__head">
+          <Icon name="database" size={16} />
+          <b>Bills</b>
+          <small>Zoho Books / Tally</small>
+        </div>
+        <div class="ss-ledger__row ss-ledger__row--new">
+          <span><b>Sharma Traders</b><small>BILL-00482</small></span>
+          <b>₹48,203.00</b>
+          <span class="ss-pill ss-pill--green">Posted</span>
+        </div>
+        <div class="ss-ledger__row">
+          <span><b>Kumar Supplies</b><small>BILL-00481</small></span>
+          <b>₹6,120.00</b>
+          <span class="ss-pill ss-pill--green">Posted</span>
+        </div>
+        <div class="ss-ledger__row">
+          <span><b>Metro Packaging</b><small>BILL-00480</small></span>
+          <b>₹2,940.00</b>
+          <span class="ss-pill ss-pill--green">Posted</span>
+        </div>
+      </div>
+      <div class="ss-toast">
+        <span class="ss-tick"><Icon name="check" size={12} /></span>
+        Posted · full history saved
+      </div>
+    </div>
+  </div>
+</StoryShell>
+
+<style>
+  /* 60 × 42 unit design grid that scales with the scene's width */
+  .ss__stage {
+    --u: calc(100cqi / 60);
+    font-size: var(--u);
+    position: relative;
+    aspect-ratio: 60 / 42;
+    color: var(--reofex-dark);
+  }
+  /* ---- The invoice ---- */
+  .ss-doc {
+    position: absolute;
+    left: 1em;
+    top: 2.5em;
+    width: 26em;
+    transform-origin: 50% 40%;
+    transition:
+      transform 800ms var(--ease-out),
+      opacity 500ms var(--ease-out),
+      filter 600ms var(--ease-out);
+    /* stage 0: tucked into the WhatsApp bubble */
+    opacity: 0;
+    transform: translate(17em, 7em) scale(0.3) rotate(-4deg);
+  }
+  .ss-doc__paper {
+    position: relative;
+    display: grid;
+    gap: 0.9em;
+    padding: 2em 2em 2.2em;
+    border-radius: 0.6em;
+    background: #fdfcf9;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08),
+      0 3em 6em -2em rgb(0 0 0 / 0.7);
+    font-size: 1.05em;
+  }
+  .ss-doc__top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95em;
+  }
+  .ss-doc__kind {
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .ss-doc__vendor {
+    font-size: 1.7em;
+    letter-spacing: -0.02em;
+  }
+  .ss-doc__addr {
+    height: 0.7em;
+    width: 70%;
+    border-radius: 99px;
+    background: rgb(18 40 47 / 0.09);
+    margin-top: -0.3em;
+  }
+  .ss-doc__addr--short {
+    width: 45%;
+  }
+  .ss-doc__gstin {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.95em;
+    color: rgb(18 40 47 / 0.75);
+  }
+  .ss-doc__lines {
+    display: grid;
+    gap: 0.5em;
+    padding-block: 0.9em;
+    border-block: 1px dashed rgb(18 40 47 / 0.15);
+  }
+  .ss-doc__lines div,
+  .ss-doc__sum div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    font-variant-numeric: tabular-nums;
+  }
+  .ss-doc__lines span:first-child,
+  .ss-doc__sum span:first-child {
+    color: rgb(18 40 47 / 0.6);
+  }
+  .ss-doc__sum {
+    display: grid;
+    gap: 0.35em;
+    margin-left: 35%;
+  }
+  .ss-doc__sum b {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+  .ss-hl {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+  .ss-hl::after {
+    content: "";
+    position: absolute;
+    inset: -0.35em -0.5em;
+    border-radius: 0.4em;
+    border: 1.5px solid var(--acc);
+    background: rgb(37 99 235 / 0.07);
+    opacity: 0;
+    transform: scale(1.06);
+    transition:
+      opacity 300ms var(--ease-out),
+      transform 300ms var(--ease-out);
+  }
+  .ss-doc__lines.ss-hl {
+    display: grid;
+  }
+  .ss-doc__sum .ss-hl {
+    display: flex;
+  }
+  .ss-ok {
+    display: none;
+    color: var(--ok);
+    stroke-width: 3;
+  }
+  .ss-scan {
+    position: absolute;
+    left: -1em;
+    right: -1em;
+    top: 0;
+    height: 0.3em;
+    border-radius: 99px;
+    background: var(--acc);
+    box-shadow: 0 0 1.5em 0.4em rgb(37 99 235 / 0.55);
+    opacity: 0;
+  }
+  .ss-stamp {
+    position: absolute;
+    right: 1.4em;
+    top: 13.5em;
+    padding: 0.4em 1em;
+    border-radius: 0.4em;
+    border: 0.18em solid currentColor;
+    font-size: 1.15em;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transform: rotate(-8deg) scale(1.6);
+    opacity: 0;
+    transition:
+      opacity 250ms var(--ease-out),
+      transform 450ms cubic-bezier(0.2, 1.6, 0.4, 1);
+  }
+  .ss-stamp--wait {
+    color: #c26a0e;
+  }
+  .ss-stamp--ok {
+    color: var(--ok);
+  }
+  .ss-stamp--done {
+    color: var(--ok);
+    font-size: 1.6em;
+  }
+
+  /* ---- Right-hand panels ---- */
+  .ss-panel {
+    position: absolute;
+    left: 30em;
+    top: 2.5em;
+    width: 29em;
+    display: grid;
+    gap: 1.2em;
+    justify-items: start;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(2.5em);
+    transition:
+      opacity 450ms var(--ease-out),
+      transform 600ms var(--ease-out),
+      visibility 0s linear 600ms;
+  }
+  :global(.story[data-stage="0"]) .ss-panel[data-s="0"],
+  :global(.story[data-stage="1"]) .ss-panel[data-s="1"],
+  :global(.story[data-stage="2"]) .ss-panel[data-s="2"],
+  :global(.story[data-stage="3"]) .ss-panel[data-s="3"],
+  :global(.story[data-stage="4"]) .ss-panel[data-s="4"] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 150ms, 150ms, 0s;
+  }
+  .ss-panel[data-s="0"] {
+    left: 15.5em;
+  }
+  .ss-panel > .ss-card {
+    width: 100%;
+  }
+
+  /* 0 · sources */
+  .ss-chat {
+    overflow: hidden;
+  }
+  .ss-chat__head {
+    display: flex;
+    align-items: center;
+    gap: 0.9em;
+    padding: 1em 1.2em;
+    background: #0f3d36;
+    color: #fff;
+  }
+  .ss-chat__head div {
+    display: grid;
+    flex: 1;
+    font-size: 1.1em;
+    line-height: 1.3;
+  }
+  .ss-chat__head small {
+    color: rgb(255 255 255 / 0.6);
+    font-size: 0.85em;
+  }
+  .ss-chat__head :global(.icon) {
+    width: 1.8em;
+    height: 1.8em;
+    color: #4ade80;
+  }
+  .ss-ava {
+    display: grid;
+    place-items: center;
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    background: #f2c48d;
+    color: #5a3205;
+    font-weight: 800;
+    font-size: 1em;
+  }
+  .ss-chat__body {
+    padding: 1.4em 1.2em;
+    background: #efeae2;
+  }
+  .ss-bubble {
+    position: relative;
+    display: grid;
+    gap: 0.6em;
+    width: 17em;
+    padding: 0.6em 0.6em 0.8em;
+    border-radius: 0.2em 1em 1em 1em;
+    background: #fff;
+    font-size: 1.05em;
+    box-shadow: 0 0.1em 0.2em rgb(0 0 0 / 0.08);
+  }
+  .ss-bubble time {
+    justify-self: end;
+    margin-top: -0.4em;
+    font-size: 0.8em;
+    color: rgb(18 40 47 / 0.45);
+  }
+  .ss-thumb {
+    display: grid;
+    gap: 0.5em;
+    align-content: start;
+    height: 9em;
+    padding: 1em;
+    border-radius: 0.6em;
+    background: #f4efe6;
+    rotate: -1.5deg;
+  }
+  .ss-thumb i,
+  .ss-appr__thumb i {
+    height: 0.6em;
+    border-radius: 99px;
+    background: rgb(18 40 47 / 0.14);
+  }
+  .ss-thumb i:first-child {
+    width: 50%;
+    height: 0.9em;
+    background: rgb(18 40 47 / 0.3);
+  }
+  .ss-thumb i:nth-child(3) {
+    width: 80%;
+  }
+  .ss-mail {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 1.1em 1.3em;
+  }
+  .ss-mail > :global(.icon) {
+    width: 2em;
+    height: 2em;
+    color: #c5221f;
+  }
+  .ss-mail div {
+    flex: 1;
+    display: grid;
+    font-size: 1.1em;
+    line-height: 1.35;
+  }
+  .ss-mail small,
+  .ss-mail time {
+    color: rgb(18 40 47 / 0.55);
+    font-size: 0.9em;
+  }
+
+  /* 1 & 2 · lists */
+  .ss-list {
+    padding: 1.4em 1.5em;
+  }
+  .ss-list__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    margin-bottom: 1em;
+    font-size: 1.2em;
+  }
+  .ss-list__head :global(.icon) {
+    width: 1.4em;
+    height: 1.4em;
+    color: var(--acc);
+  }
+  .ss-list ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+  }
+  .ss-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+    padding: 0.75em 0;
+    border-top: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 1.1em;
+  }
+  .ss-list li > span:first-child {
+    color: rgb(18 40 47 / 0.55);
+  }
+  .ss-list li b {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  .ss-list li:last-child b {
+    color: var(--acc);
+  }
+  .ss-checks li {
+    justify-content: flex-start;
+  }
+  .ss-checks li > span:last-child {
+    color: var(--reofex-dark);
+  }
+  .ss-checks li b {
+    text-align: left;
+    color: var(--reofex-dark) !important;
+  }
+  .ss-checks__flag {
+    margin-top: 0.5em;
+    padding: 0.9em 1em !important;
+    border: 0 !important;
+    border-radius: 0.8em;
+    background: rgb(247 141 32 / 0.12);
+  }
+  .ss-checks__flag > span:last-child {
+    display: grid;
+    line-height: 1.4;
+    color: rgb(18 40 47 / 0.7) !important;
+  }
+
+  /* 3 · phone */
+  .ss-panel--phone {
+    left: 34em;
+    top: 0;
+    width: 21em;
+  }
+  .ss-phone {
+    position: relative;
+    width: 21em;
+    height: 41em;
+    padding: 0.9em;
+    border-radius: 3em;
+    background: #0b1416;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.12),
+      0 3em 6em -1.5em rgb(0 0 0 / 0.8);
+  }
+  .ss-phone__notch {
+    position: absolute;
+    left: 50%;
+    top: 1.6em;
+    width: 6em;
+    height: 1.7em;
+    translate: -50% 0;
+    border-radius: 99px;
+    background: #000;
+    z-index: 1;
+  }
+  .ss-phone__app {
+    display: grid;
+    align-content: start;
+    gap: 1.2em;
+    height: 100%;
+    padding: 4.4em 1.3em 1.3em;
+    border-radius: 2.2em;
+    background: #f6f4ef;
+  }
+  .ss-phone__brand {
+    font-size: 1em;
+    font-weight: 700;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .ss-appr {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: 0.5em;
+    padding: 1.4em;
+    border-radius: 1.2em;
+    background: #fff;
+    box-shadow: 0 0.6em 1.5em -0.6em rgb(18 40 47 / 0.25);
+    overflow: hidden;
+  }
+  .ss-appr__vendor {
+    margin-top: 0.4em;
+    font-size: 1.3em;
+  }
+  .ss-appr__amt {
+    font-size: 2.2em;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .ss-appr > small {
+    font-size: 1em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .ss-appr__thumb {
+    display: grid;
+    gap: 0.45em;
+    width: 100%;
+    margin-block: 0.6em;
+    padding: 1em;
+    border-radius: 0.6em;
+    background: #f4efe6;
+  }
+  .ss-appr__btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6em;
+    width: 100%;
+  }
+  .ss-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 0.8em;
+    border-radius: 99px;
+    font-size: 1.1em;
+    font-weight: 700;
+    overflow: hidden;
+  }
+  .ss-btn--ghost {
+    border: 1px solid rgb(18 40 47 / 0.15);
+    color: rgb(18 40 47 / 0.7);
+  }
+  .ss-btn--go {
+    background: var(--reofex-orange);
+    color: var(--reofex-dark);
+  }
+  .ss-tap {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3em;
+    height: 3em;
+    margin: -1.5em 0 0 -1.5em;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.7);
+    opacity: 0;
+    transform: scale(0);
+  }
+  .ss-appr__done {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.5em;
+    background: #fff;
+    opacity: 0;
+    font-size: 1.3em;
+  }
+  .ss-appr__done small {
+    font-size: 0.75em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .ss-tick--big {
+    width: 3em;
+    height: 3em;
+  }
+  .ss-tick--big :global(.icon) {
+    width: 1.5em;
+    height: 1.5em;
+  }
+
+  /* 4 · ledger */
+  .ss-ledger {
+    overflow: hidden;
+  }
+  .ss-ledger__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 1.2em 1.4em;
+    background: #f6f4ef;
+    border-bottom: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 1.15em;
+  }
+  .ss-ledger__head :global(.icon) {
+    width: 1.4em;
+    height: 1.4em;
+    color: var(--acc);
+  }
+  .ss-ledger__head small {
+    margin-left: auto;
+    font-size: 0.85em;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .ss-ledger__row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 1.2em;
+    padding: 1em 1.4em;
+    border-top: 1px solid rgb(18 40 47 / 0.06);
+    font-size: 1.05em;
+    font-variant-numeric: tabular-nums;
+  }
+  .ss-ledger__row span:first-child {
+    display: grid;
+    line-height: 1.35;
+  }
+  .ss-ledger__row small {
+    color: rgb(18 40 47 / 0.5);
+  }
+  .ss-ledger__row:not(.ss-ledger__row--new) {
+    opacity: 0.55;
+  }
+  .ss-ledger__row--new {
+    border-top: 0;
+    background: rgb(31 157 107 / 0.07);
+    box-shadow: inset 0.25em 0 0 var(--ok);
+  }
+  .ss-toast {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 0.8em 1.3em 0.8em 0.8em;
+    border-radius: 99px;
+    background: rgb(20 46 54 / 0.9);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: 700;
+  }
+
+  /* ================= Stage choreography ================= */
+  /* doc visible from stage 1 */
+  :global(.story:not([data-stage="0"])) .ss-doc {
+    opacity: 1;
+    transform: none;
+  }
+  :global(.story[data-stage="1"]) .ss-doc {
+    transform: rotate(-1.5deg);
+  }
+  :global(.story[data-stage="3"]) .ss-doc,
+  :global(.story[data-stage="4"]) .ss-doc {
+    transform: translate(1em, 2em) scale(0.92) rotate(-3deg);
+    filter: saturate(0.9);
+  }
+  /* stage 1: scan + highlight extracted fields */
+  :global(.story[data-stage="1"]) .ss-scan {
+    animation: ss-scan 2.4s var(--ease-out) 300ms 2;
+  }
+  :global(.story[data-stage="1"]) .ss-hl::after {
+    animation: ss-hl 2.4s var(--ease-out) 2;
+  }
+  :global(.story[data-stage="1"]) .ss-hl--inv::after { animation-delay: 400ms; }
+  :global(.story[data-stage="1"]) .ss-hl--vendor::after { animation-delay: 600ms; }
+  :global(.story[data-stage="1"]) .ss-hl--gstin::after { animation-delay: 900ms; }
+  :global(.story[data-stage="1"]) .ss-hl--lines::after { animation-delay: 1200ms; }
+  :global(.story[data-stage="1"]) .ss-hl--total::after { animation-delay: 1700ms; }
+  :global(.story[data-stage="1"]) .ss-list li {
+    animation: ss-row 500ms var(--ease-out) both;
+    animation-delay: calc(250ms + var(--k) * 110ms);
+  }
+  /* stage 2: checks tick in */
+  :global(.story[data-stage="2"]) .ss-ok,
+  :global(.story[data-stage="3"]) .ss-ok,
+  :global(.story[data-stage="4"]) .ss-ok {
+    display: inline;
+  }
+  :global(.story[data-stage="2"]) .ss-checks li {
+    animation: ss-row 450ms var(--ease-out) both;
+    animation-delay: calc(200ms + var(--k) * 260ms);
+  }
+  :global(.story[data-stage="2"]) .ss-checks .ss-tick {
+    animation: ss-pop 450ms cubic-bezier(0.2, 1.6, 0.4, 1) both;
+    animation-delay: calc(330ms + var(--k) * 260ms);
+  }
+  /* stage 3: waiting stamp, then approval tap */
+  :global(.story[data-stage="4"]) .ss-stamp--done {
+    opacity: 1;
+    transform: rotate(-8deg) scale(1);
+    transition-delay: 350ms;
+  }
+  :global(.story[data-stage="3"]) .ss-stamp--wait {
+    animation: ss-stamp-out 1.8s var(--ease-out) 350ms both;
+  }
+  :global(.story[data-stage="3"]) .ss-stamp--ok {
+    animation: ss-stamp-in 450ms cubic-bezier(0.2, 1.6, 0.4, 1) 2.1s both;
+  }
+  :global(.story[data-stage="3"]) .ss-tap {
+    animation: ss-tap 700ms var(--ease-out) 1.4s both;
+  }
+  :global(.story[data-stage="3"]) .ss-appr__done {
+    animation: ss-fade 400ms var(--ease-out) 1.9s both;
+  }
+  :global(.story[data-stage="3"]) .ss-appr__done .ss-tick {
+    animation: ss-pop 500ms cubic-bezier(0.2, 1.6, 0.4, 1) 2s both;
+  }
+  /* stage 4: new ledger row + toast */
+  :global(.story[data-stage="4"]) .ss-ledger__row--new {
+    animation: ss-slide 650ms var(--ease-out) 300ms both;
+  }
+  :global(.story[data-stage="4"]) .ss-toast {
+    animation: ss-row 500ms var(--ease-out) 900ms both;
+  }
+
+  @keyframes ss-scan {
+    0% { top: 0; opacity: 0; }
+    10% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+  @keyframes ss-hl {
+    0%, 100% { opacity: 0; transform: scale(1.06); }
+    15%, 70% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes ss-stamp-in {
+    from { opacity: 0; transform: rotate(-8deg) scale(1.6); }
+    to { opacity: 1; transform: rotate(-8deg) scale(1); }
+  }
+  @keyframes ss-stamp-out {
+    0% { opacity: 0; transform: rotate(-8deg) scale(1.6); }
+    15%, 85% { opacity: 1; transform: rotate(-8deg) scale(1); }
+    100% { opacity: 0; transform: rotate(-8deg) scale(1); }
+  }
+  @keyframes ss-row {
+    from { opacity: 0; transform: translateY(0.8em); }
+  }
+  @keyframes ss-pop {
+    from { opacity: 0; transform: scale(0.3); }
+  }
+  @keyframes ss-tap {
+    0% { opacity: 0; transform: scale(0); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: scale(3); }
+  }
+  @keyframes ss-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes ss-slide {
+    from { opacity: 0; transform: translateY(-100%); }
+  }
+
+  /* Narrow scenes: panels alone on a 32-unit grid so text stays legible */
+  @container (max-width: 520px) {
+    .ss__stage {
+      --u: calc(100cqi / 32);
+      aspect-ratio: 32 / 34;
+    }
+    .ss-doc {
+      display: none;
+    }
+    .ss-panel,
+    .ss-panel[data-s="0"] {
+      left: 1.5em;
+      top: 0.5em;
+      width: 29em;
+    }
+    .ss-panel--phone {
+      left: 5.5em;
+      top: 0;
+      width: 21em;
+    }
+    .ss-phone {
+      height: 34em;
+    }
+    .ss-appr__thumb {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ss__stage [class^="ss-"],
+    .ss__stage [class^="ss-"]::after {
+      animation: none !important;
+    }
+    :global(.story[data-stage="3"]) .ss-appr__done,
+    :global(.story[data-stage="3"]) .ss-stamp--ok {
+      opacity: 1;
+      transform: rotate(-8deg);
+    }
+    :global(.story[data-stage="3"]) .ss-appr__done {
+      transform: none;
+    }
+  }
+</style>

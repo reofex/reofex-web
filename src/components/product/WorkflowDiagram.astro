@@ -2,6 +2,9 @@
 /**
  * Step-by-step workflow. Steps that involve human approval are highlighted,
  * keeping "human in control" visible wherever it applies.
+ *
+ * Motion: scrolling moves a highlight step to step (progress bar fills, the
+ * connector lights up, the step's dot turns into a check).
  */
 import Icon from "../ui/Icon.astro";
 
@@ -20,30 +23,81 @@ const cols = steps.length <= 7 ? steps.length : Math.ceil(steps.length / 2);
     steps.map((s, i) => (
       <li class:list={["wf__step", isHuman(s) && "is-human", (i + 1) % cols === 0 && "is-row-end"]} style={`--i:${i}`}>
         <span class="wf__dot">
-          {isHuman(s) ? <Icon name="userCheck" size={16} /> : String(i + 1).padStart(2, "0")}
+          <span class="wf__num">
+            {isHuman(s) ? <Icon name="userCheck" size={16} /> : String(i + 1).padStart(2, "0")}
+          </span>
+          <Icon name="check" size={16} class="wf__tick" />
         </span>
         <span class="wf__text">
           <b>{s.label}</b>
           {s.detail && <small>{s.detail}</small>}
           {isHuman(s) && <em>Human approval</em>}
         </span>
+        {i < steps.length - 1 && (
+          <span class="wf__link" aria-hidden="true">
+            <Icon name="arrowRight" size={14} />
+          </span>
+        )}
       </li>
     ))
   }
 </ol>
 
 <script>
+  // Scroll drives the flow: as the list moves up the screen each step is
+  // reached, its bar fills, then it's checked off and the connector lights.
+  // Reduced motion: everything shows as done, no movement.
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.querySelectorAll<HTMLElement>("[data-wf]").forEach((el) => {
-    const io = new IntersectionObserver(
-      ([e]) => {
+    const steps = Array.from(el.querySelectorAll<HTMLElement>(".wf__step"));
+    const n = steps.length;
+    let idx = -2;
+    const paint = (i: number, fill: number) => {
+      el.style.setProperty("--fill", fill.toFixed(3));
+      if (i === idx) return;
+      idx = i;
+      steps.forEach((s, j) => {
+        s.classList.toggle("is-current", j === i);
+        s.classList.toggle("is-done", j < i);
+      });
+    };
+    if (reduce) {
+      el.classList.add("is-active");
+      return paint(n, 0);
+    }
+
+    new IntersectionObserver(
+      ([e], io) => {
         if (e.isIntersecting) {
           el.classList.add("is-active");
+          // once the staggered reveal is over, state changes respond immediately
+          window.setTimeout(() => el.classList.add("is-settled"), 700 + n * 90);
           io.disconnect();
         }
       },
-      { threshold: 0.25 },
-    );
-    io.observe(el);
+      { threshold: 0.2 },
+    ).observe(el);
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const r = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 when the list's top reaches 75% of the viewport, 1 when its bottom reaches 45%
+      const p = Math.max(0, Math.min(1, (vh * 0.75 - r.top) / (r.height + vh * 0.3)));
+      const f = p * n;
+      const i = p <= 0 ? -1 : Math.min(n, Math.floor(f));
+      paint(i, i >= n ? 0 : f - i);
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    update();
   });
 </script>
 
@@ -54,10 +108,11 @@ const cols = steps.length <= 7 ? steps.length : Math.ceil(steps.length / 2);
     display: grid;
     grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
     gap: var(--space-3);
-    counter-reset: wf;
   }
   .wf__step {
+    --bar: var(--acc);
     position: relative;
+    z-index: calc(20 - var(--i));
     display: grid;
     align-content: start;
     gap: var(--space-3);
@@ -69,7 +124,9 @@ const cols = steps.length <= 7 ? steps.length : Math.ceil(steps.length / 2);
     transform: translateY(10px);
     transition:
       opacity 500ms var(--ease-out),
-      transform 500ms var(--ease-out);
+      transform 500ms var(--ease-out),
+      border-color 400ms var(--ease-out),
+      box-shadow 400ms var(--ease-out);
     transition-delay: calc(var(--i) * 90ms);
   }
   :global(.section--dark) .wf__step {
@@ -80,26 +137,101 @@ const cols = steps.length <= 7 ? steps.length : Math.ceil(steps.length / 2);
     opacity: 1;
     transform: none;
   }
-  /* connector arrow */
-  .wf__step:not(:last-child)::after {
+
+  .wf.is-settled .wf__step,
+  .wf.is-settled .wf__link {
+    transition-delay: 0ms;
+  }
+
+  /* ---- Travelling highlight ---- */
+  .wf__step::before {
     content: "";
     position: absolute;
-    z-index: 1;
+    left: var(--space-5);
+    right: var(--space-5);
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--bar);
+    transform: scaleX(0);
+    transform-origin: left;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .wf__step.is-current {
+    border-color: color-mix(in srgb, var(--bar) 55%, transparent);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--bar) 10%, transparent),
+      0 18px 36px -22px color-mix(in srgb, var(--bar) 70%, transparent);
+  }
+  .wf.is-active .wf__step.is-current {
+    transform: translateY(-4px);
+  }
+  .wf__step.is-current::before {
+    opacity: 1;
+    transform: scaleX(var(--fill, 0));
+  }
+  .wf__step.is-done::before {
+    opacity: 0.35;
+    transform: scaleX(1);
+    transition: opacity 600ms var(--ease-out);
+  }
+
+  /* ---- Connector badge between cards ---- */
+  .wf__link {
+    --size: 28px;
+    position: absolute;
+    z-index: 2;
     top: 50%;
-    right: calc(var(--space-3) * -0.5 - 5px);
-    width: 10px;
-    height: 10px;
-    border-top: 1.5px solid var(--acc);
-    border-right: 1.5px solid var(--acc);
-    background: var(--reofex-cream);
-    transform: translateY(-50%) rotate(45deg);
-    opacity: 0.7;
+    right: calc(var(--space-3) * -0.5 - var(--size) / 2);
+    display: grid;
+    place-items: center;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    color: var(--acc);
+    background: var(--reofex-white);
+    border: 1px solid color-mix(in srgb, var(--acc) 35%, transparent);
+    box-shadow:
+      0 0 0 4px var(--wf-bg, var(--reofex-cream)),
+      0 2px 6px rgb(18 40 47 / 0.08);
+    transform: translateY(-50%) scale(0.6);
+    opacity: 0;
+    transition:
+      opacity 400ms var(--ease-out),
+      transform 400ms var(--ease-out),
+      background-color 300ms var(--ease-out),
+      color 300ms var(--ease-out),
+      border-color 300ms var(--ease-out);
+    transition-delay: calc(var(--i) * 90ms + 300ms);
   }
-  :global(.section--dark) .wf__step:not(:last-child)::after,
-  :global(.section--white) .wf__step:not(:last-child)::after {
-    background: transparent;
+  :global(.section--white) .wf {
+    --wf-bg: var(--reofex-white);
   }
+  :global(.section--dark) .wf {
+    --wf-bg: var(--reofex-dark);
+  }
+  :global(.section--dark) .wf__link {
+    background: var(--reofex-dark);
+  }
+  :global(html:not(.js)) .wf__link,
+  .wf.is-active .wf__link {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  /* the hand-off: badge after a finished step is lit; the one leaving the current step nudges */
+  .wf__step.is-done .wf__link {
+    color: #fff;
+    background: var(--acc);
+    border-color: var(--acc);
+  }
+  .wf.is-active .wf__step.is-done .wf__link {
+    transform: translateY(-50%) scale(1.08);
+  }
+
+  /* ---- Step dot: number → check when done ---- */
   .wf__dot {
+    position: relative;
     display: grid;
     place-items: center;
     width: 36px;
@@ -110,7 +242,39 @@ const cols = steps.length <= 7 ? steps.length : Math.ceil(steps.length / 2);
     color: var(--acc);
     background: color-mix(in srgb, var(--acc) 12%, transparent);
     border: 1px solid color-mix(in srgb, var(--acc) 40%, transparent);
+    transition:
+      background-color 300ms var(--ease-out),
+      color 300ms var(--ease-out),
+      border-color 300ms var(--ease-out);
   }
+  .wf__num,
+  .wf__dot :global(.wf__tick) {
+    grid-area: 1 / 1;
+    display: grid;
+    place-items: center;
+    transition:
+      opacity 250ms var(--ease-out),
+      transform 250ms var(--ease-out);
+  }
+  .wf__dot :global(.wf__tick) {
+    opacity: 0;
+    transform: scale(0.5);
+    stroke-width: 2.5;
+  }
+  .wf__step.is-current .wf__dot {
+    color: #fff;
+    background: var(--acc);
+    border-color: var(--acc);
+  }
+  .wf__step.is-done .wf__num {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  .wf__step.is-done .wf__dot :global(.wf__tick) {
+    opacity: 1;
+    transform: none;
+  }
+
   .wf__text {
     display: grid;
     gap: 4px;
@@ -139,18 +303,27 @@ const cols = steps.length <= 7 ? steps.length : Math.ceil(steps.length / 2);
   :global(.section--dark) .wf__text em {
     color: var(--reofex-orange);
   }
+
+  /* ---- Human-approval steps stay orange ---- */
   .wf__step.is-human {
+    --bar: var(--reofex-orange);
     border-color: var(--reofex-orange);
     box-shadow: 0 0 0 3px rgb(247 141 32 / 0.12);
   }
-  .wf__step.is-human .wf__dot {
+  .wf__step.is-human .wf__dot,
+  .wf__step.is-human.is-current .wf__dot {
     color: var(--reofex-dark);
     background: var(--reofex-orange);
     border-color: var(--reofex-orange);
   }
+  .wf__step.is-human.is-current {
+    box-shadow:
+      0 0 0 4px rgb(247 141 32 / 0.18),
+      0 18px 36px -22px rgb(247 141 32 / 0.8);
+  }
 
   @media (min-width: 1024px) {
-    .wf__step.is-row-end::after {
+    .wf__step.is-row-end .wf__link {
       display: none;
     }
   }
@@ -170,12 +343,27 @@ const cols = steps.length <= 7 ? steps.length : Math.ceil(steps.length / 2);
       gap: var(--space-4);
       padding: var(--space-4);
     }
-    .wf__step:not(:last-child)::after {
+    .wf__step::before {
+      left: var(--space-4);
+      right: var(--space-4);
+    }
+    .wf.is-active .wf__step.is-current {
+      transform: none;
+    }
+    .wf__link {
+      --size: 24px;
       top: auto;
-      bottom: calc(var(--space-2) * -0.5 - 5px);
+      bottom: calc(var(--space-2) * -0.5 - var(--size) / 2);
       right: auto;
-      left: calc(var(--space-4) + 13px);
-      transform: rotate(135deg);
+      left: calc(var(--space-4) + 18px - var(--size) / 2);
+      transform: rotate(90deg) scale(0.6);
+    }
+    :global(html:not(.js)) .wf__link,
+    .wf.is-active .wf__link {
+      transform: rotate(90deg) scale(1);
+    }
+    .wf.is-active .wf__step.is-done .wf__link {
+      transform: rotate(90deg) scale(1.08);
     }
   }
 </style>

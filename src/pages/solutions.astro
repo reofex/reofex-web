@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/ui/PageHero.astro";
 import Button from "../components/ui/Button.astro";
-import ServicesGrid from "../components/home/ServicesGrid.astro";
+import ServiceStory from "../components/solutions/ServiceStory.astro";
 import SectionHeader from "../components/ui/SectionHeader.astro";
 import CTASection from "../components/home/CTASection.astro";
 
@@ -19,24 +19,22 @@ const models = [
 >
   <PageHero
     crumbs={[{ label: "Solutions" }]}
-    eyebrow="Solutions"
-    title="More than products."
-    titleAccent="We build what you need."
+    title="Software for your business,"
+    titleAccent="built like our own products."
     lead="The same team that builds Reofex products builds software for other businesses — custom applications, SaaS platforms, automation and integrations."
   >
     <Button href="/contact?topic=project" size="lg">Start a project</Button>
   </PageHero>
 
-  <ServicesGrid variant="full" />
+  <ServiceStory />
 
   <section class="section" aria-labelledby="models-title">
     <div class="container">
-      <SectionHeader id="models-title" eyebrow="Ways to work together" title="Engagements that fit the problem." align="split" lead="Every engagement follows the same disciplined process — what changes is how we plug into your team." />
+      <SectionHeader id="models-title" title="Engagements that fit the problem." align="split" lead="Every engagement follows the same disciplined process — what changes is how we plug into your team." />
       <ol role="list" class="em">
         {
           models.map((m, i) => (
             <li data-reveal style={`--reveal-i:${i}`}>
-              <span>{String(i + 1).padStart(2, "0")}</span>
               <h3>{m.title}</h3>
               <p>{m.body}</p>
             </li>
@@ -54,16 +52,15 @@ const models = [
   .em {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-4);
+    gap: var(--space-8);
   }
+  /* same open, ruled columns as the products page principles */
   .em li {
     display: grid;
     gap: var(--space-3);
     align-content: start;
-    padding: var(--space-8);
-    border-radius: var(--radius-xl);
-    background: var(--reofex-white);
-    border: 1px solid var(--reofex-border);
+    padding-top: var(--space-6);
+    border-top: 2px solid var(--reofex-dark);
   }
   .em span {
     font-size: var(--fs-sm);
@@ -84,7 +81,7 @@ const models = [
       grid-template-columns: 1fr;
     }
     .em li {
-      padding: var(--space-6);
+      padding-top: var(--space-5);
     }
   }
 </style>

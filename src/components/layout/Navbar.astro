@@ -4,7 +4,7 @@ import Icon from "../ui/Icon.astro";
 import Button from "../ui/Button.astro";
 import ProductIcon from "../ui/ProductIcon.astro";
 import MobileMenu from "./MobileMenu.astro";
-import { mainNav, getStartedHref } from "../../data/site";
+import { mainNav, getStartedHref, getStartedLabel } from "../../data/site";
 import { products, productHref } from "../../data/products";
 
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
@@ -75,7 +75,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href + "/")
 
     <div class="nav__actions">
       <Button href="/contact" variant="secondary" size="sm" icon={null} class="nav__contact">Contact</Button>
-      <Button href={getStartedHref} size="sm">Get Started</Button>
+      <Button href={getStartedHref} size="sm">{getStartedLabel}</Button>
     </div>
 
     <button class="nav__burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu" data-menu-open>

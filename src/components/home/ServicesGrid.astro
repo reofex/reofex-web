@@ -16,15 +16,14 @@ const H = variant === "full" ? "h2" : "h3";
     {
       variant === "home" && (
         <div class="sv__intro" data-reveal>
-          <p class="eyebrow">Our solutions</p>
           <h2 class="h2" id="solutions-title">
-            More than products.
+            We also build
             <br />
-            We build what you need.
+            software for you.
           </h2>
           <p class="lead">
-            From custom software to AI automation, we help businesses solve real problems with practical, scalable and
-            maintainable solutions.
+            Custom software, SaaS, AI automation, integrations and engineering support, built with the same process we
+            use on our own products.
           </p>
           <Button href="/solutions">Explore our solutions</Button>
         </div>
@@ -34,10 +33,10 @@ const H = variant === "full" ? "h2" : "h3";
       {
         services.map((s, i) => (
           <li class="sv__item" id={variant === "full" ? s.slug : undefined} style={`--reveal-i:${i % 3}`} data-reveal>
-            <span class="sv__icon">
-              <Icon name={s.icon} size={22} />
-            </span>
-            <H class="sv__name">{s.name}</H>
+            <H class="sv__name">
+              <Icon name={s.icon} size={18} class="sv__icon" />
+              {s.name}
+            </H>
             <p class="sv__summary">{s.summary}</p>
             {variant === "full" && (
               <>
@@ -92,29 +91,18 @@ const H = variant === "full" ? "h2" : "h3";
     padding: clamp(1.25rem, 1rem + 1vw, 2rem);
     border-right: 1px solid var(--reofex-border);
     border-bottom: 1px solid var(--reofex-border);
-    transition: background-color var(--dur-base) var(--ease-out);
     scroll-margin-top: calc(var(--header-h) + 24px);
   }
-  .sv__item:hover {
-    background: var(--reofex-cream);
-  }
-  .sv__icon {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    margin-bottom: var(--space-2);
-    border-radius: var(--radius-md);
-    background: var(--reofex-dark);
-    color: var(--reofex-orange);
-    transition: transform var(--dur-base) var(--ease-out);
-  }
-  .sv__item:hover .sv__icon {
-    transform: translateY(-2px) rotate(-4deg);
-  }
+  /* icon sits in the heading, not in a tile above it */
   .sv__name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
     font-size: 1.0625rem;
     letter-spacing: -0.015em;
+  }
+  .sv__name :global(.sv__icon) {
+    color: var(--reofex-orange-ink);
   }
   .sv__summary {
     font-size: var(--fs-sm);
@@ -163,15 +151,8 @@ const H = variant === "full" ? "h2" : "h3";
       border-left: 0;
     }
     .sv--home .sv__item {
-      grid-template-columns: 44px 1fr;
-      column-gap: var(--space-4);
-      row-gap: 2px;
       padding-inline: 0;
       border-right: 0;
-    }
-    .sv--home .sv__icon {
-      grid-row: span 2;
-      margin: 0;
     }
     .sv--full .sv__grid {
       grid-template-columns: 1fr;

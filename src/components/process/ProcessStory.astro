@@ -1,0 +1,690 @@
+---
+/**
+ * How We Build: the seven steps as a pinned story. Each step shows the thing
+ * a client actually receives at that point (a brief, a diagram, a prototype,
+ * a demo, working connectors, a rollout, a review), using one example
+ * project throughout. Example data only, captioned as such.
+ */
+import Icon from "../ui/Icon.astro";
+import StoryShell from "../product/story/StoryShell.astro";
+import { processSteps } from "../../data/site";
+
+// Each step, described by what the client gets at the end of it
+const bodies = [
+  "We learn the goals, the constraints and the real problem. You get a one-page brief to agree before anything is designed.",
+  "We design the system and settle the few decisions that are expensive to change later. You get the diagram and those decisions in writing.",
+  "Real users try a clickable prototype before it's built, while changes are still cheap.",
+  "Working software every week, with tests and code review on every change.",
+  "We connect to the systems you already use and test on real data before launch.",
+  "A staged rollout with monitoring, so problems show up before your users report them.",
+  "We review what's used and what isn't, and agree a short list of what to change next.",
+];
+const steps = processSteps.map((s, i) => ({ title: s.title, body: bodies[i] }));
+const weeks = ["Week 1", "Week 1–2", "Week 2–3", "Weeks 3–8", "Weeks 6–8", "Weeks 9–11", "Month 3"];
+---
+
+<StoryShell
+  id="pb-title"
+  title={"What you get\nat each step."}
+  lead="Every step ends with something you can see and sign off. Here's what that looks like on one example project."
+  steps={steps}
+  accent="#f78d20"
+  caption="Example project"
+>
+  <div class="pb">
+    <!-- Persistent project strip -->
+    <div class="pb-proj">
+      <span class="pb-proj__dot"></span>
+      <b>Purchase invoice intake</b>
+      <span class="pb-proj__client">for a building-materials distributor</span>
+      <span class="pb-proj__weeks">
+        {weeks.map((w, i) => <em data-s={i}>{w}</em>)}
+      </span>
+    </div>
+
+    <!-- 0 · Understand: problem brief -->
+    <div class="ss-card pb-panel pb-brief" data-s="0">
+      <div class="pb-head"><Icon name="file" size={16} /><b>Problem brief</b><small>v2 · signed off</small></div>
+      <dl>
+        <div style="--k:0"><dt>Who it's for</dt><dd>Accounts team, 3 people</dd></div>
+        <div style="--k:1"><dt>Today</dt><dd>About 400 purchase bills a month, typed into Tally by hand</dd></div>
+        <div style="--k:2"><dt>What goes wrong</dt><dd>Duplicate bills, wrong GST split, vendors paid late</dd></div>
+        <div style="--k:3"><dt>Success looks like</dt><dd>Routine bills post without retyping; exceptions need one approval</dd></div>
+        <div style="--k:4"><dt>Not in scope yet</dt><dd>Sales invoices, payroll</dd></div>
+      </dl>
+    </div>
+
+    <!-- 1 · Architect: system diagram -->
+    <div class="ss-card pb-panel pb-arch" data-s="1">
+      <div class="pb-head"><Icon name="layers" size={16} /><b>System diagram</b><small>v1</small></div>
+      <div class="pb-flow">
+        <div class="pb-flow__in">
+          <span class="pb-node">Gmail</span>
+          <span class="pb-node">WhatsApp</span>
+        </div>
+        <i class="pb-arrow"></i>
+        <span class="pb-node">Intake</span>
+        <i class="pb-arrow"></i>
+        <span class="pb-node">AI read</span>
+        <i class="pb-arrow"></i>
+        <span class="pb-node">Checks</span>
+        <i class="pb-arrow"></i>
+        <span class="pb-node pb-node--human"><Icon name="userCheck" size={12} />Approval</span>
+        <i class="pb-arrow"></i>
+        <span class="pb-node pb-node--out">Tally</span>
+      </div>
+      <ul class="pb-decisions">
+        <li style="--k:0"><Icon name="server" size={13} />Runs on the client's own server</li>
+        <li style="--k:1"><Icon name="sparkles" size={13} />AI provider can be swapped without a rewrite</li>
+        <li style="--k:2"><Icon name="database" size={13} />Posts to Tally over the local network</li>
+      </ul>
+    </div>
+
+    <!-- 2 · Prototype: clickable screen + feedback -->
+    <div class="pb-panel pb-proto" data-s="2">
+      <div class="ss-card pb-screen">
+        <div class="pb-screen__bar"><span></span><span></span><span></span><em>Prototype v3</em></div>
+        <div class="pb-screen__body">
+          <b>Approvals</b>
+          <div class="pb-row"><span>Sharma Traders<small>GSTIN 29ABCDE1234F1Z5</small></span><b>₹48,203</b><i class="pb-btn">Approve<span class="pb-tap"></span></i></div>
+          <div class="pb-row"><span>Kumar Supplies<small>GSTIN 32AAACK7731M1ZQ</small></span><b>₹31,640</b><i class="pb-btn pb-btn--ghost">Approve</i></div>
+          <div class="pb-row"><span>Metro Packaging<small>New vendor</small></span><b>₹26,900</b><i class="pb-btn pb-btn--ghost">Review</i></div>
+        </div>
+      </div>
+      <div class="pb-notes">
+        <p class="pb-note" style="--k:0"><b>Tested with 3 people</b></p>
+        <p class="pb-note pb-note--done" style="--k:1"><Icon name="check" size={12} />"Show the GSTIN next to the vendor"</p>
+        <p class="pb-note" style="--k:2"><Icon name="clock" size={12} />"Bulk approve small bills" · later</p>
+      </div>
+    </div>
+
+    <!-- 3 · Build: weekly demo + checks -->
+    <div class="pb-panel pb-build" data-s="3">
+      <div class="ss-card pb-demo">
+        <div class="pb-head"><Icon name="eye" size={16} /><b>Week 6 demo</b><small>Thursday</small></div>
+        <ul>
+          <li style="--k:0"><span class="ss-tick"><Icon name="check" size={11} /></span>Duplicate check across email and WhatsApp</li>
+          <li style="--k:1"><span class="ss-tick"><Icon name="check" size={11} /></span>Approval by link from email</li>
+          <li style="--k:2"><span class="ss-tick ss-tick--warn"><Icon name="clock" size={11} /></span>Tally posting · next week</li>
+        </ul>
+      </div>
+      <div class="ss-card pb-checks">
+        <div class="pb-head"><Icon name="shieldCheck" size={16} /><b>Before every merge</b></div>
+        <p style="--k:0"><span>Tests</span><b>248 passed</b></p>
+        <p style="--k:1"><span>Type check</span><b>Passed</b></p>
+        <p style="--k:2"><span>Code review</span><b>Approved</b></p>
+        <p style="--k:3"><span>Staging</span><b>Deployed</b></p>
+      </div>
+    </div>
+
+    <!-- 4 · Integrate: connectors -->
+    <div class="ss-card pb-panel pb-conn" data-s="4">
+      <div class="pb-head"><Icon name="plug" size={16} /><b>Connections</b><small>tested on real data</small></div>
+      <div class="pb-conrow" style="--k:0"><Icon name="mail" size={15} /><span>Gmail<small>accounts@ inbox</small></span><em>Connected</em></div>
+      <div class="pb-conrow" style="--k:1"><Icon name="whatsapp" size={15} /><span>WhatsApp Business<small>vendor bills number</small></span><em>Connected</em></div>
+      <div class="pb-conrow" style="--k:2"><Icon name="database" size={15} /><span>TallyPrime<small>local network</small></span><em>Test bill posted</em></div>
+      <div class="pb-conrow" style="--k:3"><Icon name="users" size={15} /><span>Vendor master<small>from Tally</small></span><em>1,240 imported</em></div>
+    </div>
+
+    <!-- 5 · Launch: staged rollout + monitoring -->
+    <div class="pb-panel pb-launch" data-s="5">
+      <div class="ss-card pb-roll">
+        <div class="pb-head"><Icon name="rocket" size={16} /><b>Rollout</b></div>
+        <ol>
+          <li class="is-done" style="--k:0"><i></i><span>Pilot · one branch</span><small>Week 9</small></li>
+          <li class="is-done" style="--k:1"><i></i><span>Two branches</span><small>Week 10</small></li>
+          <li class="is-now" style="--k:2"><i></i><span>All branches</span><small>Week 11</small></li>
+        </ol>
+      </div>
+      <div class="ss-card pb-mon">
+        <div class="pb-head"><Icon name="bell" size={16} /><b>Monitoring</b></div>
+        <p><span>Bills processed today</span><b>63</b></p>
+        <p><span>Errors, last 24 hours</span><b>0</b></p>
+        <p><span>Alerts go to</span><b>On-call engineer, finance head</b></p>
+      </div>
+    </div>
+
+    <!-- 6 · Improve: usage review -->
+    <div class="ss-card pb-panel pb-review" data-s="6">
+      <div class="pb-head"><Icon name="chart" size={16} /><b>Month 2 review</b></div>
+      <div class="pb-stat" style="--k:0"><span>Bills posted with no edits</span><b>81%</b><i style="--w:81%"></i></div>
+      <div class="pb-stat" style="--k:1"><span>Most-edited field</span><b>HSN code</b></div>
+      <div class="pb-next">
+        <small>Next</small>
+        <p style="--k:2"><Icon name="arrowRight" size={12} />Default HSN code per vendor</p>
+        <p style="--k:3"><Icon name="arrowRight" size={12} />Remove the daily email digest (nobody opens it)</p>
+      </div>
+    </div>
+  </div>
+</StoryShell>
+
+<style>
+  /* 60 × 42 unit design grid that scales with the scene's width */
+  .pb {
+    --u: calc(100cqi / 60);
+    font-size: var(--u);
+    position: relative;
+    aspect-ratio: 60 / 42;
+    color: var(--reofex-dark);
+  }
+
+  /* project strip */
+  .pb-proj {
+    position: absolute;
+    left: 2em;
+    right: 2em;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0.8em 1.2em;
+    border-radius: 99px;
+    background: rgb(255 255 255 / 0.06);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    color: #fff;
+    font-size: 1.1em;
+  }
+  .pb-proj__dot {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: var(--reofex-orange);
+  }
+  .pb-proj__client {
+    color: rgb(255 255 255 / 0.55);
+  }
+  .pb-proj__weeks {
+    margin-left: auto;
+    display: grid;
+  }
+  .pb-proj__weeks em {
+    grid-area: 1 / 1;
+    justify-self: end;
+    font-style: normal;
+    font-weight: 700;
+    color: var(--reofex-orange);
+    opacity: 0;
+    transition: opacity 300ms var(--ease-out);
+  }
+  :global(.story[data-stage="0"]) .pb-proj__weeks em[data-s="0"],
+  :global(.story[data-stage="1"]) .pb-proj__weeks em[data-s="1"],
+  :global(.story[data-stage="2"]) .pb-proj__weeks em[data-s="2"],
+  :global(.story[data-stage="3"]) .pb-proj__weeks em[data-s="3"],
+  :global(.story[data-stage="4"]) .pb-proj__weeks em[data-s="4"],
+  :global(.story[data-stage="5"]) .pb-proj__weeks em[data-s="5"],
+  :global(.story[data-stage="6"]) .pb-proj__weeks em[data-s="6"] {
+    opacity: 1;
+  }
+
+  /* panels: one per step */
+  .pb-panel {
+    position: absolute;
+    left: 6em;
+    right: 6em;
+    top: 6em;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(2.5em) scale(0.98);
+    transition:
+      opacity 450ms var(--ease-out),
+      transform 600ms var(--ease-out),
+      visibility 0s linear 600ms;
+  }
+  :global(.story[data-stage="0"]) .pb-panel[data-s="0"],
+  :global(.story[data-stage="1"]) .pb-panel[data-s="1"],
+  :global(.story[data-stage="2"]) .pb-panel[data-s="2"],
+  :global(.story[data-stage="3"]) .pb-panel[data-s="3"],
+  :global(.story[data-stage="4"]) .pb-panel[data-s="4"],
+  :global(.story[data-stage="5"]) .pb-panel[data-s="5"],
+  :global(.story[data-stage="6"]) .pb-panel[data-s="6"] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 150ms, 150ms, 0s;
+  }
+  .pb-panel:not(.ss-card) {
+    display: grid;
+    gap: 1.4em;
+  }
+  .ss-card.pb-panel {
+    padding: 0.4em 0 1.2em;
+  }
+  .pb-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 1.2em 1.6em 0.9em;
+    font-size: 1.2em;
+  }
+  .pb-head :global(.icon) {
+    width: 1.3em;
+    height: 1.3em;
+    color: var(--reofex-orange-ink);
+  }
+  .pb-head small {
+    margin-left: auto;
+    font-size: 0.78em;
+    color: rgb(18 40 47 / 0.5);
+  }
+  @keyframes pb-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.6em);
+    }
+  }
+  /* rows inside the step that just became current come in one after another */
+  :global(.story[data-stage="0"]) .pb-panel[data-s="0"] [style*="--k"],
+  :global(.story[data-stage="1"]) .pb-panel[data-s="1"] [style*="--k"],
+  :global(.story[data-stage="2"]) .pb-panel[data-s="2"] [style*="--k"],
+  :global(.story[data-stage="3"]) .pb-panel[data-s="3"] [style*="--k"],
+  :global(.story[data-stage="4"]) .pb-panel[data-s="4"] [style*="--k"],
+  :global(.story[data-stage="5"]) .pb-panel[data-s="5"] [style*="--k"],
+  :global(.story[data-stage="6"]) .pb-panel[data-s="6"] [style*="--k"] {
+    animation: pb-in 450ms var(--ease-out) both;
+    animation-delay: calc(250ms + var(--k) * 160ms);
+  }
+
+  /* 0 brief */
+  .pb-brief dl {
+    display: grid;
+    margin: 0;
+  }
+  .pb-brief dl div {
+    display: grid;
+    grid-template-columns: 12em 1fr;
+    gap: 1.5em;
+    padding: 0.85em 1.6em;
+    border-top: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 1.1em;
+    line-height: 1.4;
+  }
+  .pb-brief dt {
+    color: rgb(18 40 47 / 0.55);
+  }
+  .pb-brief dd {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  /* 1 architecture */
+  .pb-flow {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin: 0.4em 1.6em 1.2em;
+    padding: 2em 1.4em;
+    border-radius: 0.8em;
+    background: #f6f4ef;
+  }
+  .pb-flow__in {
+    display: grid;
+    gap: 0.6em;
+  }
+  .pb-arrow {
+    flex: 1;
+    min-width: 1em;
+    height: 0;
+    border-top: 1.5px dashed rgb(18 40 47 / 0.35);
+    position: relative;
+  }
+  .pb-arrow::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    top: -0.36em;
+    border-left: 0.45em solid rgb(18 40 47 / 0.45);
+    border-top: 0.3em solid transparent;
+    border-bottom: 0.3em solid transparent;
+  }
+  .pb-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.55em 0.8em;
+    border-radius: 0.6em;
+    background: #fff;
+    border: 1px solid rgb(18 40 47 / 0.14);
+    font-size: 1em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .pb-node--human {
+    border-color: var(--reofex-orange);
+    background: rgb(247 141 32 / 0.12);
+    color: #8a4700;
+  }
+  .pb-node--out {
+    background: var(--reofex-dark);
+    color: #fff;
+    border-color: var(--reofex-dark);
+  }
+  .pb-decisions {
+    list-style: none;
+    padding: 0 1.6em;
+    display: grid;
+    gap: 0.6em;
+    font-size: 1.05em;
+  }
+  .pb-decisions li {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+  }
+  .pb-decisions :global(.icon) {
+    color: var(--reofex-orange-ink);
+  }
+
+  /* 2 prototype */
+  .pb-proto {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+  .pb-screen {
+    overflow: hidden;
+  }
+  .pb-screen__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    padding: 0.7em 1em;
+    background: #f6f5f1;
+    border-bottom: 1px solid rgb(18 40 47 / 0.07);
+  }
+  .pb-screen__bar span {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: rgb(18 40 47 / 0.15);
+  }
+  .pb-screen__bar em {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 0.9em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .pb-screen__body {
+    display: grid;
+    gap: 0.6em;
+    padding: 1.2em 1.3em 1.4em;
+    font-size: 1.05em;
+  }
+  .pb-screen__body > b {
+    font-size: 1.2em;
+    margin-bottom: 0.2em;
+  }
+  .pb-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 1em;
+    padding: 0.7em 0.9em;
+    border-radius: 0.7em;
+    border: 1px solid rgb(18 40 47 / 0.08);
+  }
+  .pb-row span {
+    display: grid;
+    line-height: 1.3;
+  }
+  .pb-row small {
+    font-size: 0.82em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .pb-btn {
+    position: relative;
+    padding: 0.4em 0.9em;
+    border-radius: 99px;
+    background: var(--reofex-orange);
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.9em;
+  }
+  .pb-btn--ghost {
+    background: none;
+    border: 1px solid rgb(18 40 47 / 0.15);
+    color: rgb(18 40 47 / 0.7);
+  }
+  .pb-tap {
+    position: absolute;
+    inset: -0.3em;
+    border-radius: 99px;
+    border: 2px solid var(--reofex-orange);
+    opacity: 0;
+  }
+  :global(.story[data-stage="2"]) .pb-tap {
+    animation: pb-tap 1.4s var(--ease-out) 700ms 2;
+  }
+  @keyframes pb-tap {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  .pb-notes {
+    display: grid;
+    gap: 0.8em;
+  }
+  .pb-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.9em 1.1em;
+    border-radius: 0.8em;
+    background: #fdf3d1;
+    font-size: 1.05em;
+    line-height: 1.4;
+    box-shadow: 0 1em 2em -1em rgb(0 0 0 / 0.5);
+  }
+  .pb-note:first-child {
+    background: rgb(255 255 255 / 0.08);
+    color: #fff;
+    box-shadow: none;
+  }
+  .pb-note--done :global(.icon) {
+    color: #1f9d6b;
+  }
+
+  /* 3 build */
+  .pb-build {
+    grid-template-columns: 1.3fr 1fr;
+    align-items: start;
+  }
+  .pb-demo ul {
+    list-style: none;
+    padding: 0 1.6em 1.4em;
+    display: grid;
+    gap: 0.9em;
+    font-size: 1.05em;
+  }
+  .pb-demo li {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+  }
+  .pb-checks {
+    padding-bottom: 1em;
+  }
+  .pb-checks p,
+  .pb-mon p {
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    padding: 0.75em 1.6em;
+    border-top: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 1.05em;
+  }
+  .pb-checks p span,
+  .pb-mon p span {
+    color: rgb(18 40 47 / 0.6);
+  }
+  .pb-checks p b {
+    color: #146a48;
+  }
+
+  /* 4 connections */
+  .pb-conrow {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1em;
+    padding: 0.95em 1.6em;
+    border-top: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 1.1em;
+  }
+  .pb-conrow > :global(.icon) {
+    width: 1.4em;
+    height: 1.4em;
+    color: rgb(18 40 47 / 0.6);
+  }
+  .pb-conrow span {
+    display: grid;
+    line-height: 1.3;
+  }
+  .pb-conrow small {
+    color: rgb(18 40 47 / 0.55);
+  }
+  .pb-conrow em {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.9em;
+    padding: 0.3em 0.8em;
+    border-radius: 99px;
+    color: #146a48;
+    background: rgb(31 157 107 / 0.1);
+  }
+
+  /* 5 launch */
+  .pb-launch {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .pb-roll ol {
+    list-style: none;
+    padding: 0 1.6em 1.4em;
+    display: grid;
+    gap: 0.4em;
+  }
+  .pb-roll li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.8em;
+    padding: 0.6em 0;
+    font-size: 1.05em;
+  }
+  .pb-roll li i {
+    width: 1.1em;
+    height: 1.1em;
+    border-radius: 50%;
+    border: 2px solid rgb(18 40 47 / 0.2);
+  }
+  .pb-roll li.is-done i {
+    background: #1f9d6b;
+    border-color: #1f9d6b;
+  }
+  .pb-roll li.is-now i {
+    border-color: var(--reofex-orange);
+    box-shadow: inset 0 0 0 0.25em #fff;
+    background: var(--reofex-orange);
+  }
+  .pb-roll small {
+    color: rgb(18 40 47 / 0.5);
+  }
+  .pb-mon {
+    padding-bottom: 1em;
+  }
+
+  /* 6 review */
+  .pb-stat {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.6em 1em;
+    padding: 1em 1.6em;
+    border-top: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 1.1em;
+  }
+  .pb-stat span {
+    color: rgb(18 40 47 / 0.6);
+  }
+  .pb-stat i {
+    grid-column: 1 / -1;
+    height: 0.5em;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #1f9d6b var(--w), rgb(18 40 47 / 0.08) var(--w));
+  }
+  .pb-next {
+    display: grid;
+    gap: 0.5em;
+    padding: 1em 1.6em 0.4em;
+    border-top: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 1.05em;
+  }
+  .pb-next small {
+    color: rgb(18 40 47 / 0.5);
+  }
+  .pb-next p {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-weight: 600;
+  }
+  .pb-next :global(.icon) {
+    color: var(--reofex-orange-ink);
+  }
+
+  /* Narrow scenes: one panel at a time, full width */
+  @container (max-width: 520px) {
+    .pb {
+      --u: calc(100cqi / 32);
+      aspect-ratio: 32 / 36;
+    }
+    .pb-proj {
+      left: 0;
+      right: 0;
+      font-size: 0.95em;
+    }
+    .pb-proj__client {
+      display: none;
+    }
+    .pb-panel {
+      left: 0;
+      right: 0;
+      top: 5em;
+    }
+    .pb-proto,
+    .pb-build,
+    .pb-launch {
+      grid-template-columns: 1fr;
+    }
+    .pb-notes,
+    .pb-checks,
+    .pb-mon,
+    .pb-decisions {
+      display: none;
+    }
+    .pb-brief dl div {
+      grid-template-columns: 1fr;
+      gap: 0.2em;
+    }
+    /* the flow wraps onto two lines instead of running off the edge */
+    .pb-flow {
+      flex-wrap: wrap;
+      row-gap: 1em;
+      padding: 1.4em 1em;
+      margin-inline: 1em;
+    }
+    .pb-arrow {
+      flex: 0 0 1.4em;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pb [style*="--k"],
+    .pb-tap {
+      animation: none !important;
+    }
+  }
+</style>

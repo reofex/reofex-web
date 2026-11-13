@@ -74,6 +74,9 @@ const ld = [orgLd, ...(Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [])]
     <Footer />
 
     <script>
+      import "../scripts/motion";
+    </script>
+    <script>
       // Scroll reveal — progressive enhancement; content is visible without JS.
       const els = document.querySelectorAll<HTMLElement>("[data-reveal]");
       if ("IntersectionObserver" in window) {

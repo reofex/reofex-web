@@ -4,7 +4,7 @@ import Logo from "../ui/Logo.astro";
 import Icon from "../ui/Icon.astro";
 import Button from "../ui/Button.astro";
 import ProductIcon from "../ui/ProductIcon.astro";
-import { mainNav, site, getStartedHref } from "../../data/site";
+import { mainNav, site, getStartedHref, getStartedLabel } from "../../data/site";
 import { products, productHref } from "../../data/products";
 ---
 
@@ -61,7 +61,7 @@ import { products, productHref } from "../../data/products";
   </nav>
 
   <div class="mm__foot container">
-    <Button href={getStartedHref} size="lg" class="mm__cta">Get Started</Button>
+    <Button href={getStartedHref} size="lg" class="mm__cta">{getStartedLabel}</Button>
     <a href={`mailto:${site.email}`} class="mm__mail"><Icon name="mail" size={16} /> {site.email}</a>
   </div>
 </dialog>

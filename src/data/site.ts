@@ -6,7 +6,7 @@ export const site = {
   url: "https://reofex.com", // TODO: confirm production domain
   description:
     "Reofex Technologies builds SaaS products, intelligent automation and custom software that help businesses operate smarter, faster and with less friction.",
-  footerBlurb: "Software products, intelligent automation and custom software for modern businesses.",
+  footerBlurb: "Respondly, Reofex Sync, Reofex Growth and Fynex, plus custom software built by the same team.",
   email: "info@reofex.com",
   whatsapp: {
     /** International format, digits only or with +/spaces, e.g. "+971 50 123 4567". Empty = not configured. */
@@ -31,6 +31,8 @@ export const whatsappLink = (text: string) => {
  * Falls back to the contact page if no WhatsApp number is configured.
  */
 export const getStartedHref = whatsappLink(site.whatsapp.message) ?? "/contact?topic=project";
+/** Say what the header button actually does. */
+export const getStartedLabel = getStartedHref.startsWith("/") ? "Start a project" : "WhatsApp us";
 
 export const mainNav = [
   { label: "Products", href: "/products", mega: true },
@@ -111,19 +113,6 @@ export const processSteps = [
   { n: "05", title: "Integrate", body: "Connect to the systems and data you already rely on." },
   { n: "06", title: "Launch", body: "Ship to production with monitoring and a clear rollout." },
   { n: "07", title: "Improve", body: "Measure, learn and keep improving after launch." },
-];
-
-export const capabilities: { icon: IconName; label: string }[] = [
-  { icon: "sparkles", label: "AI" },
-  { icon: "zap", label: "Automation" },
-  { icon: "cloud", label: "Cloud" },
-  { icon: "api", label: "APIs" },
-  { icon: "layers", label: "SaaS" },
-  { icon: "globe", label: "Web" },
-  { icon: "phone", label: "Mobile" },
-  { icon: "plug", label: "Integrations" },
-  { icon: "database", label: "Databases" },
-  { icon: "workflow", label: "Workflow systems" },
 ];
 
 /**

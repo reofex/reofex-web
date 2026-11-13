@@ -1,0 +1,813 @@
+---
+/**
+ * Reofex Growth: follow one campaign from an AI draft to a WhatsApp chat,
+ * with the approval gate as the centrepiece. The campaign card stays in view
+ * and changes state; the right side shows what happens around it.
+ * Example data only (illustrative business, audience and budget).
+ */
+import Icon from "../ui/Icon.astro";
+import StoryShell from "./story/StoryShell.astro";
+
+const steps = [
+  {
+    title: "AI drafts the campaign",
+    body: "Audience, creative and copy, ready to review instead of a blank ads manager. It's created paused.",
+  },
+  {
+    title: "It stops at your approval",
+    body: "Nothing launches until you approve it. Requests you don't answer expire after 72 hours.",
+  },
+  {
+    title: "Runs on Facebook & Instagram",
+    body: "Once approved, the campaign is switched on across Meta's placements.",
+  },
+  {
+    title: "Every tap opens WhatsApp",
+    body: "Interested people land in a WhatsApp conversation with your business, not on a web page.",
+  },
+  {
+    title: "Changes wait for you too",
+    body: "AI suggests budget or audience changes. Each one needs your approval before it's applied.",
+  },
+];
+---
+
+<StoryShell
+  id="gs-title"
+  eyebrow="Follow one campaign"
+  title={"From an AI draft\nto a WhatsApp chat."}
+  lead="Scroll to see where Reofex Growth does the work, and the moments it waits for you."
+  steps={steps}
+  accent="#f78d20"
+  caption="Example campaign"
+>
+  <div class="gs">
+    <!-- The campaign card (persistent) -->
+    <div class="ss-card gs-camp">
+      <div class="gs-camp__head">
+        <span class="gs-logo">SC</span>
+        <div><b>Weekend cake box</b><small>Sweet Crumbs Bakery · Click-to-WhatsApp</small></div>
+        <span class="gs-states">
+          <span class="gs-state gs-state--draft"><i></i>Draft · paused</span>
+          <span class="gs-state gs-state--wait"><i></i>Waiting for you</span>
+          <span class="gs-state gs-state--ok"><i></i>Approved</span>
+          <span class="gs-state gs-state--live"><i></i>Live</span>
+        </span>
+      </div>
+      <div class="gs-camp__body">
+        <div class="gs-creative">
+          <span>Weekend<br />cake box</span>
+        </div>
+        <dl class="gs-spec">
+          <div style="--k:0"><dt>Audience</dt><dd>25–45 · within 8 km of Kochi</dd></div>
+          <div style="--k:1"><dt>Placements</dt><dd>Facebook & Instagram</dd></div>
+          <div style="--k:2"><dt>Button</dt><dd>Send WhatsApp message</dd></div>
+          <div style="--k:3"><dt>Daily budget</dt><dd class="gs-budget"><s>₹500</s><span>₹500</span><ins>₹800</ins></dd></div>
+        </dl>
+      </div>
+      <p class="gs-copy">"Fresh cakes for the weekend. Message us on WhatsApp to order your box by Friday."</p>
+      <div class="gs-gate"><Icon name="userCheck" size={14} /><span class="gs-gate__wait">Owner approval required to launch</span><span class="gs-gate__ok">Launched after owner approval</span></div>
+    </div>
+
+    <!-- 0 · AI drafting -->
+    <div class="gs-panel gs-ai" data-s="0">
+      <div class="ss-card gs-note">
+        <div class="gs-note__head"><Icon name="sparkles" size={16} /><b>AI draft ready</b></div>
+        <ul>
+          <li style="--k:0"><span class="ss-tick"><Icon name="check" size={12} /></span>Audience from your location and past chats</li>
+          <li style="--k:1"><span class="ss-tick"><Icon name="check" size={12} /></span>Creative and copy written</li>
+          <li style="--k:2"><span class="ss-tick ss-tick--warn"><Icon name="clock" size={12} /></span>Created paused, not spending</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 1 · approval on the phone -->
+    <div class="gs-panel gs-panel--phone" data-s="1">
+      <div class="gs-phone">
+        <div class="gs-phone__notch"></div>
+        <div class="gs-phone__app">
+          <small class="gs-phone__brand">Reofex Growth</small>
+          <div class="gs-appr">
+            <span class="ss-pill ss-pill--orange">Approval needed</span>
+            <b>Launch "Weekend cake box"?</b>
+            <dl>
+              <div><dt>Budget</dt><dd>₹500 / day</dd></div>
+              <div><dt>Runs on</dt><dd>Facebook, Instagram</dd></div>
+              <div><dt>Expires</dt><dd>in 72 hours</dd></div>
+            </dl>
+            <div class="gs-appr__btns">
+              <span class="gs-btn gs-btn--ghost">Reject</span>
+              <span class="gs-btn gs-btn--go">Approve<span class="gs-tap"></span></span>
+            </div>
+            <div class="gs-appr__done">
+              <span class="ss-tick gs-tick--big"><Icon name="check" size={18} /></span>
+              <b>Approved</b>
+              <small>Switching on now</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · the ad in the feed -->
+    <div class="gs-panel gs-panel--feed" data-s="2">
+      <div class="ss-card gs-ad">
+        <div class="gs-ad__head">
+          <span class="gs-logo">SC</span>
+          <div><b>Sweet Crumbs Bakery</b><small>Sponsored</small></div>
+        </div>
+        <p>Fresh cakes for the weekend. Message us on WhatsApp to order your box by Friday.</p>
+        <div class="gs-creative gs-creative--big"><span>Weekend<br />cake box</span></div>
+        <div class="gs-ad__cta"><Icon name="whatsapp" size={14} />Send WhatsApp message<span class="gs-tap gs-tap--ad"></span></div>
+      </div>
+    </div>
+
+    <!-- 3 · the tap opens WhatsApp -->
+    <div class="gs-panel" data-s="3">
+      <div class="ss-card gs-wa">
+        <div class="gs-wa__head"><span class="gs-logo">SC</span><div><b>Sweet Crumbs Bakery</b><small>WhatsApp Business</small></div></div>
+        <div class="gs-wa__body">
+          <div class="gs-msg gs-msg--ad"><Icon name="megaphone" size={12} />From your ad: Weekend cake box</div>
+          <div class="gs-msg gs-msg--in">Hi! Can I order the weekend box for Saturday?</div>
+          <div class="gs-msg gs-msg--out">Of course! Chocolate or red velvet?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 · a suggested change, waiting -->
+    <div class="gs-panel" data-s="4">
+      <div class="ss-card gs-note gs-suggest">
+        <div class="gs-note__head"><Icon name="lightbulb" size={16} /><b>Suggested change</b><span class="ss-pill ss-pill--orange">Needs approval</span></div>
+        <p>Instagram is bringing more chats than Facebook for this campaign. Raise the daily budget from ₹500 to ₹800?</p>
+        <div class="gs-appr__btns">
+          <span class="gs-btn gs-btn--ghost">Dismiss</span>
+          <span class="gs-btn gs-btn--go">Review change</span>
+        </div>
+      </div>
+      <div class="gs-toast"><Icon name="shield" size={14} />Budget stays at ₹500 until you approve</div>
+    </div>
+  </div>
+</StoryShell>
+
+<style>
+  .gs {
+    --u: calc(100cqi / 60);
+    font-size: var(--u);
+    position: relative;
+    aspect-ratio: 60 / 42;
+    color: var(--reofex-dark);
+  }
+
+  /* ---- Campaign card ---- */
+  .gs-camp {
+    position: absolute;
+    left: 1em;
+    top: 3em;
+    width: 28em;
+    padding: 1.4em;
+    display: grid;
+    gap: 1.1em;
+    transition:
+      transform 800ms var(--ease-out),
+      box-shadow 600ms var(--ease-out);
+  }
+  .gs-camp__head {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+  }
+  .gs-camp__head > div {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    line-height: 1.3;
+    font-size: 1.1em;
+  }
+  .gs-camp__head small {
+    font-size: 0.8em;
+    color: rgb(18 40 47 / 0.55);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gs-logo {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.8em;
+    height: 2.8em;
+    border-radius: 50%;
+    background: #fbe3c8;
+    color: #8a4700;
+    font-weight: 800;
+    font-size: 0.95em;
+  }
+  .gs-states {
+    display: grid;
+    justify-items: end;
+  }
+  .gs-states > * {
+    grid-area: 1 / 1;
+  }
+  .gs-state {
+    display: none;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0.3em 0.8em;
+    border-radius: 99px;
+    font-size: 0.95em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .gs-state i {
+    width: 0.55em;
+    height: 0.55em;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .gs-state--draft {
+    color: rgb(18 40 47 / 0.65);
+    background: rgb(18 40 47 / 0.07);
+  }
+  .gs-state--wait {
+    color: #8a4700;
+    background: rgb(247 141 32 / 0.16);
+  }
+  .gs-state--live {
+    color: #146a48;
+    background: rgb(31 157 107 / 0.12);
+  }
+  .gs-state--ok {
+    color: #146a48;
+    background: rgb(31 157 107 / 0.12);
+  }
+  :global(.story[data-stage="0"]) .gs-state--draft,
+  :global(.story[data-stage="1"]) .gs-state--wait,
+  :global(.story[data-stage="1"]) .gs-state--ok,
+  :global(.story.reached-2) .gs-state--live {
+    display: inline-flex;
+  }
+  /* waiting until the tap on the phone (≈2s), then approved */
+  :global(.story[data-stage="1"]) .gs-state--wait {
+    animation: gs-out 2.3s linear both;
+  }
+  :global(.story[data-stage="1"]) .gs-state--ok {
+    animation: gs-swap 300ms var(--ease-out) 2.1s both;
+  }
+
+  .gs-camp__body {
+    display: grid;
+    grid-template-columns: 9em 1fr;
+    gap: 1.2em;
+  }
+  .gs-creative {
+    display: grid;
+    align-content: end;
+    aspect-ratio: 1;
+    padding: 0.9em;
+    border-radius: 0.8em;
+    background:
+      radial-gradient(70% 60% at 70% 30%, #ffd9a8, transparent 70%),
+      linear-gradient(160deg, #f6a04d, #c4571a);
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.05em;
+    line-height: 1.15;
+  }
+  .gs-spec {
+    display: grid;
+    gap: 0.55em;
+    margin: 0;
+    font-size: 1em;
+  }
+  .gs-spec div {
+    display: grid;
+    line-height: 1.3;
+  }
+  .gs-spec dt {
+    font-size: 0.85em;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .gs-spec dd {
+    margin: 0;
+    font-weight: 700;
+  }
+  .gs-budget s,
+  .gs-budget ins {
+    display: none;
+  }
+  .gs-copy {
+    padding: 0.8em 1em;
+    border-radius: 0.7em;
+    background: #f6f4ef;
+    font-size: 1em;
+    line-height: 1.45;
+    color: rgb(18 40 47 / 0.75);
+  }
+  /* AI writes the draft in */
+  :global(.story[data-stage="0"]) .gs-spec div,
+  :global(.story[data-stage="0"]) .gs-copy,
+  :global(.story[data-stage="0"]) .gs-creative {
+    animation: gs-in 500ms var(--ease-out) both;
+    animation-delay: calc(300ms + var(--k, 4) * 180ms);
+  }
+
+  /* The gate: a hard line under the card that it can't pass until approved */
+  .gs-gate {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    margin: 0.2em -1.4em -1.4em;
+    padding: 0.9em 1.4em;
+    border-top: 0.15em dashed rgb(247 141 32 / 0.6);
+    border-radius: 0 0 1.2em 1.2em;
+    background: rgb(247 141 32 / 0.1);
+    color: #8a4700;
+    font-weight: 700;
+    font-size: 1em;
+  }
+  .gs-gate :global(.icon) {
+    width: 1.3em;
+    height: 1.3em;
+  }
+  :global(.story.reached-2) .gs-gate {
+    border-top-style: solid;
+    border-top-color: rgb(31 157 107 / 0.5);
+    background: rgb(31 157 107 / 0.08);
+    color: #146a48;
+  }
+  .gs-gate__ok,
+  :global(.story.reached-2) .gs-gate__wait {
+    display: none;
+  }
+  :global(.story.reached-2) .gs-gate__ok {
+    display: inline;
+  }
+  :global(.story[data-stage="1"]) .gs-camp {
+    box-shadow:
+      0 0 0 0.25em rgb(247 141 32 / 0.55),
+      0 2.5em 5em -2em rgb(0 0 0 / 0.6);
+  }
+  :global(.story[data-stage="2"]) .gs-camp,
+  :global(.story[data-stage="3"]) .gs-camp {
+    transform: translateY(1em) scale(0.94);
+  }
+  /* stage 4: proposed budget shown as a pending change, not applied */
+  :global(.story[data-stage="4"]) .gs-budget span {
+    display: none;
+  }
+  :global(.story[data-stage="4"]) .gs-budget s,
+  :global(.story[data-stage="4"]) .gs-budget ins {
+    display: inline;
+  }
+  .gs-budget s {
+    text-decoration: none;
+  }
+  .gs-budget ins {
+    margin-left: 0.5em;
+    padding: 0.1em 0.5em;
+    border-radius: 0.4em;
+    background: rgb(247 141 32 / 0.16);
+    color: #8a4700;
+    text-decoration: none;
+    font-size: 0.9em;
+  }
+  .gs-budget ins::before {
+    content: "→ ";
+  }
+  .gs-budget ins::after {
+    content: " pending";
+    font-weight: 600;
+  }
+
+  /* ---- Right-hand panels ---- */
+  .gs-panel {
+    position: absolute;
+    left: 31.5em;
+    top: 3em;
+    width: 27.5em;
+    display: grid;
+    gap: 1.2em;
+    justify-items: start;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(2.5em);
+    transition:
+      opacity 450ms var(--ease-out),
+      transform 600ms var(--ease-out),
+      visibility 0s linear 600ms;
+  }
+  :global(.story[data-stage="0"]) .gs-panel[data-s="0"],
+  :global(.story[data-stage="1"]) .gs-panel[data-s="1"],
+  :global(.story[data-stage="2"]) .gs-panel[data-s="2"],
+  :global(.story[data-stage="3"]) .gs-panel[data-s="3"],
+  :global(.story[data-stage="4"]) .gs-panel[data-s="4"] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 150ms, 150ms, 0s;
+  }
+  .gs-panel > .ss-card {
+    width: 100%;
+  }
+  .gs-note {
+    display: grid;
+    gap: 0.9em;
+    padding: 1.4em;
+    font-size: 1.05em;
+  }
+  .gs-note__head {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-size: 1.1em;
+  }
+  .gs-note__head :global(.icon) {
+    width: 1.4em;
+    height: 1.4em;
+    color: var(--acc);
+  }
+  .gs-note__head .ss-pill {
+    margin-left: auto;
+    font-size: 0.85em;
+  }
+  .gs-note ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.8em;
+  }
+  .gs-note li {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+  }
+  :global(.story[data-stage="0"]) .gs-note li {
+    animation: gs-in 450ms var(--ease-out) both;
+    animation-delay: calc(900ms + var(--k) * 300ms);
+  }
+  .gs-suggest p {
+    line-height: 1.5;
+    color: rgb(18 40 47 / 0.75);
+  }
+
+  /* phone */
+  .gs-panel--phone {
+    left: 35em;
+    top: 0;
+    width: 21em;
+  }
+  .gs-phone {
+    position: relative;
+    width: 21em;
+    height: 41em;
+    padding: 0.9em;
+    border-radius: 3em;
+    background: #0b1416;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.12),
+      0 3em 6em -1.5em rgb(0 0 0 / 0.8);
+  }
+  .gs-phone__notch {
+    position: absolute;
+    left: 50%;
+    top: 1.6em;
+    width: 6em;
+    height: 1.7em;
+    translate: -50% 0;
+    border-radius: 99px;
+    background: #000;
+    z-index: 1;
+  }
+  .gs-phone__app {
+    display: grid;
+    align-content: start;
+    gap: 1.2em;
+    height: 100%;
+    padding: 4.4em 1.3em 1.3em;
+    border-radius: 2.2em;
+    background: #f6f4ef;
+  }
+  .gs-phone__brand {
+    font-weight: 700;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .gs-appr {
+    position: relative;
+    display: grid;
+    justify-items: start;
+    gap: 0.9em;
+    padding: 1.4em;
+    border-radius: 1.2em;
+    background: #fff;
+    box-shadow: 0 0.6em 1.5em -0.6em rgb(18 40 47 / 0.25);
+    overflow: hidden;
+  }
+  .gs-appr > b {
+    font-size: 1.35em;
+    line-height: 1.25;
+  }
+  .gs-appr dl {
+    display: grid;
+    gap: 0.5em;
+    width: 100%;
+    margin: 0;
+  }
+  .gs-appr dl div {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.05em;
+  }
+  .gs-appr dt {
+    color: rgb(18 40 47 / 0.55);
+  }
+  .gs-appr dd {
+    margin: 0;
+    font-weight: 700;
+  }
+  .gs-appr__btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6em;
+    width: 100%;
+    margin-top: 0.4em;
+  }
+  .gs-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 0.8em;
+    border-radius: 99px;
+    font-size: 1.05em;
+    font-weight: 700;
+    overflow: hidden;
+  }
+  .gs-btn--ghost {
+    border: 1px solid rgb(18 40 47 / 0.15);
+    color: rgb(18 40 47 / 0.7);
+  }
+  .gs-btn--go {
+    background: var(--reofex-orange);
+    color: var(--reofex-dark);
+  }
+  .gs-tap {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3em;
+    height: 3em;
+    margin: -1.5em 0 0 -1.5em;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.7);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .gs-appr__done {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.5em;
+    background: #fff;
+    opacity: 0;
+    font-size: 1.3em;
+  }
+  .gs-appr__done small {
+    font-size: 0.75em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .gs-tick--big {
+    width: 3em;
+    height: 3em;
+  }
+  :global(.story[data-stage="1"]) .gs-tap {
+    animation: gs-tap 700ms var(--ease-out) 1.4s both;
+  }
+  :global(.story[data-stage="1"]) .gs-appr__done {
+    animation: gs-in 400ms var(--ease-out) 1.9s both;
+  }
+
+  /* feed ad */
+  .gs-panel--feed {
+    left: 33em;
+    top: 0;
+    width: 24em;
+  }
+  .gs-ad {
+    display: grid;
+    gap: 0.8em;
+    padding: 1.2em;
+    font-size: 1em;
+  }
+  .gs-ad__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+  }
+  .gs-ad__head div {
+    display: grid;
+    line-height: 1.3;
+  }
+  .gs-ad__head small {
+    color: rgb(18 40 47 / 0.5);
+  }
+  .gs-ad p {
+    line-height: 1.45;
+  }
+  .gs-creative--big {
+    aspect-ratio: 4 / 3;
+    font-size: 2em;
+    padding: 0.6em;
+  }
+  .gs-ad__cta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    padding: 0.8em;
+    border-radius: 0.6em;
+    background: #25d366;
+    color: #fff;
+    font-weight: 700;
+    overflow: hidden;
+  }
+  .gs-ad__cta :global(.icon) {
+    width: 1.3em;
+    height: 1.3em;
+  }
+  :global(.story[data-stage="2"]) .gs-tap--ad {
+    animation: gs-tap 700ms var(--ease-out) 1.6s both;
+  }
+
+  /* WhatsApp */
+  .gs-wa {
+    overflow: hidden;
+  }
+  .gs-wa__head {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 1em 1.2em;
+    background: #0f3d36;
+    color: #fff;
+  }
+  .gs-wa__head div {
+    display: grid;
+    line-height: 1.3;
+    font-size: 1.05em;
+  }
+  .gs-wa__head small {
+    color: rgb(255 255 255 / 0.6);
+    font-size: 0.85em;
+  }
+  .gs-wa__body {
+    display: grid;
+    gap: 0.7em;
+    padding: 1.3em 1.2em 1.6em;
+    background: #efeae2;
+  }
+  .gs-msg {
+    max-width: 82%;
+    padding: 0.65em 0.9em;
+    border-radius: 0.3em 1em 1em 1em;
+    background: #fff;
+    font-size: 1.08em;
+    line-height: 1.4;
+  }
+  .gs-msg--ad {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    justify-self: center;
+    max-width: none;
+    padding: 0.35em 0.9em;
+    border-radius: 0.5em;
+    background: #fdf3d1;
+    font-size: 0.9em;
+    color: rgb(18 40 47 / 0.7);
+  }
+  .gs-msg--out {
+    justify-self: end;
+    border-radius: 1em 0.3em 1em 1em;
+    background: #d9fdd3;
+  }
+  :global(.story[data-stage="3"]) .gs-msg {
+    animation: gs-in 450ms var(--ease-out) both;
+  }
+  :global(.story[data-stage="3"]) .gs-msg--in {
+    animation-delay: 500ms;
+  }
+  :global(.story[data-stage="3"]) .gs-msg--out {
+    animation-delay: 1200ms;
+  }
+
+  .gs-toast {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.75em 1.2em;
+    border-radius: 99px;
+    background: rgb(20 46 54 / 0.9);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    color: #fff;
+    font-size: 1.05em;
+    font-weight: 700;
+  }
+  .gs-toast :global(.icon) {
+    width: 1.3em;
+    height: 1.3em;
+    color: var(--reofex-orange);
+  }
+
+  @keyframes gs-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.8em);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes gs-swap {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes gs-out {
+    0%,
+    90% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes gs-tap {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(3);
+    }
+  }
+
+  @container (max-width: 520px) {
+    .gs {
+      --u: calc(100cqi / 32);
+      aspect-ratio: 32 / 34;
+    }
+    .gs-camp {
+      left: 1.5em;
+      top: 0.5em;
+      width: 29em;
+    }
+    /* phone-sized frame: the campaign card carries the story, panels float over it */
+    .gs-panel,
+    .gs-panel--feed {
+      left: 2.5em;
+      top: 12em;
+      width: 27em;
+    }
+    .gs-panel--phone {
+      left: 5.5em;
+      top: 0;
+      width: 21em;
+    }
+    .gs-phone {
+      height: 34em;
+    }
+    .gs-creative--big {
+      display: none;
+    }
+    :global(.story[data-stage="1"]) .gs-camp,
+    :global(.story[data-stage="2"]) .gs-camp,
+    :global(.story[data-stage="3"]) .gs-camp,
+    :global(.story[data-stage="4"]) .gs-camp {
+      opacity: 0.35;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gs [class^="gs-"] {
+      animation: none !important;
+    }
+    :global(.story[data-stage="1"]) .gs-appr__done,
+    :global(.story[data-stage="1"]) .gs-state--ok {
+      opacity: 1;
+    }
+    :global(.story[data-stage="1"]) .gs-state--wait {
+      display: none;
+    }
+  }
+</style>

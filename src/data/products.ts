@@ -11,13 +11,13 @@
  */
 import type { ImageMetadata } from "astro";
 import type { IconName } from "../components/ui/icons";
-import respondlyShot from "../assets/products/respondly.png";
+import respondlyShot from "../assets/products/respondly-site.png";
 import fynexShot from "../assets/products/fynex.png";
 import growthDashShot from "../assets/products/growth-dash.png";
 import growthApprovalShot from "../assets/products/growth-approval.png";
 import syncShot from "../assets/products/sync-dashboard.jpg";
 
-export type ProductSlug = "respondly" | "reofex-growth" | "reofex-sync" | "fynex";
+export type ProductSlug = "respondly" | "reofex-sync" | "reofex-growth" | "fynex";
 
 export interface Feature {
   icon: IconName;
@@ -39,6 +39,12 @@ export interface Screenshot {
    * CSS object-position for that crop, e.g. "0% 50%" = left edge.
    */
   mobileFocus?: string;
+  /**
+   * Product-page hero only: zoom into the part of the screen that shows the
+   * product working (e.g. skip a marketing headline that would repeat ours).
+   * `origin` is the CSS transform-origin the zoom is anchored to.
+   */
+  heroZoom?: { scale: number; origin: string };
 }
 
 export interface Product {
@@ -84,10 +90,10 @@ export const products: Product[] = [
   {
     slug: "respondly",
     name: "Respondly",
-    tagline: "AI that replies to your clients the way you would.",
+    tagline: "AI that answers your customers and sells for you.",
     category: "Customer Communication",
     description:
-      "Respondly understands customer queries on WhatsApp, Instagram and your website, and responds with your actual business data — products, prices, services and opening hours — 24 hours a day.",
+      "Your own AI assistant for WhatsApp, Instagram and your website. It answers from your real products, prices and policies, takes orders and payments in the chat, and hands ready customers to your team, day and night.",
     icon: "chat",
     logo: { src: "/brand/products/respondly.svg", tile: true },
     accent: "#1f9d6b",
@@ -95,17 +101,17 @@ export const products: Product[] = [
     externalUrl: "https://therespondly.com/",
     screenshot: {
       src: respondlyShot,
-      alt: "Respondly website: 'AI that replies to your clients the way you would', with a website chat widget answering a property enquiry.",
+      alt: "Respondly website: 'AI that answers your customers and sells for you', with a WhatsApp chat on a phone where the assistant finds boots in stock from the catalogue, takes the order and collects payment.",
       frameLabel: "therespondly.com",
-      mobileFocus: "50% 50%",
+      mobileFocus: "78% 45%",
     },
     hero: {
       eyebrow: "AI WhatsApp & Instagram lead automation",
-      title: "AI that replies to your clients",
-      titleAccent: "the way you would.",
-      body: "No more generic auto-replies. Respondly understands every customer query on WhatsApp, Instagram and your website, and responds with your actual data — instantly, 24 hours a day.",
+      title: "AI that answers your customers",
+      titleAccent: "and sells for you.",
+      body: "Your own AI assistant for WhatsApp, Instagram and your website. It answers from your real products, prices and policies, takes orders and payments in the chat, and hands ready customers to your team, day and night.",
       primaryCta: { label: "Visit therespondly.com", href: "https://therespondly.com/" },
-      note: "7-day free trial · Setup in 10 minutes",
+      note: "7-day free trial · No card needed · Setup in 10 minutes",
     },
     problem: {
       title: "Customer messages arrive faster than teams can answer them.",
@@ -153,82 +159,6 @@ export const products: Product[] = [
       title: "Respondly — AI replies for WhatsApp & Instagram | Reofex",
       description:
         "Respondly by Reofex Technologies answers customer queries on WhatsApp, Instagram and your website with your real business data, 24/7, with instant human handover.",
-    },
-  },
-  {
-    slug: "reofex-growth",
-    name: "Reofex Growth",
-    tagline: "AI campaigns. Real customers. You stay in control.",
-    category: "Advertising & Marketing",
-    description:
-      "An AI-assisted Meta advertising platform for small businesses. Run Facebook and Instagram ads where every ad opens a WhatsApp conversation with your business — and nothing goes live or changes budget without your approval.",
-    icon: "megaphone",
-    logo: { src: "/brand/products/reofex-growth.svg", tile: true },
-    accent: "#f78d20",
-    accentVar: "--accent-growth",
-    screenshot: {
-      src: growthDashShot,
-      alt: "Reofex Growth dashboard: AI Growth Overview with campaign metrics, AI Insights and an Approval Policy panel where every launch and spend change requires approval.",
-      frameLabel: "Reofex Growth · AI Growth Overview",
-      mobileFocus: "0% 50%",
-    },
-    hero: {
-      eyebrow: "AI-assisted Meta advertising",
-      title: "AI does the work.",
-      titleAccent: "You stay in control.",
-      body: "Reofex Growth helps small businesses run Facebook and Instagram ads that open straight into a WhatsApp conversation. AI drafts campaigns and suggests improvements — you approve every launch and every budget change.",
-      primaryCta: { label: "Request early access", href: "/contact?topic=reofex-growth" },
-    },
-    problem: {
-      title: "Advertising is hard to get right for a small business.",
-      points: [
-        "Ads managers are complex, and setting up a campaign properly takes expertise.",
-        "Clicks that land on a website often never turn into a real conversation.",
-        "Handing spend to an opaque automated tool feels like losing control of your budget.",
-      ],
-    },
-    explanation: {
-      title: "An assistant for your ads — not an autopilot for your wallet.",
-      body: "AI drafts Facebook and Instagram campaigns, suggests changes and helps you optimise. Every ad is built to open a WhatsApp chat with your business, so interest turns into a conversation. Spending money is always a human decision.",
-    },
-    workflow: {
-      title: "From draft to conversation — with approval at every money step.",
-      steps: [
-        { label: "AI drafts campaign", detail: "Audience, creative & copy" },
-        { label: "You review & approve", detail: "Required before launch" },
-        { label: "Ads run on Meta", detail: "Facebook & Instagram" },
-        { label: "Customer taps ad", detail: "Opens WhatsApp chat" },
-        { label: "AI suggests changes", detail: "You approve any budget change" },
-      ],
-    },
-    features: [
-      { icon: "sparkles", title: "AI campaign drafts", body: "Get a ready-to-review campaign instead of a blank ads manager." },
-      { icon: "whatsapp", title: "Click-to-WhatsApp ads", body: "Every ad opens a WhatsApp conversation with your business." },
-      { icon: "facebook", title: "Facebook & Instagram", body: "Run campaigns across Meta's two biggest platforms." },
-      { icon: "lightbulb", title: "Optimisation suggestions", body: "AI recommends changes — you decide what to apply." },
-      { icon: "userCheck", title: "Human approval, always", body: "Every launch and every budget change needs your explicit approval." },
-      { icon: "clock", title: "Campaigns start paused", body: "New campaigns are created paused, verified, then switched on — and approval requests expire after 72 hours." },
-      { icon: "eye", title: "Clear visibility", body: "See what's running, what it's costing and what AI is proposing." },
-    ],
-    highlight: {
-      title: "AI cannot spend money autonomously.",
-      body: "Reofex Growth is designed so that a human must approve every campaign launch and every budget change. New campaigns start paused. AI prepares and recommends; you decide.",
-      image: {
-        src: growthApprovalShot,
-        alt: "Reofex Growth Approval Policy panel: approval mode always on, new campaigns start paused, requests expire after 72 hours.",
-        frameLabel: "Approval Policy",
-      },
-    },
-    benefits: [
-      "Launch professional campaigns without ads-manager expertise",
-      "Turn ad interest into real WhatsApp conversations",
-      "Stay in full control of every rupee, dirham or dollar",
-      "Spend less time on setup, more time with customers",
-    ],
-    seo: {
-      title: "Reofex Growth — AI-assisted Meta ads, human-approved",
-      description:
-        "Reofex Growth helps small businesses run Meta ads that open WhatsApp conversations. AI drafts and suggests; a human approves every launch and budget change.",
     },
   },
   {
@@ -317,6 +247,82 @@ export const products: Product[] = [
     },
   },
   {
+    slug: "reofex-growth",
+    name: "Reofex Growth",
+    tagline: "AI campaigns. Real customers. You stay in control.",
+    category: "Advertising & Marketing",
+    description:
+      "An AI-assisted Meta advertising platform for small businesses. Run Facebook and Instagram ads where every ad opens a WhatsApp conversation with your business — and nothing goes live or changes budget without your approval.",
+    icon: "megaphone",
+    logo: { src: "/brand/products/reofex-growth.svg", tile: true },
+    accent: "#f78d20",
+    accentVar: "--accent-growth",
+    screenshot: {
+      src: growthDashShot,
+      alt: "Reofex Growth dashboard: AI Growth Overview with campaign metrics, AI Insights and an Approval Policy panel where every launch and spend change requires approval.",
+      frameLabel: "Reofex Growth · AI Growth Overview",
+      mobileFocus: "0% 50%",
+    },
+    hero: {
+      eyebrow: "AI-assisted Meta advertising",
+      title: "AI does the work.",
+      titleAccent: "You stay in control.",
+      body: "Reofex Growth helps small businesses run Facebook and Instagram ads that open straight into a WhatsApp conversation. AI drafts campaigns and suggests improvements — you approve every launch and every budget change.",
+      primaryCta: { label: "Request early access", href: "/contact?topic=reofex-growth" },
+    },
+    problem: {
+      title: "Advertising is hard to get right for a small business.",
+      points: [
+        "Ads managers are complex, and setting up a campaign properly takes expertise.",
+        "Clicks that land on a website often never turn into a real conversation.",
+        "Handing spend to an opaque automated tool feels like losing control of your budget.",
+      ],
+    },
+    explanation: {
+      title: "An assistant for your ads — not an autopilot for your wallet.",
+      body: "AI drafts Facebook and Instagram campaigns, suggests changes and helps you optimise. Every ad is built to open a WhatsApp chat with your business, so interest turns into a conversation. Spending money is always a human decision.",
+    },
+    workflow: {
+      title: "From draft to conversation — with approval at every money step.",
+      steps: [
+        { label: "AI drafts campaign", detail: "Audience, creative & copy" },
+        { label: "You review & approve", detail: "Required before launch" },
+        { label: "Ads run on Meta", detail: "Facebook & Instagram" },
+        { label: "Customer taps ad", detail: "Opens WhatsApp chat" },
+        { label: "AI suggests changes", detail: "You approve any budget change" },
+      ],
+    },
+    features: [
+      { icon: "sparkles", title: "AI campaign drafts", body: "Get a ready-to-review campaign instead of a blank ads manager." },
+      { icon: "whatsapp", title: "Click-to-WhatsApp ads", body: "Every ad opens a WhatsApp conversation with your business." },
+      { icon: "facebook", title: "Facebook & Instagram", body: "Run campaigns across Meta's two biggest platforms." },
+      { icon: "lightbulb", title: "Optimisation suggestions", body: "AI recommends changes — you decide what to apply." },
+      { icon: "userCheck", title: "Human approval, always", body: "Every launch and every budget change needs your explicit approval." },
+      { icon: "clock", title: "Campaigns start paused", body: "New campaigns are created paused, verified, then switched on — and approval requests expire after 72 hours." },
+      { icon: "eye", title: "Clear visibility", body: "See what's running, what it's costing and what AI is proposing." },
+    ],
+    highlight: {
+      title: "AI cannot spend money autonomously.",
+      body: "Reofex Growth is designed so that a human must approve every campaign launch and every budget change. New campaigns start paused. AI prepares and recommends; you decide.",
+      image: {
+        src: growthApprovalShot,
+        alt: "Reofex Growth Approval Policy panel: approval mode always on, new campaigns start paused, requests expire after 72 hours.",
+        frameLabel: "Approval Policy",
+      },
+    },
+    benefits: [
+      "Launch professional campaigns without ads-manager expertise",
+      "Turn ad interest into real WhatsApp conversations",
+      "Stay in full control of every rupee, dirham or dollar",
+      "Spend less time on setup, more time with customers",
+    ],
+    seo: {
+      title: "Reofex Growth — AI-assisted Meta ads, human-approved",
+      description:
+        "Reofex Growth helps small businesses run Meta ads that open WhatsApp conversations. AI drafts and suggests; a human approves every launch and budget change.",
+    },
+  },
+  {
     slug: "fynex",
     name: "Fynex",
     tagline: "Self-hosted case management for UAE & GCC service firms.",
@@ -333,6 +339,8 @@ export const products: Product[] = [
       alt: "Fynex: an Employment Visa Renewal case moving through submission, PRO review, signature, payment and approval, with expiry tracking and wallet balance.",
       frameLabel: "gofynex.com",
       mobileFocus: "100% 50%",
+      // the case card, not the site's own headline
+      heroZoom: { scale: 1.9, origin: "100% 50%" },
     },
     hero: {
       eyebrow: "Self-hosted · Built for UAE/GCC service workflows",
