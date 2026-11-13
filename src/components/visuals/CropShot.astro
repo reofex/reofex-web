@@ -1,0 +1,60 @@
+---
+/**
+ * Shows exactly one rectangle of a screenshot at that rectangle's own shape:
+ * the box takes the crop's real proportions and the image is scaled and
+ * offset so the rectangle fills it. Crops are drawn around complete UI
+ * elements, so nothing is cut mid-text.
+ */
+import { Picture } from "astro:assets";
+import type { Crop } from "../../data/products";
+
+interface Props {
+  src: ImageMetadata;
+  crop: Crop;
+  alt: string;
+  /** rendered width of the box in CSS px at its largest */
+  maxWidth?: number;
+  class?: string;
+}
+const { src, crop: c, alt, maxWidth = 600, class: className } = Astro.props;
+const ratio = ((c.w / 100) * src.width) / ((c.h / 100) * src.height);
+// the whole image is drawn larger than the box, so request a source sized for that
+const drawn = Math.min(src.width, Math.round((maxWidth * 100) / c.w));
+const drawnPhone = Math.round((92 * 100) / c.w);
+const widths = [640, 960, 1280, 1800, 2400, 3200].filter((w) => w < src.width).concat(src.width);
+---
+
+<div
+  class:list={["cs", className]}
+  style={`--cx:${c.x};--cy:${c.y};--cw:${c.w};--ch:${c.h};--cr:${ratio.toFixed(4)}`}
+>
+  <Picture
+    src={src}
+    alt={alt}
+    formats={["avif", "webp"]}
+    widths={widths}
+    sizes={`(max-width: 767px) ${drawnPhone}vw, ${drawn}px`}
+    loading="lazy"
+    decoding="async"
+    class="cs__img"
+  />
+</div>
+
+<style>
+  .cs {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--cr);
+  }
+  .cs :global(picture) {
+    display: contents;
+  }
+  .cs :global(.cs__img) {
+    position: absolute;
+    max-width: none;
+    width: calc(100% * 100 / var(--cw));
+    height: auto;
+    left: calc(-100% * var(--cx) / var(--cw));
+    top: calc(-100% * var(--cy) / var(--ch));
+  }
+</style>

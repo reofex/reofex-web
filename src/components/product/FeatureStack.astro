@@ -1,0 +1,249 @@
+---
+/**
+ * Product page "What X does" as stacking cards. Each card pairs a group of
+ * features with a crop of the product's own screenshot. On wide screens the
+ * cards stick one below the header and the next card slides over the
+ * previous one, which eases back (slightly smaller and darker) as it's
+ * covered. Normal scrolling throughout: nothing is pinned or hijacked.
+ * Phones, reduced motion and no-JS: a plain sequence of cards.
+ */
+import Icon from "../ui/Icon.astro";
+import CropShot from "../visuals/CropShot.astro";
+import RespondlyChannels from "../live/mini/RespondlyChannels.astro";
+import RespondlyStudio from "../live/mini/RespondlyStudio.astro";
+
+const panels = { "respondly-channels": RespondlyChannels, "respondly-studio": RespondlyStudio } as Record<string, any>;
+import type { Product } from "../../data/products";
+
+interface Props {
+  product: Product;
+}
+const { product: p } = Astro.props;
+const cards = p.featureCards ?? [];
+const byTitle = new Map(p.features.map((f) => [f.title, f]));
+const shot = p.screenshot!;
+---
+
+<div class="fs" data-fs style={`--acc:${p.accent};--n:${cards.length}`}>
+  {
+    cards.map((c, i) => (
+      <article class="fs__card" style={`--i:${i}`} data-fs-card>
+        <div class="fs__copy">
+          <span class="fs__count">
+            {i + 1} / {cards.length}
+          </span>
+          <h3 class="fs__title">{c.title}</h3>
+          <p class="fs__body">{c.body}</p>
+        </div>
+        <div class="fs__visual">
+          {c.ui ? (
+            (() => {
+              const Panel = panels[c.ui];
+              return <Panel />;
+            })()
+          ) : (
+            <CropShot
+              src={shot.src}
+              crop={c.crop!}
+              alt={`${p.name}: ${c.title.toLowerCase()}`}
+              maxWidth={560}
+              class="fs__shot"
+            />
+          )}
+        </div>
+        <ul role="list" class="fs__list">
+            {c.features.map((t) => {
+              const f = byTitle.get(t)!;
+              return (
+                <li>
+                  <Icon name={f.icon} size={16} />
+                  <span>
+                    <b>{f.title}</b>
+                    <small>{f.body}</small>
+                  </span>
+                </li>
+              );
+            })}
+        </ul>
+      </article>
+    ))
+  }
+</div>
+
+<script>
+  // As the next card slides over a stuck card, ease the stuck one back.
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const wide = window.matchMedia("(min-width: 900px)");
+  document.querySelectorAll<HTMLElement>("[data-fs]").forEach((root) => {
+    const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-fs-card]"));
+    let ticking = false;
+    const fits = () => {
+      const header = 72;
+      const tallest = Math.max(...cards.map((c) => c.offsetHeight));
+      return tallest + header + 24 + cards.length * 14 <= window.innerHeight;
+    };
+    const update = () => {
+      ticking = false;
+      const flat = !fits();
+      root.classList.toggle("fs--flat", flat);
+      const on = wide.matches && !reduce.matches && !flat;
+      cards.forEach((card, i) => {
+        const next = cards[i + 1];
+        if (!on || !next) {
+          card.style.removeProperty("--t");
+          return;
+        }
+        const a = card.getBoundingClientRect();
+        const b = next.getBoundingClientRect();
+        // 0 while the next card is a card-height away, 1 once it has fully arrived
+        const t = Math.max(0, Math.min(1, 1 - (b.top - a.top) / a.height));
+        card.style.setProperty("--t", t.toFixed(3));
+      });
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    update();
+  });
+</script>
+
+<style>
+  .fs {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  }
+  .fs__card {
+    --t: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-areas: "copy visual" "list list";
+    grid-template-rows: 1fr auto;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--reofex-dark);
+    color: #fff;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.04),
+      0 30px 60px -30px rgb(18 40 47 / 0.55);
+  }
+
+  /* ---- Copy ---- */
+  .fs__copy {
+    grid-area: copy;
+    display: grid;
+    align-content: center;
+    gap: var(--space-4);
+    padding: clamp(1.75rem, 1rem + 2vw, 2.5rem) clamp(1.75rem, 1rem + 2.5vw, 3rem);
+  }
+  .fs__count {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in srgb, var(--acc) 55%, white);
+  }
+  .fs__title {
+    font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.125rem);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+  .fs__body {
+    max-width: 44ch;
+    color: var(--reofex-muted-dark);
+    font-size: var(--fs-md);
+    line-height: 1.55;
+  }
+  /* features run in columns across the full card width, under copy and visual */
+  .fs__list {
+    grid-area: list;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+    gap: var(--space-4) var(--space-5);
+    padding: var(--space-5) clamp(1.75rem, 1rem + 2.5vw, 3rem) var(--space-6);
+    border-top: 1px solid var(--reofex-border-dark);
+  }
+  .fs__list li {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--space-3);
+    align-items: start;
+  }
+  .fs__list :global(.icon) {
+    margin-top: 3px;
+    color: color-mix(in srgb, var(--acc) 55%, white);
+  }
+  .fs__list span {
+    display: grid;
+    gap: 2px;
+  }
+  .fs__list b {
+    font-size: var(--fs-sm);
+  }
+  .fs__list small {
+    font-size: var(--fs-sm);
+    line-height: 1.5;
+    color: var(--reofex-muted-dark);
+  }
+
+  /* ---- Visual: the crop sits on a soft lit surface ---- */
+  .fs__visual {
+    grid-area: visual;
+    display: grid;
+    place-items: center;
+    padding: clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
+    background:
+      radial-gradient(70% 70% at 60% 40%, color-mix(in srgb, var(--acc) 22%, transparent), transparent 70%),
+      var(--reofex-dark-soft);
+  }
+  .fs__visual :global(.fs__shot) {
+    width: min(100%, calc(260px * var(--cr)));
+    border-radius: 12px;
+    /* a clear edge, so dark product screens (Fynex) still read against the dark card */
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.16),
+      0 30px 60px -24px rgb(0 0 0 / 0.65);
+  }
+
+  /* ---- Stacking (wide screens) ---- */
+  @media (min-width: 900px) {
+    /* stacking only once the script has checked the cards fit the screen */
+    :global(.js) .fs:not(.fs--flat) {
+      gap: 14vh;
+      padding-bottom: 6vh;
+      /* every card as tall as the tallest, so a covered card never sticks out below the next */
+      grid-auto-rows: 1fr;
+    }
+    :global(.js) .fs:not(.fs--flat) .fs__card {
+      position: sticky;
+      top: calc(var(--header-h) + 24px + var(--i) * 14px);
+      transform-origin: 50% 0;
+      transform: scale(calc(1 - var(--t) * 0.05));
+      filter: brightness(calc(1 - var(--t) * 0.4));
+    }
+  }
+
+  /* ---- Phones and tablets: a plain sequence, visual first ---- */
+  @media (max-width: 899px) {
+    .fs__card {
+      grid-template-columns: 1fr;
+      grid-template-areas: "visual" "copy" "list";
+      grid-template-rows: auto;
+    }
+    .fs__list {
+      padding-top: var(--space-5);
+    }
+    .fs__visual :global(.fs__shot) {
+      width: min(100%, calc(300px * var(--cr)));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fs__card {
+      transform: none;
+      filter: none;
+    }
+  }
+</style>

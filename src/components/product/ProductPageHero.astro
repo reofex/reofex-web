@@ -10,6 +10,13 @@ import ProductIcon from "../ui/ProductIcon.astro";
 import ProductMiniUI from "../visuals/ProductMiniUI.astro";
 import ScreenshotFrame from "../visuals/ScreenshotFrame.astro";
 import HeroObject from "./HeroObject.astro";
+import SyncLive from "../live/SyncLive.astro";
+import RespondlyLive from "../live/RespondlyLive.astro";
+import GrowthLive from "../live/GrowthLive.astro";
+import FynexLive from "../live/FynexLive.astro";
+
+// Live dashboards (example data, animated). Products without one show the screenshot.
+const live = { respondly: RespondlyLive, "reofex-sync": SyncLive, "reofex-growth": GrowthLive, fynex: FynexLive } as Record<string, any>;
 import BackdropCurves from "../visuals/BackdropCurves.astro";
 import type { Product } from "../../data/products";
 
@@ -17,6 +24,7 @@ interface Props {
   product: Product;
 }
 const { product: p } = Astro.props;
+const Live = live[p.slug];
 ---
 
 <section class="pph section--dark" style={`--acc:${p.accent}`} aria-labelledby="page-title" data-depth>
@@ -51,15 +59,15 @@ const { product: p } = Astro.props;
       {
         p.screenshot ? (
           <>
-            <ScreenshotFrame
+            {Live ? <Live /> : <ScreenshotFrame
               shot={p.screenshot}
               priority
               tilt
               zoom={p.screenshot.heroZoom}
               tone="dark"
-              sizes={p.screenshot.heroZoom ? "(min-width: 1200px) 2400px, 200vw" : "(max-width: 767px) 200vw, (min-width: 1200px) 1040px, 92vw"}
-            />
-            <HeroObject product={p.slug} />
+              sizes={p.screenshot.heroZoom ? "(max-width: 767px) 280vw, (min-width: 1200px) 2400px, 200vw" : "(max-width: 767px) 280vw, (min-width: 1200px) 1040px, 92vw"}
+            />}
+            {!Live && <HeroObject product={p.slug} />}
           </>
         ) : (
           <ProductMiniUI product={p.slug} size="showcase" />

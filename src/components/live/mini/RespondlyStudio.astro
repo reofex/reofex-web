@@ -1,0 +1,149 @@
+---
+/**
+ * "You decide how it works": Assistant Studio settings, from the options
+ * Respondly describes (job, how each detail is collected, test & publish).
+ */
+import Icon from "../../ui/Icon.astro";
+
+const jobs = ["Capture leads", "Take orders", "Answer questions", "Book appointments"];
+const details = [
+  { k: "Size & colour", v: "Needed for an order" },
+  { k: "Delivery address", v: "Needed for an order" },
+  { k: "Budget", v: "Save if mentioned" },
+  { k: "Phone number", v: "Ask before handover" },
+];
+---
+
+<div class="st">
+  <div class="st-head"><Icon name="sparkles" size={14} /><b>Assistant Studio</b><span>Draft · v13</span></div>
+  <div class="st-sec">
+    <small>Its job</small>
+    <div class="st-jobs">{jobs.map((j, i) => <i class:list={[i === 1 && "is-on", i === 3 && "is-soon"]}>{j}{i === 3 && <u>Soon</u>}</i>)}</div>
+  </div>
+  <div class="st-sec">
+    <small>Collect only what you need</small>
+    {
+      details.map((d) => (
+        <p>
+          <span>{d.k}</span>
+          <em>{d.v}</em>
+        </p>
+      ))
+    }
+  </div>
+  <div class="st-foot">
+    <span><Icon name="chat" size={12} />Test chat</span>
+    <span class="is-go">Publish</span>
+  </div>
+</div>
+
+<style>
+  .st {
+    width: min(100%, 440px);
+    border-radius: 14px;
+    background: #fff;
+    color: #101828;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.16),
+      0 30px 60px -24px rgb(0 0 0 / 0.65);
+  }
+  .st-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid #eef0f3;
+    font-size: 14px;
+  }
+  .st-head :global(.icon) {
+    color: #4f39f6;
+  }
+  .st-head span {
+    margin-left: auto;
+    font-size: 11.5px;
+    color: #667085;
+  }
+  .st-sec {
+    display: grid;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f2f4f7;
+  }
+  .st-sec small {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #98a2b3;
+  }
+  .st-jobs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .st-jobs i {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 99px;
+    border: 1px solid #e4e7ec;
+    font-style: normal;
+    font-size: 12px;
+    color: #344054;
+  }
+  .st-jobs i.is-on {
+    border-color: #4f39f6;
+    background: #f0edff;
+    color: #4330b8;
+    font-weight: 600;
+  }
+  .st-jobs i.is-soon {
+    color: #98a2b3;
+  }
+  .st-jobs u {
+    text-decoration: none;
+    font-size: 10px;
+    padding: 0 5px;
+    border-radius: 99px;
+    background: #f2f4f7;
+  }
+  .st-sec p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+  }
+  .st-sec p em {
+    font-style: normal;
+    font-size: 11.5px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #f2f4f7;
+    color: #344054;
+  }
+  .st-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f9fafb;
+  }
+  .st-foot span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #e4e7ec;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .st-foot .is-go {
+    border-color: #4f39f6;
+    background: #4f39f6;
+    color: #fff;
+  }
+</style>

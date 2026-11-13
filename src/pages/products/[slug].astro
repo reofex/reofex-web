@@ -7,6 +7,7 @@ import RespondlyStory from "../../components/product/RespondlyStory.astro";
 import GrowthStory from "../../components/product/GrowthStory.astro";
 import FynexStory from "../../components/product/FynexStory.astro";
 import FeatureGrid from "../../components/product/FeatureGrid.astro";
+import FeatureStack from "../../components/product/FeatureStack.astro";
 import SectionHeader from "../../components/ui/SectionHeader.astro";
 import Icon from "../../components/ui/Icon.astro";
 import ProductIcon from "../../components/ui/ProductIcon.astro";
@@ -117,7 +118,7 @@ const jsonLd = [
         lead={p.description}
         align="split"
       />
-      <FeatureGrid features={p.features} accent={p.accent} />
+      {p.featureCards && p.screenshot ? <FeatureStack product={p} /> : <FeatureGrid features={p.features} accent={p.accent} />}
     </div>
   </section>
 

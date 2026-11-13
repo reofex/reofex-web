@@ -1,0 +1,450 @@
+---
+/**
+ * Reofex Growth "AI Growth Overview", rebuilt from the real dashboard and
+ * filled with example campaign data (the real screenshot is an empty account).
+ * Loop: WhatsApp conversations come in from the ads → results move → AI
+ * suggests a budget change → it waits for approval → the owner approves.
+ */
+import Icon from "../ui/Icon.astro";
+import LiveFrame from "./LiveFrame.astro";
+
+const v = (a: string[]) => JSON.stringify(a);
+const metrics = [
+  { k: "Ad spend", icon: "card", vals: ["₹6,420", "₹6,610", "₹6,610", "₹6,780", "₹6,780"] },
+  { k: "Clicks", icon: "target", vals: ["1,284", "1,329", "1,329", "1,371", "1,371"] },
+  { k: "Conversations", icon: "whatsapp", vals: ["212", "219", "219", "226", "226"] },
+  { k: "Qualified leads", icon: "users", vals: ["74", "77", "77", "80", "80"] },
+  { k: "Customers", icon: "userCheck", vals: ["31", "31", "32", "33", "33"] },
+  { k: "Revenue", icon: "chart", vals: ["₹58,900", "₹58,900", "₹61,300", "₹64,150", "₹64,150"] },
+  { k: "ROAS", icon: "rocket", vals: ["9.2×", "8.9×", "9.3×", "9.5×", "9.5×"] },
+] as const;
+// conversations per day, last 14 days; the final bars grow during the loop
+const days = [9, 12, 11, 14, 13, 16, 15, 17, 19, 18, 21, 20, 22];
+---
+
+<LiveFrame label="Reofex Growth · AI Growth Overview · demo data" steps={5} class="lf--tilt">
+  <div class="gl">
+    <aside class="gl-side">
+      <div class="gl-brand"><i><Icon name="megaphone" size={12} /></i><span><b>Reofex Growth</b><small>Sweet Crumbs Bakery</small></span></div>
+      <nav>
+        <span class="is-on"><Icon name="compass" size={12} />Overview</span>
+        <span><Icon name="megaphone" size={12} />Campaigns</span>
+        <span><Icon name="sparkles" size={12} />AI Campaign Builder</span>
+        <span><Icon name="eye" size={12} />Creatives</span>
+        <span><Icon name="users" size={12} />Audiences</span>
+        <span><Icon name="target" size={12} />Leads & Attribution</span>
+        <span><Icon name="chart" size={12} />Reports</span>
+        <span><Icon name="check" size={12} />Approvals<b data-in="3" data-out="4">1</b></span>
+      </nav>
+    </aside>
+
+    <div class="gl-main">
+      <div class="gl-head">
+        <span><b>AI Growth Overview</b><small>Plan, launch and optimise your Meta click-to-WhatsApp campaigns.</small></span>
+        <em><Icon name="sparkles" size={11} />Create campaign</em>
+      </div>
+
+      <div class="gl-metrics">
+        {
+          metrics.map((m) => (
+            <div>
+              <i>
+                <Icon name={m.icon} size={12} />
+              </i>
+              <span>
+                <small>{m.k}</small>
+                <b data-vals={v([...m.vals])}>{m.vals[m.vals.length - 1]}</b>
+              </span>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="gl-grid">
+        <section class="gl-card gl-perf">
+          <div class="gl-ch"><Icon name="chart" size={13} /><b>Growth performance</b><small>Conversations per day · last 14 days</small></div>
+          <div class="gl-chart">
+            {days.map((d) => <i style={`height:${d * 4}%`} />)}
+            <i class="gl-today" style="height:96%"></i>
+          </div>
+          <div class="gl-legend"><span><i></i>Conversations</span><span><i class="is-lead"></i>Qualified leads</span><b>Today <span data-vals={v(["17", "19", "21", "23", "24"])}>24</span></b></div>
+        </section>
+
+        <section class="gl-card gl-ai">
+          <div class="gl-ch"><Icon name="sparkles" size={13} /><b>AI insights</b></div>
+          <p class="gl-quiet" data-in="0" data-out="2">Watching results. Nothing to change yet.</p>
+          <div class="gl-sug" data-in="2">
+            <b>Instagram is bringing more chats</b>
+            <p>Raise the daily budget from ₹500 to ₹800?</p>
+            <span class="gl-state" data-vals={v(["", "", "Suggested", "Waiting for your approval", "Approved by you · applied"])} data-cls='{"2":"is-new-s","3":"is-wait","4":"is-ok"}'>Approved by you · applied</span>
+          </div>
+        </section>
+
+        <section class="gl-card gl-policy">
+          <div class="gl-ch"><Icon name="shield" size={13} /><b>Approval policy</b></div>
+          <p><span>Approval mode</span><u>Always on</u></p>
+          <p><span>New campaigns start paused</span><u>Always on</u></p>
+          <p><span>Waiting for approval</span><b data-vals={v(["None", "None", "None", "1 request", "None"])}>None</b></p>
+        </section>
+
+        <section class="gl-card gl-leads">
+          <div class="gl-ch"><Icon name="whatsapp" size={13} /><b>Recent leads</b></div>
+          <p data-in="1"><span><b>Neha R.</b><small>Weekend cake box · WhatsApp</small></span><u>New</u></p>
+          <p data-in="3"><span><b>Arjun P.</b><small>Birthday order · WhatsApp</small></span><u>New</u></p>
+          <p><span><b>Fathima S.</b><small>Weekend cake box · WhatsApp</small></span><u class="is-q">Qualified</u></p>
+          <p><span><b>Kiran M.</b><small>Custom cake · WhatsApp</small></span><u class="is-c">Customer</u></p>
+        </section>
+      </div>
+    </div>
+  </div>
+</LiveFrame>
+
+<style>
+  .gl {
+    --ink: #101828;
+    --mut: #667085;
+    --line: #eaecf0;
+    --vio: #5b3fe0;
+    display: grid;
+    grid-template-columns: 20em 1fr;
+    aspect-ratio: 16 / 10;
+    color: var(--ink);
+    background: #f8f8fc;
+    overflow: hidden;
+  }
+  .gl :global(.icon) {
+    width: 1.25em;
+    height: 1.25em;
+    flex: none;
+  }
+  .gl-side {
+    display: grid;
+    align-content: start;
+    gap: 2em;
+    padding: 2em 1.2em;
+    background: #fff;
+    border-right: 1px solid var(--line);
+  }
+  .gl-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+  }
+  .gl-brand i {
+    display: grid;
+    place-items: center;
+    width: 2.8em;
+    height: 2.8em;
+    border-radius: 0.6em;
+    background: var(--vio);
+    color: #fff;
+  }
+  .gl-brand span {
+    display: grid;
+    line-height: 1.25;
+    font-size: 1.15em;
+  }
+  .gl-brand small {
+    color: var(--mut);
+  }
+  .gl-side nav {
+    display: grid;
+    gap: 0.2em;
+  }
+  .gl-side nav span {
+    display: flex;
+    align-items: center;
+    gap: 0.9em;
+    padding: 0.75em 0.9em;
+    border-radius: 0.6em;
+    font-size: 1.2em;
+    color: #344054;
+  }
+  .gl-side nav span.is-on {
+    background: #f0edff;
+    color: var(--vio);
+    font-weight: 600;
+  }
+  .gl-side nav b {
+    margin-left: auto;
+    min-width: 1.6em;
+    padding: 0 0.4em;
+    border-radius: 99px;
+    background: #f78d20;
+    color: #fff;
+    font-size: 0.85em;
+    text-align: center;
+  }
+  .gl-main {
+    display: grid;
+    align-content: start;
+    gap: 1.6em;
+    padding: 2.2em 2.4em;
+    min-width: 0;
+  }
+  .gl-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+  }
+  .gl-head > span {
+    display: grid;
+    gap: 0.2em;
+  }
+  .gl-head b {
+    font-size: 2.4em;
+    letter-spacing: -0.02em;
+  }
+  .gl-head small {
+    font-size: 1.2em;
+    color: var(--mut);
+  }
+  .gl-head em {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.7em 1.2em;
+    border-radius: 0.6em;
+    background: var(--vio);
+    color: #fff;
+    font-style: normal;
+    font-size: 1.15em;
+    font-weight: 600;
+  }
+  .gl-metrics {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1em;
+  }
+  .gl-metrics > div {
+    display: flex;
+    gap: 0.8em;
+    align-items: center;
+    padding: 1em 1.1em;
+    border: 1px solid var(--line);
+    border-radius: 1em;
+    background: #fff;
+    min-width: 0;
+  }
+  .gl-metrics i {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.4em;
+    height: 2.4em;
+    border-radius: 0.6em;
+    background: #f0edff;
+    color: var(--vio);
+  }
+  .gl-metrics span {
+    display: grid;
+    min-width: 0;
+  }
+  .gl-metrics small {
+    font-size: 1em;
+    color: var(--mut);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gl-metrics b {
+    justify-self: start;
+    font-size: 1.5em;
+    border-radius: 0.2em;
+  }
+  .gl-grid {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 1.6em;
+  }
+  .gl-card {
+    display: grid;
+    align-content: start;
+    gap: 0.8em;
+    padding: 1.5em 1.7em;
+    border: 1px solid var(--line);
+    border-radius: 1.2em;
+    background: #fff;
+  }
+  .gl-ch {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-size: 1.3em;
+  }
+  .gl-ch :global(.icon) {
+    color: var(--vio);
+  }
+  .gl-ch small {
+    margin-left: auto;
+    font-size: 0.8em;
+    color: var(--mut);
+  }
+  .gl-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.8em;
+    height: 14em;
+    padding-top: 1em;
+    border-bottom: 1px solid var(--line);
+  }
+  .gl-chart i {
+    flex: 1;
+    border-radius: 0.3em 0.3em 0 0;
+    background: #d9d1ff;
+  }
+  .gl-chart i:nth-last-child(2) {
+    background: #b8a9ff;
+  }
+  .gl-chart .gl-today {
+    background: var(--vio);
+    transform-origin: bottom;
+  }
+  :global([data-live][data-step="0"]) .gl-today {
+    transform: scaleY(0.7);
+  }
+  :global([data-live][data-step="1"]) .gl-today {
+    transform: scaleY(0.79);
+  }
+  :global([data-live][data-step="2"]) .gl-today {
+    transform: scaleY(0.87);
+  }
+  :global([data-live][data-step="3"]) .gl-today {
+    transform: scaleY(0.96);
+  }
+  .gl-today {
+    transition: transform 900ms var(--ease-out);
+  }
+  .gl-legend {
+    display: flex;
+    align-items: center;
+    gap: 1.6em;
+    font-size: 1.1em;
+    color: var(--mut);
+  }
+  .gl-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+  .gl-legend i {
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+    background: var(--vio);
+  }
+  .gl-legend i.is-lead {
+    background: #00a63e;
+  }
+  .gl-legend b {
+    margin-left: auto;
+    color: var(--ink);
+  }
+  .gl-legend b span {
+    color: var(--vio);
+    border-radius: 0.2em;
+  }
+  .gl-quiet {
+    font-size: 1.2em;
+    color: var(--mut);
+  }
+  .gl-sug {
+    display: grid;
+    gap: 0.4em;
+    padding: 1.1em 1.2em;
+    border-radius: 0.9em;
+    background: #f7f5ff;
+    border: 1px solid #e4dcff;
+    font-size: 1.2em;
+  }
+  .gl-sug p {
+    color: #475467;
+  }
+  .gl-state {
+    justify-self: start;
+    margin-top: 0.3em;
+    padding: 0.2em 0.7em;
+    border-radius: 99px;
+    font-size: 0.9em;
+    font-weight: 600;
+    background: #eef0f4;
+    color: #475467;
+  }
+  .gl-state.is-wait {
+    background: #fff1e0;
+    color: #b45309;
+  }
+  .gl-state.is-ok {
+    background: #dcfce7;
+    color: #008236;
+  }
+  .gl-policy p,
+  .gl-leads p {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 0.5em 0;
+    border-top: 1px solid var(--line);
+    font-size: 1.15em;
+  }
+  .gl-policy p span {
+    color: #475467;
+  }
+  .gl-policy u,
+  .gl-leads u {
+    margin-left: auto;
+    padding: 0.15em 0.6em;
+    border-radius: 99px;
+    background: #dcfce7;
+    color: #008236;
+    font-size: 0.85em;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .gl-policy p b {
+    margin-left: auto;
+    border-radius: 0.2em;
+  }
+  .gl-leads p span {
+    display: grid;
+    line-height: 1.3;
+  }
+  .gl-leads small {
+    color: var(--mut);
+    font-size: 0.85em;
+  }
+  .gl-leads u {
+    background: #f0edff;
+    color: var(--vio);
+  }
+  .gl-leads u.is-q {
+    background: #fff1e0;
+    color: #b45309;
+  }
+  .gl-leads u.is-c {
+    background: #dcfce7;
+    color: #008236;
+  }
+
+  @container (max-width: 560px) {
+    .gl {
+      grid-template-columns: 1fr;
+      aspect-ratio: auto;
+      font-size: calc(var(--u) * 3.4);
+    }
+    .gl-side,
+    .gl-head,
+    .gl-metrics,
+    .gl-perf,
+    .gl-leads {
+      display: none !important;
+    }
+    .gl-main {
+      padding: 1.2em;
+    }
+    .gl-grid {
+      grid-template-columns: 1fr;
+      gap: 1em;
+    }
+  }
+</style>

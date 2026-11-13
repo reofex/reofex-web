@@ -17,13 +17,23 @@ interface Props {
   tilt?: boolean;
   /** Zoom into one region of the screen (see Screenshot.heroZoom) */
   zoom?: { scale: number; origin: string };
+  /** Use the screenshot's phone crop (off for layouts that show the whole screen) */
+  crop?: boolean;
 }
-const { shot, priority = false, sizes = "(min-width: 1200px) 1100px, 100vw", tone = "light", class: className, tilt = false, zoom } = Astro.props;
-const styles = [shot.mobileFocus && `--sf-focus:${shot.mobileFocus}`, zoom && `--sf-zoom:${zoom.scale};--sf-origin:${zoom.origin}`].filter(Boolean).join(";");
+const { shot, priority = false, sizes = "(min-width: 1200px) 1100px, 100vw", tone = "light", class: className, tilt = false, zoom, crop = true } = Astro.props;
+const c = crop ? shot.mobileCrop : undefined;
+// the crop's real proportions, so the frame on phones is exactly the shape of the element
+const cropRatio = c ? ((c.w / 100) * shot.src.width) / ((c.h / 100) * shot.src.height) : 0;
+const styles = [
+  c && `--cx:${c.x};--cy:${c.y};--cw:${c.w};--ch:${c.h};--cr:${cropRatio.toFixed(4)}`,
+  zoom && `--sf-zoom:${zoom.scale};--sf-origin:${zoom.origin}`,
+]
+  .filter(Boolean)
+  .join(";");
 ---
 
 <figure
-  class:list={["sf", `sf--${tone}`, shot.mobileFocus && !zoom && "sf--focus", tilt && "sf--tilt", zoom && "sf--zoom", className]}
+  class:list={["sf", `sf--${tone}`, c && "sf--crop", tilt && "sf--tilt", zoom && "sf--zoom", className]}
   style={styles || undefined}
 >
   <div class="sf__bar" aria-hidden="true">
@@ -92,15 +102,6 @@ const styles = [shot.mobileFocus && `--sf-focus:${shot.mobileFocus}`, zoom && `-
     width: 100%;
     height: auto;
   }
-  /* Phones: a full desktop screen at ~400px is unreadable, so show a closer
-     portrait crop around the screenshot's focal area instead. */
-  @media (max-width: 767px) {
-    .sf--focus :global(.sf__img) {
-      aspect-ratio: 4 / 5;
-      object-fit: cover;
-      object-position: var(--sf-focus, 50% 50%);
-    }
-  }
   .sf--zoom :global(picture) {
     display: block;
     overflow: hidden;
@@ -108,6 +109,26 @@ const styles = [shot.mobileFocus && `--sf-focus:${shot.mobileFocus}`, zoom && `-
   .sf--zoom :global(.sf__img) {
     transform: scale(var(--sf-zoom));
     transform-origin: var(--sf-origin);
+  }
+  /* Phones: a full desktop screen at ~400px is unreadable, so the frame shows
+     one complete element (Screenshot.mobileCrop) at the element's own shape.
+     The image is scaled and offset so that rectangle exactly fills the frame. */
+  @media (max-width: 767px) {
+    .sf--crop :global(picture) {
+      display: block;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: var(--cr);
+    }
+    .sf--crop :global(.sf__img) {
+      position: absolute;
+      max-width: none;
+      width: calc(100% * 100 / var(--cw));
+      left: calc(-100% * var(--cx) / var(--cw));
+      top: calc(-100% * var(--cy) / var(--ch));
+      height: auto;
+      transform: none;
+    }
   }
   /* Scroll-driven 3D settle (CSS scroll timelines; browsers without support show it flat) */
   @supports (animation-timeline: view()) {

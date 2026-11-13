@@ -29,7 +29,7 @@ const sync = getProduct("reofex-sync");
   <div class="sp">
     <!-- 0 · Custom software → Fynex -->
     <figure class="sp-panel" data-s="0">
-      <ScreenshotFrame shot={fynex.screenshot!} zoom={fynex.screenshot!.heroZoom} sizes="(min-width: 1320px) 1400px, 120vw" tone="dark" />
+      <ScreenshotFrame crop={false} shot={fynex.screenshot!} zoom={fynex.screenshot!.heroZoom} sizes="(min-width: 1320px) 1400px, 120vw" tone="dark" />
       <figcaption class="sp-cap"><ProductIcon product={fynex} size={22} /><span><b>Fynex</b> Intake forms and approval chains, configured per service</span></figcaption>
     </figure>
 
@@ -38,7 +38,7 @@ const sync = getProduct("reofex-sync");
       {
         products.map((p) => (
           <div class="sp-grid__item">
-            <ScreenshotFrame shot={p.screenshot!} sizes="(min-width: 1320px) 380px, 46vw" tone="dark" class="sp-thumb" />
+            <ScreenshotFrame crop={false} shot={p.screenshot!} sizes="(min-width: 1320px) 380px, 46vw" tone="dark" class="sp-thumb" />
             <span><ProductIcon product={p} size={18} />{p.name}</span>
           </div>
         ))
@@ -48,13 +48,13 @@ const sync = getProduct("reofex-sync");
 
     <!-- 2 · AI & automation → Sync -->
     <figure class="sp-panel" data-s="2">
-      <ScreenshotFrame shot={sync.screenshot!} sizes="(min-width: 1320px) 760px, 92vw" tone="dark" />
+      <ScreenshotFrame crop={false} shot={sync.screenshot!} sizes="(min-width: 1320px) 760px, 92vw" tone="dark" />
       <figcaption class="sp-cap"><ProductIcon product={sync} size={22} /><span><b>Reofex Sync</b> AI reads every purchase invoice; a person approves the exceptions</span></figcaption>
     </figure>
 
     <!-- 3 · Integrations → Sync connections -->
     <figure class="sp-panel" data-s="3">
-      <ScreenshotFrame shot={sync.screenshot!} zoom={{ scale: 2.2, origin: "100% 22%" }} sizes="(min-width: 1320px) 1600px, 200vw" tone="dark" />
+      <ScreenshotFrame crop={false} shot={sync.screenshot!} zoom={{ scale: 2.2, origin: "100% 22%" }} sizes="(min-width: 1320px) 1600px, 200vw" tone="dark" />
       <figcaption class="sp-cap"><ProductIcon product={sync} size={22} /><span><b>Reofex Sync</b> Gmail, WhatsApp, Zoho Books and Tally in one flow</span></figcaption>
     </figure>
 

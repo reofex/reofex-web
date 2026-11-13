@@ -14,19 +14,20 @@ const bodies = [
   "We learn the goals, the constraints and the real problem. You get a one-page brief to agree before anything is designed.",
   "We design the system and settle the few decisions that are expensive to change later. You get the diagram and those decisions in writing.",
   "Real users try a clickable prototype before it's built, while changes are still cheap.",
-  "Working software every week, with tests and code review on every change.",
+  "Working software every few days, with tests and code review on every change.",
   "We connect to the systems you already use and test on real data before launch.",
   "A staged rollout with monitoring, so problems show up before your users report them.",
   "We review what's used and what isn't, and agree a short list of what to change next.",
 ];
 const steps = processSteps.map((s, i) => ({ title: s.title, body: bodies[i] }));
-const weeks = ["Week 1", "Week 1–2", "Week 2–3", "Weeks 3–8", "Weeks 6–8", "Weeks 9–11", "Month 3"];
+// From first conversation to launch in about four weeks
+const weeks = ["Days 1–2", "Days 2–3", "Week 1", "Weeks 2–3", "Week 3", "Week 4", "2 weeks after launch"];
 ---
 
 <StoryShell
   id="pb-title"
   title={"What you get\nat each step."}
-  lead="Every step ends with something you can see and sign off. Here's what that looks like on one example project."
+  lead="Every step ends with something you can see and sign off. Here's one example project, from brief to launch in four weeks."
   steps={steps}
   accent="#f78d20"
   caption="Example project"
@@ -101,7 +102,7 @@ const weeks = ["Week 1", "Week 1–2", "Week 2–3", "Weeks 3–8", "Weeks 6–8
     <!-- 3 · Build: weekly demo + checks -->
     <div class="pb-panel pb-build" data-s="3">
       <div class="ss-card pb-demo">
-        <div class="pb-head"><Icon name="eye" size={16} /><b>Week 6 demo</b><small>Thursday</small></div>
+        <div class="pb-head"><Icon name="eye" size={16} /><b>Week 2 demo</b><small>Thursday</small></div>
         <ul>
           <li style="--k:0"><span class="ss-tick"><Icon name="check" size={11} /></span>Duplicate check across email and WhatsApp</li>
           <li style="--k:1"><span class="ss-tick"><Icon name="check" size={11} /></span>Approval by link from email</li>
@@ -131,9 +132,9 @@ const weeks = ["Week 1", "Week 1–2", "Week 2–3", "Weeks 3–8", "Weeks 6–8
       <div class="ss-card pb-roll">
         <div class="pb-head"><Icon name="rocket" size={16} /><b>Rollout</b></div>
         <ol>
-          <li class="is-done" style="--k:0"><i></i><span>Pilot · one branch</span><small>Week 9</small></li>
-          <li class="is-done" style="--k:1"><i></i><span>Two branches</span><small>Week 10</small></li>
-          <li class="is-now" style="--k:2"><i></i><span>All branches</span><small>Week 11</small></li>
+          <li class="is-done" style="--k:0"><i></i><span>Pilot · one branch</span><small>Week 4 · Mon</small></li>
+          <li class="is-done" style="--k:1"><i></i><span>Two branches</span><small>Week 4 · Wed</small></li>
+          <li class="is-now" style="--k:2"><i></i><span>All branches</span><small>Week 4 · Fri</small></li>
         </ol>
       </div>
       <div class="ss-card pb-mon">
@@ -146,7 +147,7 @@ const weeks = ["Week 1", "Week 1–2", "Week 2–3", "Weeks 3–8", "Weeks 6–8
 
     <!-- 6 · Improve: usage review -->
     <div class="ss-card pb-panel pb-review" data-s="6">
-      <div class="pb-head"><Icon name="chart" size={16} /><b>Month 2 review</b></div>
+      <div class="pb-head"><Icon name="chart" size={16} /><b>Two-week review</b></div>
       <div class="pb-stat" style="--k:0"><span>Bills posted with no edits</span><b>81%</b><i style="--w:81%"></i></div>
       <div class="pb-stat" style="--k:1"><span>Most-edited field</span><b>HSN code</b></div>
       <div class="pb-next">

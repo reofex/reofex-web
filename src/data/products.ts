@@ -29,16 +29,40 @@ export interface Feature {
  * Real product screenshots. Crops must never include personal data
  * (emails, user names, client workspace names).
  */
+/** A rectangle in % of an image, drawn around one complete UI element */
+export interface Crop {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * Product page "What X does": features grouped into a few themes, each shown
+ * with a crop of the product's own screenshot (see FeatureStack).
+ */
+export interface FeatureCard {
+  title: string;
+  body: string;
+  /** titles from `features`, in display order */
+  features: string[];
+  /** a crop of the product's screenshot… */
+  crop?: Crop;
+  /** …or a product-style panel (see FeatureStack's `panels`) */
+  ui?: "respondly-channels" | "respondly-studio";
+}
+
 export interface Screenshot {
   src: ImageMetadata;
   alt: string;
   /** Neutral label shown in the frame's title bar */
   frameLabel: string;
   /**
-   * Phones show a closer portrait crop instead of the whole desktop screen.
-   * CSS object-position for that crop, e.g. "0% 50%" = left edge.
+   * Phones show one complete part of the screen instead of the whole desktop
+   * screenshot shrunk to nothing. A rectangle in % of the image, drawn around a
+   * whole UI element so the crop never cuts through text.
    */
-  mobileFocus?: string;
+  mobileCrop?: Crop;
   /**
    * Product-page hero only: zoom into the part of the screen that shows the
    * product working (e.g. skip a marketing headline that would repeat ours).
@@ -78,6 +102,7 @@ export interface Product {
   explanation: { title: string; body: string };
   workflow: { title: string; body?: string; steps: { label: string; detail?: string }[] };
   features: Feature[];
+  featureCards?: FeatureCard[];
   integrations?: { title: string; body: string; items: string[] };
   benefits: string[];
   highlight?: { title: string; body: string; image?: Screenshot };
@@ -103,10 +128,10 @@ export const products: Product[] = [
       src: respondlyShot,
       alt: "Respondly website: 'AI that answers your customers and sells for you', with a WhatsApp chat on a phone where the assistant finds boots in stock from the catalogue, takes the order and collects payment.",
       frameLabel: "therespondly.com",
-      mobileFocus: "78% 45%",
+      mobileCrop: { x: 50, y: 13, w: 36, h: 60 }, // the phone and its chat
     },
     hero: {
-      eyebrow: "AI WhatsApp & Instagram lead automation",
+      eyebrow: "AI assistant for WhatsApp, Instagram and your website",
       title: "AI that answers your customers",
       titleAccent: "and sells for you.",
       body: "Your own AI assistant for WhatsApp, Instagram and your website. It answers from your real products, prices and policies, takes orders and payments in the chat, and hands ready customers to your team, day and night.",
@@ -122,43 +147,77 @@ export const products: Product[] = [
       ],
     },
     explanation: {
-      title: "Replies grounded in your own business data.",
-      body: "You decide what the AI does and upload your data. Respondly then answers customers across your connected channels using that information, collects only the details you need, and alerts your team the moment a human should step in.",
+      title: "Your assistant, your rules.",
+      body: "Give the assistant one job, decide what it asks and when, and when a person steps in. Simple settings, no prompt writing, and a safe test chat before customers see a change. It answers from your own catalogue and business facts, takes orders and payments in the chat, and sends ready leads to Zoho CRM.",
     },
     workflow: {
       title: "Up and running in four steps.",
       steps: [
-        { label: "Sign up & decide what AI does" },
-        { label: "Upload your data", detail: "Products, prices, services, hours" },
-        { label: "Connect channels", detail: "WhatsApp, Instagram & website" },
-        { label: "Get notified & step in", detail: "Instant alerts & handover" },
+        { label: "Sign up & decide what your AI does", detail: "Start from a template, try it in a safe test chat" },
+        { label: "Add your products & facts", detail: "Products, services, hours, prices and policies, by hand or CSV" },
+        { label: "Connect channels & open your store", detail: "WhatsApp, Instagram, website chat and the online store" },
+        { label: "Get notified & step in", detail: "Ready leads, new orders and handovers, at once" },
       ],
     },
+    featureCards: [
+      {
+        title: "Answers from your real catalogue",
+        body: "Customers get the actual product, price and stock, in the language they write in, at any hour.",
+        features: ["24/7 AI responses", "Replies in your customer's language", "Your catalogue, your data"],
+        crop: { x: 50.4, y: 13, w: 30, h: 38 },
+      },
+      {
+        title: "Takes the order, and the payment",
+        body: "Orders and payment links come from your catalogue and your own payment account, and ready leads land in Zoho CRM.",
+        features: ["Orders & payments in chat", "Online store add-on", "Zoho CRM sync"],
+        crop: { x: 53, y: 47.2, w: 34, h: 25.8 },
+      },
+      {
+        title: "Every channel, one assistant",
+        body: "WhatsApp, Instagram and your website chat answered by the same assistant, with one dashboard for all of it.",
+        features: ["Instagram DMs & auto-import", "Website chat widget", "Instant alerts & handover", "Performance dashboard"],
+        ui: "respondly-channels",
+      },
+      {
+        title: "You decide how it works",
+        body: "Choose its job, what it asks and when a person takes over. No prompt writing, and our team helps you set it up.",
+        features: ["Assistant Studio", "Collect only what you need", "Templates for your industry", "Setup help from our team"],
+        ui: "respondly-studio",
+      },
+    ],
     features: [
-      { icon: "clock", title: "24/7 AI responses", body: "Customers get accurate answers at any hour, not a 'we'll get back to you'." },
-      { icon: "instagram", title: "Instagram DMs & auto-import", body: "Handle Instagram conversations alongside WhatsApp in one place." },
-      { icon: "filter", title: "Collect only what you need", body: "Gather the exact lead details your team asked for — nothing more." },
-      { icon: "bell", title: "Instant alerts & handover", body: "Get notified and take over the conversation whenever you choose." },
-      { icon: "card", title: "Orders & payments in chat", body: "Take orders and collect payments without leaving the conversation." },
-      { icon: "globe", title: "Multi-language replies", body: "Respond to customers in the language they write in." },
-      { icon: "chart", title: "Performance dashboard", body: "See conversations and leads at a glance." },
-      { icon: "layers", title: "Multi-client support", body: "Manage multiple businesses from a single account." },
+      { icon: "clock", title: "24/7 AI responses", body: "Answers every WhatsApp, Instagram and website message within seconds, at 2 AM or 2 PM." },
+      { icon: "globe", title: "Replies in your customer's language", body: "English, Malayalam, Manglish, Arabic and more, detected automatically." },
+      { icon: "database", title: "Your catalogue, your data", body: "Every reply comes from your own products, services and facts, so prices and stock are right." },
+      { icon: "card", title: "Orders & payments in chat", body: "Order summary to confirm, change or cancel, paid into your own Razorpay or Stripe account." },
+      { icon: "layers", title: "Online store add-on", body: "The products it sells in the chat become a store at your own address. Growth and Pro plans." },
+      { icon: "users", title: "Zoho CRM sync", body: "Ready leads become Zoho CRM leads with everything the assistant learned, kept up to date." },
+      { icon: "instagram", title: "Instagram DMs & auto-import", body: "Replies to DMs like WhatsApp, and can turn existing posts into ready-to-review products." },
+      { icon: "code", title: "Website chat widget", body: "One line of code adds a branded AI chat to your website." },
+      { icon: "bell", title: "Instant alerts & handover", body: "WhatsApp and email alerts when a lead is ready; the AI steps back when you reply." },
+      { icon: "chart", title: "Performance dashboard", body: "Leads, orders, sales and how the assistant is doing, in one place." },
+      { icon: "sparkles", title: "Assistant Studio", body: "Set its job and rules without prompts, test changes safely, publish, and roll back any time." },
+      { icon: "filter", title: "Collect only what you need", body: "Per detail: save if mentioned, ask when needed, or ask only before an order or handover." },
+      { icon: "compass", title: "Templates for your industry", body: "Fashion, real estate, clinics, restaurants, education and more, ready to adjust." },
+      { icon: "userCheck", title: "Setup help from our team", body: "Real people help you get live, and stay a message away afterwards." },
     ],
     integrations: {
       title: "Works with the tools you already use.",
-      body: "Respondly syncs conversations and leads with your existing systems.",
-      items: ["WhatsApp", "Instagram", "Website chat widget", "Zoho CRM", "Razorpay", "Google Sheets", "CSV import"],
+      body: "Respondly connects your channels, your payments and your CRM, with Excel export and CSV import for everything else.",
+      items: ["WhatsApp", "Instagram", "Website chat widget", "Zoho CRM", "Razorpay", "Stripe", "Excel export", "CSV import"],
     },
     benefits: [
       "Never miss an enquiry, day or night",
-      "Answers based on your real products and prices",
+      "Answers from your real products, prices and policies",
+      "Orders and payments in the chat, paid into your own account",
+      "Ready leads land in Zoho CRM on their own",
       "Your team steps in only when it matters",
-      "Leads flow straight into your CRM or sheets",
+      "Real people to help you set up",
     ],
     seo: {
-      title: "Respondly — AI replies for WhatsApp & Instagram | Reofex",
+      title: "Respondly — AI assistant and online store for WhatsApp & Instagram | Reofex",
       description:
-        "Respondly by Reofex Technologies answers customer queries on WhatsApp, Instagram and your website with your real business data, 24/7, with instant human handover.",
+        "Respondly answers customers on WhatsApp, Instagram and your website from your real catalogue, takes orders and payments in the chat, syncs leads to Zoho CRM and hands over to your team.",
     },
   },
   {
@@ -177,7 +236,7 @@ export const products: Product[] = [
       src: syncShot,
       alt: "Reofex Sync home screen: invoices waiting for approval or review, a new vendor to confirm, Gmail, WhatsApp, Zoho Books and AI provider connections, and this month's posted amount, GST on posted bills and time saved.",
       frameLabel: "sync.reofex.com",
-      mobileFocus: "0% 0%",
+      mobileCrop: { x: 17.5, y: 17.5, w: 54.5, h: 55 }, // the "Needs you" list
     },
     hero: {
       eyebrow: "For businesses on Zoho Books & Tally",
@@ -208,6 +267,26 @@ export const products: Product[] = [
         { label: "Forget the data entry", detail: "You only see the invoices that need you" },
       ],
     },
+    featureCards: [
+      {
+        title: "Only the bills that need you",
+        body: "Invoices arrive from Gmail and WhatsApp, get read and checked, and only the exceptions wait for a person.",
+        features: ["Invoices arrive on their own", "Invoice in, bill out", "Tax & total checks", "Duplicates & new vendors", "Approve from anywhere"],
+        crop: { x: 17.5, y: 17.5, w: 54.5, h: 55 },
+      },
+      {
+        title: "Connected to the tools you already use",
+        body: "Your inbox, your WhatsApp number, your ledger and your own AI provider, in one flow.",
+        features: ["Zoho Books or Tally", "Your AI, your key", "Tax rules built in"],
+        crop: { x: 72, y: 18.5, w: 27, h: 35.5 },
+      },
+      {
+        title: "Runs on your machine, with a full record",
+        body: "Nothing goes through Reofex servers. Every invoice keeps its history, and the month's numbers are one click away.",
+        features: ["Not another cloud service", "Every step on record", "The month at a glance", "Backups & safe updates"],
+        crop: { x: 0, y: 0, w: 60, h: 39.5 },
+      },
+    ],
     features: [
       { icon: "mail", title: "Invoices arrive on their own", body: "Gmail attachments and photos sent to your WhatsApp Business number land in one inbox — no downloading or forwarding." },
       { icon: "scan", title: "Invoice in, bill out", body: "Reads vendor, GSTIN, invoice number, line items with HSN/SAC and the CGST/SGST/IGST split." },
@@ -261,7 +340,7 @@ export const products: Product[] = [
       src: growthDashShot,
       alt: "Reofex Growth dashboard: AI Growth Overview with campaign metrics, AI Insights and an Approval Policy panel where every launch and spend change requires approval.",
       frameLabel: "Reofex Growth · AI Growth Overview",
-      mobileFocus: "0% 50%",
+      mobileCrop: { x: 72, y: 70, w: 27, h: 29.5 }, // the Approval Policy card
     },
     hero: {
       eyebrow: "AI-assisted Meta advertising",
@@ -292,6 +371,26 @@ export const products: Product[] = [
         { label: "AI suggests changes", detail: "You approve any budget change" },
       ],
     },
+    featureCards: [
+      {
+        title: "Campaigns drafted for you",
+        body: "A ready-to-review campaign for Facebook and Instagram, where every ad opens a WhatsApp chat.",
+        features: ["AI campaign drafts", "Facebook & Instagram", "Click-to-WhatsApp ads", "Clear visibility"],
+        crop: { x: 0, y: 0, w: 49, h: 52 },
+      },
+      {
+        title: "Nothing spends without you",
+        body: "Launches and budget changes always need your approval, and new campaigns start paused.",
+        features: ["Human approval, always", "Campaigns start paused"],
+        crop: { x: 72, y: 70, w: 27, h: 29.5 },
+      },
+      {
+        title: "Suggestions you approve",
+        body: "AI watches the results and recommends changes. You decide which ones happen.",
+        features: ["Optimisation suggestions"],
+        crop: { x: 0.5, y: 79, w: 12.6, h: 20.5 },
+      },
+    ],
     features: [
       { icon: "sparkles", title: "AI campaign drafts", body: "Get a ready-to-review campaign instead of a blank ads manager." },
       { icon: "whatsapp", title: "Click-to-WhatsApp ads", body: "Every ad opens a WhatsApp conversation with your business." },
@@ -338,7 +437,7 @@ export const products: Product[] = [
       src: fynexShot,
       alt: "Fynex: an Employment Visa Renewal case moving through submission, PRO review, signature, payment and approval, with expiry tracking and wallet balance.",
       frameLabel: "gofynex.com",
-      mobileFocus: "100% 50%",
+      mobileCrop: { x: 50.5, y: 30, w: 34, h: 45.5 }, // the case card
       // the case card, not the site's own headline
       heroZoom: { scale: 1.9, origin: "100% 50%" },
     },
@@ -376,6 +475,26 @@ export const products: Product[] = [
         { label: "Completion", detail: "VAT-ready invoice on every charge" },
       ],
     },
+    featureCards: [
+      {
+        title: "Every request runs the same way",
+        body: "Build the intake form once, and each request follows its step list from submission to approval.",
+        features: ["Service builder", "Task workflows", "Team & roles"],
+        crop: { x: 50.5, y: 30, w: 34, h: 45.5 },
+      },
+      {
+        title: "Billing and expiries, handled",
+        body: "Charges come from a prepaid wallet with a VAT invoice each time, and expiries are tracked before they lapse.",
+        features: ["Wallet & billing", "VAT invoicing", "Compliance alerts"],
+        crop: { x: 50.5, y: 63, w: 34, h: 12.5 },
+      },
+      {
+        title: "Your servers, your language",
+        body: "Deployed inside your own environment, in English and Arabic with full right-to-left layout.",
+        features: ["Self-hosted", "English & Arabic"],
+        crop: { x: 17, y: 69.5, w: 32, h: 20.5 },
+      },
+    ],
     features: [
       { icon: "form", title: "Service builder", body: "Drag-and-drop intake forms — text, uploads, e-signature, conditional fields." },
       { icon: "workflow", title: "Task workflows", body: "A friendly step-list for approvals and handoffs. Rejections loop back with a reason." },

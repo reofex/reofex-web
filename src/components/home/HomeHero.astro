@@ -61,7 +61,7 @@ const list = products.filter((p) => p.screenshot);
                       <div>
                         <p class="hh__tag">{p.tagline}</p>
                         <div class="hh__inline">
-                          <ScreenshotFrame shot={p.screenshot!} tone="dark" sizes="92vw" />
+                          <ScreenshotFrame shot={p.screenshot!} tone="dark" sizes="(max-width: 767px) 280vw, 92vw" />
                         </div>
                         <a class="hh__link" href={productHref(p.slug)}>
                           See how {p.name} works <Icon name="arrowRight" size={16} />
@@ -81,6 +81,7 @@ const list = products.filter((p) => p.screenshot);
               list.map((p, i) => (
                 <div class="hh__card" data-hh-card style={`--k:${i}`}>
                   <ScreenshotFrame
+                    crop={false}
                     shot={p.screenshot!}
                     priority={i === 0}
                     tone="dark"
@@ -175,6 +176,7 @@ const list = products.filter((p) => p.screenshot);
       const i = Math.floor(u);
       const t = i + smooth(0.3, 0.7, u - i);
 
+      const poses: { x: number; y: number; z: number; ry: number; rx: number; o: number; haze: number; zi: number }[] = [];
       cards.forEach((c, k) => {
         const a = heroPose(k);
         const b = dealPose(k - t);
@@ -187,8 +189,13 @@ const list = products.filter((p) => p.screenshot);
         c.style.transform = `perspective(2200px) translate3d(${x}%, ${y}%, ${z}px) rotateY(${ry}deg) rotateX(${rx}deg)`;
         c.style.opacity = lerp(a.o, b.o, q).toFixed(3);
         c.style.setProperty("--haze", lerp(a.haze, b.haze, q).toFixed(3));
-        c.style.zIndex = String(100 - Math.round((k - t * q) * 10));
+        const zi = 100 - Math.round((k - t * q) * 10);
+        c.style.zIndex = String(zi);
+        poses.push({ x, y, z, ry, rx, o: lerp(a.o, b.o, q), haze: lerp(a.haze, b.haze, q), zi });
       });
+      // shared with the WebGL deck (heroDeck3d), which draws the same poses in real 3D
+      (root as any).__poses = poses;
+      (root as any).__q = q;
 
       const next = q < 0.5 ? -1 : Math.round(t);
       if (next !== active) {
@@ -221,6 +228,18 @@ const list = products.filter((p) => p.screenshot);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     update();
+
+    // Desktop upgrade: the same deck drawn with WebGL (real perspective, light,
+    // soft shadows). Loaded after the page is idle; the CSS deck stays as the fallback.
+    const saveData = (navigator as any).connection?.saveData;
+    if (desktop.matches && !reduce.matches && !saveData) {
+      const go = () =>
+        import("../../scripts/heroDeck3d")
+          .then((m) => m.mount(root))
+          .catch(() => {});
+      if ("requestIdleCallback" in window) (window as any).requestIdleCallback(go, { timeout: 2000 });
+      else setTimeout(go, 800);
+    }
   });
 </script>
 
@@ -393,6 +412,23 @@ const list = products.filter((p) => p.screenshot);
     max-width: calc((100svh - var(--header-h) - 3rem) * 1.45);
     justify-self: center;
     aspect-ratio: 16 / 11;
+  }
+  /* WebGL deck: a canvas a little larger than the stage, so dealt cards can travel */
+  .hh__stage :global(.hh__gl) {
+    position: absolute;
+    left: -20%;
+    top: -25%;
+    width: 140%;
+    height: 150%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 700ms var(--ease-out);
+  }
+  .hh__stage :global(.hh__gl.is-on) {
+    opacity: 1;
+  }
+  .hh--webgl .hh__card {
+    visibility: hidden;
   }
   .hh__deck {
     position: absolute;

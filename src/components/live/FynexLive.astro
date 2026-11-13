@@ -1,0 +1,417 @@
+---
+/**
+ * Fynex requests screen, in the product's dark teal style, with example data.
+ * Loop: case SR-1047 moves through its step list (PRO review → signature →
+ * payment from the wallet → approved & issued), the wallet is debited and a
+ * VAT invoice is issued, while expiry tracking keeps watch.
+ */
+import Icon from "../ui/Icon.astro";
+import LiveFrame from "./LiveFrame.astro";
+
+const v = (a: string[]) => JSON.stringify(a);
+const caseSteps = ["Submitted by HR", "PRO document review", "Signature", "Payment from wallet", "Approved & issued"];
+// case step i is current at loop step i and done after it; at the last loop step every step is done
+const stepCls = (i: number) =>
+  JSON.stringify(Object.fromEntries([0, 1, 2, 3, 4].map((k) => [String(k), i < k || k === 4 ? "is-done" : i === k ? "is-now" : "is-todo"])));
+const reqs = [
+  { id: "SR-1047", svc: "Employment Visa Renewal", who: "Mariam Saeed", st: ["PRO review", "Signature", "Payment", "Approved", "Issued"] },
+  { id: "SR-1046", svc: "Trade Licence Renewal", who: "Al Noor Trading", st: ["Finance", "Finance", "Finance", "Issued", "Issued"] },
+  { id: "SR-1044", svc: "Emirates ID Renewal", who: "Rahul Menon", st: ["Documents", "Documents", "PRO review", "PRO review", "PRO review"] },
+  { id: "SR-1041", svc: "Labour Card", who: "Joseph Thomas", st: ["Issued", "Issued", "Issued", "Issued", "Issued"] },
+];
+---
+
+<LiveFrame label="Fynex · Requests · demo data" steps={5} class="lf--tilt">
+  <div class="fl">
+    <aside class="fl-side">
+      <div class="fl-brand"><i>F</i>Fynex</div>
+      <nav>
+        <span><Icon name="compass" size={12} />Dashboard</span>
+        <span class="is-on"><Icon name="file" size={12} />Requests</span>
+        <span><Icon name="form" size={12} />Services</span>
+        <span><Icon name="wallet" size={12} />Wallet</span>
+        <span><Icon name="bell" size={12} />Compliance<b>2</b></span>
+        <span><Icon name="users" size={12} />Team & roles</span>
+      </nav>
+      <div class="fl-lang"><span class="is-on">EN</span><span>عربي</span></div>
+    </aside>
+
+    <div class="fl-main">
+      <section class="fl-list">
+        <div class="fl-lh"><b>Requests</b><small>Al Noor Trading LLC</small></div>
+        {
+          reqs.map((r, i) => (
+            <div class:list={["fl-req", i === 0 && "is-sel"]}>
+              <span>
+                <small>{r.id}</small>
+                <b>{r.svc}</b>
+                <em>{r.who}</em>
+              </span>
+              <u data-vals={v(r.st)} data-cls={JSON.stringify(Object.fromEntries(r.st.map((x, k) => [String(k), x === "Issued" || x === "Approved" ? "is-ok" : "is-pend"])))}>
+                {r.st[4]}
+              </u>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="fl-case">
+        <div class="fl-ch">
+          <span><small>SR-1047 · Al Noor Trading LLC</small><b>Employment Visa Renewal</b><em lang="ar" dir="rtl">تجديد تأشيرة العمل</em></span>
+          <span class="fl-vat" data-in="4"><i></i>VAT invoice issued</span>
+        </div>
+        <ol>
+          {
+            caseSteps.map((label, i) => (
+              <li class="is-done" data-cls={stepCls(i)}>
+                <i>
+                  <Icon name="check" size={10} />
+                </i>
+                {label}
+              </li>
+            ))
+          }
+        </ol>
+        <div class="fl-foot">
+          <span class="fl-exp"><Icon name="clock" size={11} />Visa expires in <b data-vals={v(["11", "11", "10", "10", "10"])}>10</b> days · alert sent to PRO</span>
+          <span class="fl-wal">Wallet balance <b data-vals={v(["AED 12,400.00", "AED 12,400.00", "AED 12,400.00", "AED 10,457.50", "AED 10,457.50"])}>AED 10,457.50</b></span>
+        </div>
+      </section>
+
+      <div class="fl-toast" data-in="3" data-out="4"><Icon name="wallet" size={12} />− AED 1,942.50 from company wallet</div>
+      <div class="fl-toast" data-in="4"><Icon name="file" size={12} />INV-2026-0318 · AED 1,942.50 incl. 5% VAT</div>
+    </div>
+  </div>
+</LiveFrame>
+
+<style>
+  .fl {
+    --bg: #0c1214;
+    --pan: #121a1d;
+    --line: rgb(255 255 255 / 0.08);
+    --mut: rgb(255 255 255 / 0.5);
+    --teal: #2dd4bf;
+    display: grid;
+    grid-template-columns: 19em 1fr;
+    aspect-ratio: 16 / 10;
+    color: #e8f0ef;
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .fl :global(.icon) {
+    width: 1.25em;
+    height: 1.25em;
+    flex: none;
+  }
+  .fl-side {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 2em;
+    padding: 2em 1.2em;
+    border-right: 1px solid var(--line);
+  }
+  .fl-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    font-size: 1.5em;
+    font-weight: 700;
+  }
+  .fl-brand i {
+    display: grid;
+    place-items: center;
+    width: 1.7em;
+    height: 1.7em;
+    border-radius: 0.4em;
+    background: var(--teal);
+    color: #052e2b;
+    font-style: normal;
+  }
+  .fl-side nav {
+    display: grid;
+    align-content: start;
+    gap: 0.25em;
+  }
+  .fl-side nav span {
+    display: flex;
+    align-items: center;
+    gap: 0.9em;
+    padding: 0.8em 0.9em;
+    border-radius: 0.6em;
+    font-size: 1.2em;
+    color: rgb(255 255 255 / 0.7);
+  }
+  .fl-side nav span.is-on {
+    background: rgb(45 212 191 / 0.12);
+    color: var(--teal);
+  }
+  .fl-side nav b {
+    margin-left: auto;
+    padding: 0 0.5em;
+    border-radius: 99px;
+    background: #f59e0b;
+    color: #1c1305;
+    font-size: 0.85em;
+  }
+  .fl-lang {
+    display: flex;
+    gap: 0.4em;
+    font-size: 1.1em;
+  }
+  .fl-lang span {
+    padding: 0.3em 0.8em;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    color: var(--mut);
+  }
+  .fl-lang span.is-on {
+    color: #fff;
+    border-color: rgb(255 255 255 / 0.3);
+  }
+  .fl-main {
+    position: relative;
+    display: grid;
+    grid-template-columns: 38em 1fr;
+    gap: 2em;
+    padding: 2.4em;
+    min-width: 0;
+  }
+  .fl-list {
+    display: grid;
+    align-content: start;
+    gap: 0.8em;
+  }
+  .fl-lh {
+    display: grid;
+    margin-bottom: 0.6em;
+  }
+  .fl-lh b {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: 2.4em;
+  }
+  .fl-lh small {
+    font-size: 1.15em;
+    color: var(--mut);
+  }
+  .fl-req {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+    padding: 1.2em 1.3em;
+    border: 1px solid var(--line);
+    border-radius: 1em;
+    background: var(--pan);
+  }
+  .fl-req.is-sel {
+    border-color: rgb(45 212 191 / 0.5);
+    box-shadow: 0 0 0 1px rgb(45 212 191 / 0.25);
+  }
+  .fl-req > span {
+    display: grid;
+    line-height: 1.35;
+    min-width: 0;
+  }
+  .fl-req small {
+    font-size: 1em;
+    letter-spacing: 0.05em;
+    color: var(--mut);
+  }
+  .fl-req b {
+    font-size: 1.3em;
+    font-weight: 600;
+  }
+  .fl-req em {
+    font-style: normal;
+    font-size: 1.1em;
+    color: var(--mut);
+  }
+  .fl-req u {
+    flex: none;
+    padding: 0.25em 0.8em;
+    border-radius: 99px;
+    background: rgb(245 158 11 / 0.14);
+    color: #fbbf24;
+    font-size: 1.05em;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .fl-req u.is-ok {
+    background: rgb(45 212 191 / 0.14);
+    color: var(--teal);
+  }
+  .fl-case {
+    display: grid;
+    align-content: start;
+    gap: 1.6em;
+    padding: 2em 2.2em;
+    border: 1px solid var(--line);
+    border-radius: 1.4em;
+    background: linear-gradient(180deg, #16211f, var(--pan));
+  }
+  .fl-ch {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 1em;
+  }
+  .fl-ch > span:first-child {
+    display: grid;
+    gap: 0.3em;
+  }
+  .fl-ch small {
+    font-size: 1.05em;
+    letter-spacing: 0.05em;
+    color: var(--mut);
+  }
+  .fl-ch b {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: 2.3em;
+  }
+  .fl-ch em {
+    font-style: normal;
+    font-size: 1.3em;
+    color: var(--mut);
+  }
+  .fl-vat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.5em 1em;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    background: #0a0f10;
+    font-size: 1.1em;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fl-vat i {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+  .fl-case ol {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.4em;
+  }
+  .fl-case li {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 0.9em 1.1em;
+    border-radius: 0.8em;
+    font-size: 1.35em;
+    color: rgb(255 255 255 / 0.4);
+    transition:
+      background-color 500ms var(--ease-out),
+      color 500ms var(--ease-out);
+  }
+  .fl-case li i {
+    display: grid;
+    place-items: center;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    border: 1.5px solid rgb(255 255 255 / 0.25);
+    color: transparent;
+    transition: all 500ms var(--ease-out);
+  }
+  .fl-case li i :global(.icon) {
+    width: 0.9em;
+    height: 0.9em;
+    stroke-width: 3;
+  }
+  .fl-case li.is-done {
+    color: rgb(255 255 255 / 0.85);
+  }
+  .fl-case li.is-done i {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #052e2b;
+  }
+  .fl-case li.is-now {
+    background: rgb(45 212 191 / 0.12);
+    color: #fff;
+    font-weight: 600;
+  }
+  .fl-case li.is-now i {
+    border-color: var(--teal);
+    box-shadow: inset 0 0 0 0.3em var(--pan);
+    background: var(--teal);
+  }
+  .fl-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+    padding-top: 1.4em;
+    border-top: 1px solid var(--line);
+    font-size: 1.15em;
+  }
+  .fl-exp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.4em 0.9em;
+    border-radius: 99px;
+    background: rgb(245 158 11 / 0.12);
+    color: #fbbf24;
+  }
+  .fl-exp b {
+    border-radius: 0.2em;
+  }
+  .fl-wal {
+    color: var(--mut);
+  }
+  .fl-wal b {
+    margin-left: 0.4em;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    font-size: 1.25em;
+    color: #fff;
+    border-radius: 0.2em;
+  }
+  .fl-toast {
+    position: absolute;
+    right: 2.4em;
+    bottom: 2.4em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.9em 1.3em;
+    border-radius: 99px;
+    background: #f6f5f1;
+    color: #12282f;
+    font-size: 1.2em;
+    font-weight: 600;
+    box-shadow: 0 1em 2em -0.8em rgb(0 0 0 / 0.6);
+  }
+  .fl-toast :global(.icon) {
+    color: #0f766e;
+  }
+
+  @container (max-width: 560px) {
+    .fl {
+      grid-template-columns: 1fr;
+      aspect-ratio: auto;
+      font-size: calc(var(--u) * 3.4);
+    }
+    .fl-side,
+    .fl-list,
+    .fl-toast {
+      display: none !important;
+    }
+    .fl-main {
+      grid-template-columns: 1fr;
+      padding: 1em;
+    }
+    .fl-foot {
+      flex-wrap: wrap;
+    }
+  }
+</style>

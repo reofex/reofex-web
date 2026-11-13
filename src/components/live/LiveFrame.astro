@@ -1,0 +1,231 @@
+---
+/**
+ * A product dashboard rebuilt in HTML with example data, in the same window
+ * frame as the real screenshots, that plays a short loop of events the way the
+ * live product would (a new invoice arrives, an order is paid, a case moves).
+ * The title bar says "demo data" so it's never mistaken for real activity.
+ *
+ * Event runner: the dashboard (slot) marks elements with data attributes and
+ * the step counter drives them:
+ *   data-in="k"          shown from step k (data-out="m" hides it again at m)
+ *   data-vals='[..]'     text for steps 0,1,2… (last value holds)
+ *   data-cls='{"k":"c"}' class c from step k (latest key <= step wins)
+ *   data-w='[..]'        width per step (bars)
+ * Plays only while on screen; loops with a short fade. Reduced motion and
+ * no-JS show the final step as a still.
+ *
+ * Sizing: the dashboard is designed on a 128-unit-wide grid (1em ≈ 10px at
+ * 1280px) and scales with the frame like a screenshot does.
+ */
+interface Props {
+  label: string;
+  steps: number;
+  /** ms per step */
+  interval?: number;
+  tone?: "light" | "dark";
+  class?: string;
+}
+const { label, steps, interval = 2600, tone = "light", class: className } = Astro.props;
+---
+
+<figure class:list={["lf", `lf--${tone}`, className]} data-live data-steps={steps} data-interval={interval} data-step={steps - 1}>
+  <div class="lf__bar" aria-hidden="true">
+    <span></span><span></span><span></span>
+    <em>{label}</em>
+  </div>
+  <div class="lf__screen">
+    <div class="lf__app">
+      <slot />
+    </div>
+  </div>
+</figure>
+
+<script>
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  type Bound = { el: HTMLElement; kind: "in" | "vals" | "cls" | "w"; data: any };
+
+  document.querySelectorAll<HTMLElement>("[data-live]").forEach((root) => {
+    const steps = Number(root.dataset.steps);
+    const interval = Number(root.dataset.interval);
+    const bound: Bound[] = [];
+    root.querySelectorAll<HTMLElement>("[data-in],[data-vals],[data-cls],[data-w]").forEach((el) => {
+      if (el.dataset.in) bound.push({ el, kind: "in", data: { from: Number(el.dataset.in), to: el.dataset.out ? Number(el.dataset.out) : Infinity } });
+      if (el.dataset.vals) bound.push({ el, kind: "vals", data: JSON.parse(el.dataset.vals) });
+      if (el.dataset.cls) bound.push({ el, kind: "cls", data: JSON.parse(el.dataset.cls) });
+      if (el.dataset.w) bound.push({ el, kind: "w", data: JSON.parse(el.dataset.w) });
+    });
+
+    const apply = (s: number, animate: boolean) => {
+      root.dataset.step = String(s);
+      for (const b of bound) {
+        if (b.kind === "in") {
+          const on = s >= b.data.from && s < b.data.to;
+          if (on !== b.el.classList.contains("is-in")) {
+            b.el.classList.toggle("is-in", on);
+            if (on && animate) b.el.classList.add("is-new");
+          }
+        } else if (b.kind === "vals") {
+          const v = b.data[Math.min(s, b.data.length - 1)];
+          if (b.el.textContent !== v) {
+            b.el.textContent = v;
+            if (animate) {
+              b.el.classList.remove("is-flash");
+              void b.el.offsetWidth;
+              b.el.classList.add("is-flash");
+            }
+          }
+        } else if (b.kind === "cls") {
+          const keys = Object.keys(b.data).map(Number).sort((x, y) => x - y);
+          keys.forEach((k) => b.data[k] && b.el.classList.remove(b.data[k]));
+          const k = keys.filter((x) => x <= s).pop();
+          if (k !== undefined && b.data[k]) b.el.classList.add(b.data[k]);
+        } else {
+          b.el.style.width = b.data[Math.min(s, b.data.length - 1)];
+        }
+      }
+    };
+
+    // start from the still (last step) so no-JS and first paint agree, then rewind if we'll animate
+    apply(steps - 1, false);
+    if (reduce.matches) return;
+    apply(0, false);
+
+    let s = 0;
+    let timer = 0;
+    let visible = false;
+    const tick = () => {
+      if (s >= steps - 1) {
+        // hold the finished state for a beat, then fade and start over
+        root.classList.add("is-resetting");
+        timer = window.setTimeout(() => {
+          root.querySelectorAll(".is-new").forEach((e) => e.classList.remove("is-new"));
+          s = 0;
+          apply(0, false);
+          root.classList.remove("is-resetting");
+          schedule();
+        }, 450);
+        return;
+      }
+      s += 1;
+      apply(s, true);
+      schedule();
+    };
+    const schedule = () => {
+      clearTimeout(timer);
+      if (visible) timer = window.setTimeout(tick, s >= steps - 1 ? interval * 1.6 : interval);
+    };
+    new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible) schedule();
+      else clearTimeout(timer);
+    }, { threshold: 0.25 }).observe(root);
+  });
+</script>
+
+<style>
+  .lf {
+    margin: 0;
+    overflow: hidden;
+    border-radius: clamp(10px, 0.6rem + 0.5vw, 16px);
+    background: #fff;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.1),
+      0 40px 80px -30px rgb(0 0 0 / 0.7);
+  }
+  .lf__bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: #f6f5f1;
+    border-bottom: 1px solid rgb(18 40 47 / 0.07);
+  }
+  .lf__bar span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgb(18 40 47 / 0.15);
+  }
+  .lf__bar em {
+    margin-inline: auto;
+    padding: 3px 14px;
+    border-radius: var(--radius-pill);
+    font-style: normal;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-medium);
+    color: rgb(18 40 47 / 0.6);
+    background: #fff;
+    border: 1px solid rgb(18 40 47 / 0.07);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+  }
+  .lf__screen {
+    container-type: inline-size;
+  }
+  .lf__app {
+    --u: calc(100cqi / 128);
+    font-size: var(--u);
+    position: relative;
+    transition: opacity 400ms var(--ease-out);
+  }
+  .lf.is-resetting .lf__app {
+    opacity: 0.35;
+  }
+
+  /* runner states, shared by every dashboard */
+  /* only with JS: without it the markup shows the finished state as written */
+  :global(.js) .lf :global([data-in]:not(.is-in)) {
+    display: none !important;
+  }
+  .lf :global(.is-new) {
+    animation: lf-in 600ms var(--ease-out) both;
+  }
+  .lf :global(.is-flash) {
+    animation: lf-flash 1.2s var(--ease-out);
+  }
+  .lf :global([data-w]) {
+    transition: width 900ms var(--ease-out);
+  }
+  @keyframes lf-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.8em);
+    }
+  }
+  @keyframes lf-flash {
+    0% {
+      background-color: rgb(247 141 32 / 0.25);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+
+  /* same scroll-driven settle as the screenshot frames */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .lf--tilt {
+        transform-origin: 50% 0%;
+        animation: lf-settle linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 50%;
+      }
+    }
+  }
+  @keyframes lf-settle {
+    from {
+      transform: perspective(1800px) rotateX(24deg) scale(0.9) translateY(-2%);
+    }
+    to {
+      transform: perspective(1800px) rotateX(0deg) scale(1) translateY(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lf :global(.is-new),
+    .lf :global(.is-flash) {
+      animation: none;
+    }
+  }
+</style>
