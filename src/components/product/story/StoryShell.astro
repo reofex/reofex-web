@@ -1,0 +1,415 @@
+---
+/**
+ * Pinned scroll story used on product pages. The section pins while
+ * scrolling moves through `steps`; the scene (slot) is decorative and reacts
+ * to the root's state:
+ *   data-stage="k"      the current step
+ *   .reached-0 … -k     every step reached so far (for things that accumulate)
+ *   --p                 overall progress 0 → 1
+ * Without JS it's a plain list; on phones only the current step's text shows.
+ */
+import SectionHeader from "../../ui/SectionHeader.astro";
+
+interface Props {
+  id: string;
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  steps: { title: string; body: string; id?: string; items?: readonly string[] }[];
+  accent: string;
+  caption?: string;
+  /** scene width ÷ height on desktop and in the narrow layout */
+  ratio?: number;
+  narrowRatio?: number;
+}
+const { id, eyebrow, title, lead, steps, accent, caption, ratio = 60 / 42, narrowRatio = 32 / 34 } = Astro.props;
+---
+
+<section
+  class="section section--dark story reached-0"
+  aria-labelledby={id}
+  data-story
+  data-stage="0"
+  style={`--n:${steps.length};--acc:${accent};--scene-ratio:${ratio};--scene-ratio-narrow:${narrowRatio}`}
+>
+  <div class="container container--wide">
+    <SectionHeader id={id} eyebrow={eyebrow} title={title} lead={lead} align="split" />
+  </div>
+
+  <div class="ss__track">
+    <div class="ss__pin">
+      <div class="container container--wide ss__grid">
+        <ol class="ss__steps">
+          {
+            steps.map((s, i) => (
+              <li class="ss__step" style={`--i:${i}`} id={s.id} data-story-step={i}>
+                <button type="button" class="ss__stepbtn" data-story-go={i} aria-current={i === 0 ? "step" : undefined}>
+                  <span class="ss__n">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="ss__t">{s.title}</span>
+                </button>
+                <div class="ss__body">
+                  <div class="ss__bodyin">
+                    <p>{s.body}</p>
+                    {s.items && (
+                      <ul class="ss__items">
+                        {s.items.map((x) => (
+                          <li>{x}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+
+        <div class="ss__scene" aria-hidden="true">
+          <slot />
+          {caption && <p class="ss__cap">{caption}</p>}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const HEADER = 72;
+  document.querySelectorAll<HTMLElement>("[data-story]").forEach((root) => {
+    const track = root.querySelector<HTMLElement>(".ss__track")!;
+    const btns = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-story-go]"));
+    const n = btns.length;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let stage = 0;
+    let ticking = false;
+
+    const metrics = () => {
+      const r = track.getBoundingClientRect();
+      const pinH = window.innerHeight - HEADER;
+      return { top: r.top + window.scrollY, travel: Math.max(1, r.height - pinH) };
+    };
+
+    const update = () => {
+      ticking = false;
+      const { top, travel } = metrics();
+      const p = Math.max(0, Math.min(1, (window.scrollY + HEADER - top) / travel));
+      root.style.setProperty("--p", p.toFixed(4));
+      const s = Math.min(n - 1, Math.floor(p * n));
+      if (s !== stage) {
+        stage = s;
+        root.dataset.stage = String(s);
+        for (let i = 0; i < n; i++) root.classList.toggle(`reached-${i}`, i <= s);
+        btns.forEach((b, i) => (i === s ? b.setAttribute("aria-current", "step") : b.removeAttribute("aria-current")));
+      }
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    btns.forEach((b, i) =>
+      b.addEventListener("click", () => {
+        const { top, travel } = metrics();
+        window.scrollTo({
+          top: top - HEADER + ((i + 0.5) / n) * travel,
+          behavior: reduce.matches ? "auto" : "smooth",
+        });
+      }),
+    );
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    update();
+
+    // Deep links (e.g. /solutions#integrations): land on that step's stage, not the top of the pin
+    const goToHash = (instant: boolean) => {
+      const id = decodeURIComponent(location.hash.slice(1));
+      const step = id ? root.querySelector<HTMLElement>(`[data-story-step][id="${CSS.escape(id)}"]`) : null;
+      if (!step) return false;
+      const i = Number(step.dataset.storyStep);
+      const { top, travel } = metrics();
+      window.scrollTo({ top: top - HEADER + ((i + 0.5) / n) * travel, behavior: instant || reduce.matches ? "auto" : "smooth" });
+      return true;
+    };
+    if (location.hash) requestAnimationFrame(() => goToHash(true));
+    window.addEventListener("hashchange", () => goToHash(false));
+  });
+</script>
+
+<style>
+  .story {
+    --ok: #1f9d6b;
+    padding-bottom: var(--space-12);
+    background:
+      radial-gradient(60% 50% at 80% 40%, color-mix(in srgb, var(--acc) 16%, transparent), transparent 70%),
+      var(--reofex-dark);
+  }
+  .story :global(.sh) {
+    margin-bottom: 0;
+  }
+
+  /* ---- Pinning ---- */
+  .ss__track {
+    position: relative;
+    height: calc(var(--n) * 70svh + 100svh);
+  }
+  .ss__pin {
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100svh - var(--header-h));
+    display: grid;
+    align-items: center;
+    overflow: hidden;
+  }
+  :global(html:not(.js)) .ss__track {
+    height: auto;
+  }
+  :global(html:not(.js)) .ss__pin {
+    position: static;
+    height: auto;
+    padding-block: var(--space-12);
+  }
+  .ss__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.68fr) minmax(0, 1.32fr);
+    align-items: center;
+    gap: clamp(2rem, 1rem + 4vw, 5rem);
+  }
+
+  /* ---- Step list ---- */
+  .ss__steps {
+    list-style: none;
+    padding: 0 0 0 var(--space-6);
+    position: relative;
+    display: grid;
+    gap: var(--space-1);
+  }
+  .ss__steps::before,
+  .ss__steps::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--reofex-border-dark-strong);
+  }
+  .ss__steps::after {
+    background: linear-gradient(180deg, var(--acc), var(--reofex-orange));
+    transform-origin: top;
+    transform: scaleY(var(--p, 0));
+  }
+  .ss__stepbtn {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    width: 100%;
+    padding: var(--space-3) 0;
+    border: 0;
+    background: none;
+    color: rgb(255 255 255 / 0.45);
+    font: inherit;
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-bold);
+    letter-spacing: -0.015em;
+    text-align: left;
+    cursor: pointer;
+    transition: color 300ms var(--ease-out);
+  }
+  .ss__stepbtn:hover {
+    color: rgb(255 255 255 / 0.75);
+  }
+  .ss__stepbtn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: var(--radius-sm);
+  }
+  .ss__stepbtn[aria-current],
+  :global(html:not(.js)) .ss__stepbtn {
+    color: #fff;
+  }
+  .ss__n {
+    font-size: var(--fs-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--reofex-muted-dark);
+    transition: color 300ms var(--ease-out);
+  }
+  .ss__stepbtn[aria-current] .ss__n {
+    color: var(--reofex-orange);
+  }
+  .ss__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 450ms var(--ease-out);
+  }
+  .ss__bodyin {
+    overflow: hidden;
+    min-height: 0;
+    padding-left: calc(var(--space-3) + 1.1em);
+    opacity: 0;
+    transition: opacity 300ms var(--ease-out);
+  }
+  .ss__bodyin p {
+    font-size: var(--fs-base);
+    line-height: 1.6;
+    color: var(--reofex-muted-dark);
+  }
+  .ss__items {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    font-size: var(--fs-sm);
+    color: rgb(255 255 255 / 0.8);
+  }
+  .ss__items li::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: var(--acc);
+    vertical-align: middle;
+  }
+  .ss__stepbtn[aria-current] + .ss__body,
+  :global(html:not(.js)) .ss__body {
+    grid-template-rows: 1fr;
+  }
+  .ss__stepbtn[aria-current] + .ss__body .ss__bodyin,
+  :global(html:not(.js)) .ss__body .ss__bodyin {
+    opacity: 1;
+    padding-bottom: var(--space-3);
+    transition-delay: 120ms;
+  }
+
+  /* ---- Scene slot ---- */
+  .ss__scene {
+    container-type: inline-size;
+    width: min(100%, calc((100svh - var(--header-h) - 5rem) * var(--scene-ratio, 1.43)));
+    justify-self: center;
+  }
+  .ss__cap {
+    margin-top: var(--space-3);
+    text-align: center;
+    font-size: var(--fs-xs);
+    color: rgb(255 255 255 / 0.4);
+  }
+
+  /* ---- Shared scene primitives (used by every scene) ---- */
+  .story :global(.ss-card) {
+    background: #fff;
+    border-radius: 1.2em;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.06),
+      0 2.5em 5em -2em rgb(0 0 0 / 0.6);
+  }
+  .story :global(.ss-pill) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.35em 0.9em;
+    border-radius: 99px;
+    font-size: 1.05em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .story :global(.ss-pill i) {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .story :global(.ss-pill--blue) {
+    color: #bcd0ff;
+    background: rgb(37 99 235 / 0.22);
+    border: 1px solid rgb(37 99 235 / 0.45);
+  }
+  .story :global(.ss-pill--orange) {
+    color: #8a4700;
+    background: rgb(247 141 32 / 0.16);
+  }
+  .story :global(.ss-pill--green) {
+    color: #146a48;
+    background: rgb(31 157 107 / 0.12);
+  }
+  .story :global(.ss-tick) {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--ok);
+  }
+  .story :global(.ss-tick .icon) {
+    width: 1.2em;
+    height: 1.2em;
+    stroke-width: 2.6;
+  }
+  .story :global(.ss-tick--warn) {
+    color: var(--reofex-dark);
+    background: var(--reofex-orange);
+  }
+
+  .story :global(.ss-pill--violet) {
+    color: #5b3fc4;
+    background: rgb(115 87 214 / 0.12);
+  }
+  .story :global(.ss-pill--grey) {
+    color: rgb(18 40 47 / 0.65);
+    background: rgb(18 40 47 / 0.07);
+  }
+
+  /* ---- Tablet & phone: stacked, only the current step's text ---- */
+  @media (max-width: 899px) {
+    .ss__track {
+      height: calc(var(--n) * 60svh + 100svh);
+    }
+    .ss__grid {
+      grid-template-columns: 1fr;
+      align-content: center;
+      gap: var(--space-5);
+      height: 100%;
+    }
+    .ss__steps {
+      padding-left: 0;
+      padding-top: var(--space-4);
+      min-height: 7.5rem;
+      align-content: start;
+    }
+    .ss__steps::before,
+    .ss__steps::after {
+      top: 0;
+      bottom: auto;
+      left: 0;
+      right: 0;
+      width: auto;
+      height: 2px;
+    }
+    .ss__steps::after {
+      transform-origin: left;
+      transform: scaleX(var(--p, 0));
+    }
+    .ss__step {
+      display: none;
+    }
+    .ss__step:has([aria-current]),
+    :global(html:not(.js)) .ss__step {
+      display: block;
+    }
+    .ss__stepbtn {
+      padding-bottom: var(--space-1);
+    }
+    .ss__scene {
+      width: min(100%, calc((100svh - var(--header-h) - 12rem) * var(--scene-ratio-narrow, 0.94)), 520px);
+    }
+  }
+
+</style>

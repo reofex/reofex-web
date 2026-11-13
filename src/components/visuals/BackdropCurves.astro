@@ -19,11 +19,7 @@ const { variant = "hero" } = Astro.props;
         <stop offset=".5" stop-color="#2f8f86" stop-opacity=".35" />
         <stop offset="1" stop-color="#2f8f86" stop-opacity="0" />
       </linearGradient>
-      <pattern id={`bc-dots-${variant}`} width="28" height="28" patternUnits="userSpaceOnUse">
-        <circle cx="1" cy="1" r="1" fill="#fff" fill-opacity=".05" />
-      </pattern>
     </defs>
-    <rect width="1440" height="800" fill={`url(#bc-dots-${variant})`} />
     {
       variant === "hero" && (
         <>

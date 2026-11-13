@@ -1,0 +1,618 @@
+---
+/**
+ * Respondly: follow one WhatsApp conversation from a late-night question to a
+ * lead in the CRM. The chat on the left accumulates messages as stages are
+ * reached; the panel on the right shows what Respondly is doing behind it.
+ * Example data only (illustrative business and customer).
+ */
+import Icon from "../ui/Icon.astro";
+import StoryShell from "./story/StoryShell.astro";
+
+const steps = [
+  {
+    title: "A customer asks, any hour",
+    body: "An enquiry comes in on WhatsApp at 11:48 pm. Instagram DMs and website chat land in the same inbox.",
+  },
+  {
+    title: "Answered from your data",
+    body: "Respondly replies with your real products, prices, stock and delivery rules. Not a generic auto-reply.",
+  },
+  {
+    title: "Collects only what you need",
+    body: "It asks for the details your team asked for, and nothing more.",
+  },
+  {
+    title: "Hands over when it matters",
+    body: "A discount request? Your team gets an alert and takes over the conversation.",
+  },
+  {
+    title: "Saved where you work",
+    body: "The payment link goes out in the chat, paid into your own account, and the lead lands in Zoho CRM on its own.",
+  },
+];
+
+type Msg = { s: number; from: "in" | "ai" | "team" | "sys"; text: string; time?: string };
+const msgs: Msg[] = [
+  { s: 0, from: "in", text: "Hi, do you have the Brogue Commando boots in brown, size 9? Can you deliver to Kakkanad?", time: "11:48 pm" },
+  { s: 1, from: "ai", text: "Yes! The Brogue Commando in brown, UK 9, is ₹4,999 and we have 3 pairs in stock. Delivery to Kakkanad takes 2 days and is free.", time: "11:48 pm" },
+  { s: 2, from: "in", text: "Great, I'd like to order a pair.", time: "11:50 pm" },
+  { s: 2, from: "ai", text: "Lovely! Could I have your name and delivery address?", time: "11:50 pm" },
+  { s: 2, from: "in", text: "Anjali Menon, 14B Palm Grove, Kakkanad", time: "11:51 pm" },
+  { s: 3, from: "in", text: "Any chance of ₹4,500?", time: "11:52 pm" },
+  { s: 3, from: "ai", text: "Let me get someone from the team for you.", time: "11:52 pm" },
+  { s: 4, from: "sys", text: "Rahul from Stride & Co. joined the chat" },
+  { s: 4, from: "team", text: "Hi Anjali, I can do ₹4,799 with free delivery. Here's your payment link.", time: "9:05 am" },
+];
+---
+
+<StoryShell
+  id="rs-title"
+  eyebrow="Follow one conversation"
+  title={"From a late-night question\nto a lead in your CRM."}
+  lead="Scroll to see how Respondly handles a single enquiry, and where your team steps in."
+  steps={steps}
+  accent="#1f9d6b"
+  caption="Example conversation"
+>
+  <div class="rs">
+    <!-- The conversation -->
+    <div class="ss-card rs-chat">
+      <div class="rs-chat__head">
+        <span class="rs-ava">AM</span>
+        <div><b>Anjali Menon</b><small>WhatsApp · Stride & Co.</small></div>
+        <Icon name="whatsapp" size={16} />
+      </div>
+      <div class="rs-chat__body">
+        {
+          msgs.map((m) => (
+            <div class:list={["rs-msg", `rs-msg--${m.from}`]} data-s={m.s}>
+              {m.from === "ai" && <span class="rs-by">Respondly</span>}
+              {m.from === "team" && <span class="rs-by rs-by--team">Rahul · Stride & Co.</span>}
+              <p>{m.text}</p>
+              {m.time && <time>{m.time}</time>}
+            </div>
+          ))
+        }
+      </div>
+      <div class="rs-chat__input"><span>Message</span><Icon name="arrowRight" size={14} /></div>
+    </div>
+
+    <!-- 0 · one inbox, every channel -->
+    <div class="ss-card rs-panel rs-inbox" data-s="0">
+      <div class="rs-panel__head"><Icon name="chat" size={16} /><b>Inbox</b><small>All channels</small></div>
+      <div class="rs-row rs-row--new">
+        <Icon name="whatsapp" size={16} />
+        <span><b>Anjali Menon</b><small>Brogue boots in brown, size 9?</small></span>
+        <span class="ss-pill ss-pill--green">New</span>
+      </div>
+      <div class="rs-row">
+        <Icon name="instagram" size={16} />
+        <span><b>@riya.k</b><small>Are the Chelsea boots back in size 7?</small></span>
+        <span class="ss-pill ss-pill--grey">Answered</span>
+      </div>
+      <div class="rs-row">
+        <Icon name="globe" size={16} />
+        <span><b>Website visitor</b><small>Are you open on Sunday?</small></span>
+        <span class="ss-pill ss-pill--grey">Answered</span>
+      </div>
+    </div>
+
+    <!-- 1 · grounded in the business's own data -->
+    <div class="ss-card rs-panel rs-data" data-s="1">
+      <div class="rs-panel__head"><Icon name="database" size={16} /><b>Your products</b><small>Uploaded by you</small></div>
+      <div class="rs-row rs-row--use">
+        <span><b>Brogue Commando</b><small>Brown · UK 9</small></span>
+        <b>₹4,999</b>
+        <span class="rs-stock">3 in stock</span>
+      </div>
+      <div class="rs-row">
+        <span><b>Brogue Commando</b><small>Tan · UK 9</small></span>
+        <b>₹4,999</b>
+        <span class="rs-stock rs-stock--out">Sold out</span>
+      </div>
+      <div class="rs-row">
+        <span><b>Chelsea boots</b><small>Black · UK 7–10</small></span>
+        <b>₹3,899</b>
+        <span class="rs-stock">6 in stock</span>
+      </div>
+      <div class="rs-rule rs-row--use">
+        <Icon name="compass" size={14} />
+        Delivery in Kochi: 2 days, free over ₹2,500
+      </div>
+      <p class="rs-note">Highlighted rows were used in this reply</p>
+    </div>
+
+    <!-- 2 · lead details -->
+    <div class="ss-card rs-panel rs-lead" data-s="2">
+      <div class="rs-panel__head"><Icon name="filter" size={16} /><b>Lead details</b><span class="ss-pill ss-pill--green">4 of 4</span></div>
+      {
+        [
+          ["Name", "Anjali Menon"],
+          ["Phone", "From WhatsApp"],
+          ["Product", "Brogue Commando, brown UK 9"],
+          ["Address", "14B Palm Grove, Kakkanad"],
+        ].map(([k, v], i) => (
+          <div class="rs-field" style={`--k:${i}`}>
+            <span class="ss-tick"><Icon name="check" size={12} /></span>
+            <span>{k}</span>
+            <b>{v}</b>
+          </div>
+        ))
+      }
+      <p class="rs-note">Only the fields you asked Respondly to collect</p>
+    </div>
+
+    <!-- 3 · alert + human takeover -->
+    <div class="rs-panel rs-alert" data-s="3">
+      <div class="ss-card rs-notif">
+        <div class="rs-notif__top"><Icon name="bell" size={14} /><b>Respondly</b><small>now</small></div>
+        <b>Discount request from Anjali Menon</b>
+        <p>"Any chance of ₹4,500?" · Brogue Commando boots, ₹4,999</p>
+        <div class="rs-notif__btns">
+          <span class="rs-btn rs-btn--ghost">Later</span>
+          <span class="rs-btn rs-btn--go">Take over<span class="rs-tap"></span></span>
+        </div>
+      </div>
+      <div class="rs-joined"><span class="ss-tick"><Icon name="userCheck" size={12} /></span>Rahul is now in the chat</div>
+    </div>
+
+    <!-- 4 · saved to the CRM -->
+    <div class="ss-card rs-panel rs-crm" data-s="4">
+      <div class="rs-panel__head"><Icon name="users" size={16} /><b>Leads</b><small>Zoho CRM</small></div>
+      <div class="rs-row rs-row--new rs-row--crm">
+        <span><b>Anjali Menon</b><small>Brogue Commando · WhatsApp</small></span>
+        <b>₹4,799</b>
+        <span class="ss-pill ss-pill--orange">Payment sent</span>
+      </div>
+      <div class="rs-row rs-row--crm">
+        <span><b>Riya K.</b><small>Chelsea boots · Instagram</small></span>
+        <b>₹3,899</b>
+        <span class="ss-pill ss-pill--grey">Follow up</span>
+      </div>
+      <div class="rs-row rs-row--crm">
+        <span><b>Website visitor</b><small>Store visit · Website</small></span>
+        <b>—</b>
+        <span class="ss-pill ss-pill--grey">Booked</span>
+      </div>
+    </div>
+  </div>
+</StoryShell>
+
+<style>
+  /* 60 × 42 unit design grid that scales with the scene's width */
+  .rs {
+    --u: calc(100cqi / 60);
+    --wa: #0f3d36;
+    font-size: var(--u);
+    position: relative;
+    aspect-ratio: 60 / 42;
+    color: var(--reofex-dark);
+  }
+
+  /* ---- Chat ---- */
+  .rs-chat {
+    position: absolute;
+    left: 1em;
+    top: 0;
+    width: 27em;
+    height: 42em;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+  }
+  .rs-chat__head {
+    display: flex;
+    align-items: center;
+    gap: 0.9em;
+    padding: 1em 1.2em;
+    background: var(--wa);
+    color: #fff;
+  }
+  .rs-chat__head div {
+    display: grid;
+    flex: 1;
+    font-size: 1.1em;
+    line-height: 1.3;
+  }
+  .rs-chat__head small {
+    font-size: 0.82em;
+    color: rgb(255 255 255 / 0.6);
+  }
+  .rs-chat__head :global(.icon) {
+    width: 1.8em;
+    height: 1.8em;
+    color: #4ade80;
+  }
+  .rs-ava {
+    display: grid;
+    place-items: center;
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    background: #f2c48d;
+    color: #5a3205;
+    font-weight: 800;
+  }
+  .rs-chat__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.7em;
+    padding: 1.2em;
+    background: #efeae2;
+    overflow: hidden;
+  }
+  .rs-chat__input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0.9em 0.9em;
+    padding: 0.8em 1.1em;
+    border-radius: 99px;
+    background: #fff;
+    color: rgb(18 40 47 / 0.4);
+    font-size: 1.05em;
+    box-shadow: 0 0 0 1px rgb(18 40 47 / 0.06);
+  }
+  :global(.story) .rs-chat__input {
+    margin-top: -0.2em;
+  }
+  .rs-msg {
+    display: none;
+    flex-direction: column;
+    gap: 0.25em;
+    max-width: 80%;
+    padding: 0.65em 0.9em 0.5em;
+    border-radius: 0.3em 1em 1em 1em;
+    background: #fff;
+    font-size: 1.08em;
+    line-height: 1.4;
+    box-shadow: 0 0.1em 0.2em rgb(0 0 0 / 0.08);
+    animation: rs-pop 450ms var(--ease-out) both;
+  }
+  .rs-msg time {
+    align-self: flex-end;
+    font-size: 0.75em;
+    color: rgb(18 40 47 / 0.45);
+  }
+  .rs-msg--ai,
+  .rs-msg--team {
+    align-self: flex-end;
+    border-radius: 1em 0.3em 1em 1em;
+    background: #d9fdd3;
+    animation-delay: 500ms;
+  }
+  .rs-by {
+    font-size: 0.78em;
+    font-weight: 800;
+    color: #146a48;
+  }
+  .rs-by--team {
+    color: #8a4700;
+  }
+  .rs-msg--sys {
+    align-self: center;
+    max-width: none;
+    padding: 0.35em 0.9em;
+    border-radius: 0.5em;
+    background: #fdf3d1;
+    font-size: 0.9em;
+    color: rgb(18 40 47 / 0.7);
+    box-shadow: none;
+  }
+  /* messages accumulate as stages are reached */
+  :global(.story.reached-0) .rs-msg[data-s="0"],
+  :global(.story.reached-1) .rs-msg[data-s="1"],
+  :global(.story.reached-2) .rs-msg[data-s="2"],
+  :global(.story.reached-3) .rs-msg[data-s="3"],
+  :global(.story.reached-4) .rs-msg[data-s="4"] {
+    display: flex;
+  }
+  /* within a stage, later messages follow the earlier ones */
+  .rs-msg[data-s="2"]:nth-child(4) {
+    animation-delay: 900ms;
+  }
+  .rs-msg[data-s="2"]:nth-child(5) {
+    animation-delay: 1500ms;
+  }
+  .rs-msg[data-s="3"]:nth-child(7) {
+    animation-delay: 900ms;
+  }
+  .rs-msg[data-s="4"]:nth-child(9) {
+    animation-delay: 900ms;
+  }
+
+  /* ---- Right-hand panels ---- */
+  .rs-panel {
+    position: absolute;
+    left: 30.5em;
+    top: 3em;
+    width: 28.5em;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(2.5em);
+    transition:
+      opacity 450ms var(--ease-out),
+      transform 600ms var(--ease-out),
+      visibility 0s linear 600ms;
+  }
+  :global(.story[data-stage="0"]) .rs-panel[data-s="0"],
+  :global(.story[data-stage="1"]) .rs-panel[data-s="1"],
+  :global(.story[data-stage="2"]) .rs-panel[data-s="2"],
+  :global(.story[data-stage="3"]) .rs-panel[data-s="3"],
+  :global(.story[data-stage="4"]) .rs-panel[data-s="4"] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 150ms, 150ms, 0s;
+  }
+  .ss-card.rs-panel {
+    padding: 0.4em 0 0.8em;
+    overflow: hidden;
+  }
+  .rs-panel__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 1em 1.4em 0.9em;
+    font-size: 1.15em;
+  }
+  .rs-panel__head :global(.icon) {
+    width: 1.4em;
+    height: 1.4em;
+    color: var(--acc);
+  }
+  .rs-panel__head small,
+  .rs-panel__head .ss-pill {
+    margin-left: auto;
+  }
+  .rs-panel__head small {
+    font-size: 0.85em;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .rs-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1em;
+    padding: 0.9em 1.4em;
+    border-top: 1px solid rgb(18 40 47 / 0.06);
+    font-size: 1.05em;
+    font-variant-numeric: tabular-nums;
+  }
+  .rs-data .rs-row,
+  .rs-row--crm {
+    grid-template-columns: 1fr auto auto;
+  }
+  .rs-row > span:first-of-type:not(.ss-pill) {
+    display: grid;
+    line-height: 1.35;
+    min-width: 0;
+  }
+  .rs-row small {
+    color: rgb(18 40 47 / 0.55);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rs-row > :global(.icon) {
+    width: 1.5em;
+    height: 1.5em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .rs-row--new {
+    background: rgb(31 157 107 / 0.07);
+    box-shadow: inset 0.25em 0 0 var(--acc);
+  }
+  .rs-stock {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #146a48;
+  }
+  .rs-stock--out {
+    color: rgb(18 40 47 / 0.45);
+  }
+  .rs-rule {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    margin: 0.6em 1.4em 0;
+    padding: 0.8em 1em;
+    border-radius: 0.7em;
+    background: #f6f4ef;
+    font-size: 1em;
+    font-weight: 600;
+  }
+  .rs-rule :global(.icon) {
+    width: 1.3em;
+    height: 1.3em;
+  }
+  .rs-note {
+    padding: 0.9em 1.4em 0.2em;
+    font-size: 0.92em;
+    color: rgb(18 40 47 / 0.5);
+  }
+  /* rows the reply was built from light up */
+  :global(.story[data-stage="1"]) .rs-row--use {
+    animation: rs-use 1.6s var(--ease-out) 700ms both;
+  }
+  .rs-field {
+    display: grid;
+    grid-template-columns: auto 6.5em 1fr;
+    align-items: center;
+    gap: 0.9em;
+    padding: 0.85em 1.4em;
+    border-top: 1px solid rgb(18 40 47 / 0.06);
+    font-size: 1.05em;
+  }
+  .rs-field > span:nth-child(2) {
+    color: rgb(18 40 47 / 0.55);
+  }
+  :global(.story[data-stage="2"]) .rs-field {
+    animation: rs-pop 400ms var(--ease-out) both;
+    animation-delay: calc(900ms + var(--k) * 260ms);
+  }
+
+  /* 3 · alert */
+  .rs-alert {
+    display: grid;
+    gap: 1.2em;
+    justify-items: start;
+  }
+  .rs-notif {
+    display: grid;
+    gap: 0.5em;
+    width: 100%;
+    padding: 1.3em 1.4em;
+    font-size: 1.05em;
+  }
+  .rs-notif__top {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.9em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .rs-notif__top b {
+    color: var(--reofex-dark);
+  }
+  .rs-notif__top small {
+    margin-left: auto;
+  }
+  .rs-notif__top :global(.icon) {
+    width: 1.2em;
+    height: 1.2em;
+    color: var(--reofex-orange);
+  }
+  .rs-notif p {
+    color: rgb(18 40 47 / 0.65);
+  }
+  .rs-notif__btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6em;
+    margin-top: 0.5em;
+  }
+  .rs-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 0.7em;
+    border-radius: 99px;
+    font-weight: 700;
+    overflow: hidden;
+  }
+  .rs-btn--ghost {
+    border: 1px solid rgb(18 40 47 / 0.15);
+    color: rgb(18 40 47 / 0.7);
+  }
+  .rs-btn--go {
+    background: var(--reofex-orange);
+    color: var(--reofex-dark);
+  }
+  .rs-tap {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3em;
+    height: 3em;
+    margin: -1.5em 0 0 -1.5em;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.7);
+    opacity: 0;
+  }
+  :global(.story[data-stage="3"]) .rs-tap {
+    animation: rs-tap 700ms var(--ease-out) 1.6s both;
+  }
+  .rs-joined {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0.7em 1.2em 0.7em 0.7em;
+    border-radius: 99px;
+    background: rgb(20 46 54 / 0.9);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    color: #fff;
+    font-size: 1.05em;
+    font-weight: 700;
+    opacity: 0;
+  }
+  :global(.story[data-stage="3"]) .rs-joined {
+    animation: rs-pop 450ms var(--ease-out) 2.1s both;
+  }
+  :global(.story[data-stage="4"]) .rs-row--new {
+    animation: rs-slide 600ms var(--ease-out) 300ms both;
+  }
+
+  @keyframes rs-pop {
+    from {
+      opacity: 0;
+      transform: translateY(0.8em);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes rs-use {
+    0% {
+      background: transparent;
+    }
+    30%,
+    100% {
+      background: rgb(31 157 107 / 0.1);
+      box-shadow: inset 0.25em 0 0 var(--acc);
+    }
+  }
+  @keyframes rs-tap {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(3);
+    }
+  }
+  @keyframes rs-slide {
+    from {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+  }
+
+  /* Narrow scenes: chat fills the frame, the panel floats over its top */
+  @container (max-width: 520px) {
+    .rs {
+      --u: calc(100cqi / 32);
+      aspect-ratio: 32 / 34;
+    }
+    .rs-chat {
+      left: 0.5em;
+      width: 31em;
+      height: 34em;
+    }
+    .rs-panel {
+      left: 2em;
+      top: 5em;
+      width: 28em;
+      font-size: 0.92em;
+    }
+    .rs-note,
+    .rs-row:nth-of-type(n + 4) {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rs [class^="rs-"] {
+      animation: none !important;
+    }
+    :global(.story[data-stage="3"]) .rs-joined {
+      opacity: 1;
+    }
+  }
+</style>

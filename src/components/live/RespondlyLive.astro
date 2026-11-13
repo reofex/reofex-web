@@ -1,0 +1,632 @@
+---
+/**
+ * Respondly dashboard, rebuilt from the product's layout with demo-store data
+ * (Stride & Co., the demo business on therespondly.com). No client data.
+ * Loop: a WhatsApp enquiry arrives → the assistant replies → the customer
+ * pays → sales move → a discount request waits for a person.
+ */
+import Icon from "../ui/Icon.astro";
+import LiveFrame from "./LiveFrame.astro";
+
+const v = (a: string[]) => JSON.stringify(a);
+const total = ["46", "47", "47", "47", "47"];
+const stages = [
+  { k: "New", c: "#4f39f6", n: ["9", "10", "10", "9", "9"] },
+  { k: "Qualified", c: "#00a63e", n: ["14", "14", "14", "14", "14"] },
+  { k: "Followed up", c: "#f59e0b", n: ["8", "8", "8", "8", "8"] },
+  { k: "Converted", c: "#0ea5e9", n: ["12", "12", "12", "13", "13"] },
+  { k: "Lost", c: "#d1d5dc", n: ["3", "3", "3", "3", "3"] },
+];
+const pct = (n: string, t: string) => `${Math.round((Number(n) / Number(t)) * 100)}%`;
+// ring chart segments from the final state
+const fin = stages.map((x) => Number(x.n[4]));
+const sum = fin.reduce((a, b) => a + b, 0);
+const C = 2 * Math.PI * 40;
+let acc = 0;
+const arcs = stages.map((x, i) => {
+  const len = (fin[i] / sum) * C;
+  const a = { c: x.c, dash: `${Math.max(0, len - 2)} ${C}`, off: -acc };
+  acc += len;
+  return a;
+});
+---
+
+<LiveFrame label="Respondly · Dashboard · demo data" steps={5} class="lf--tilt">
+  <div class="rl">
+    <aside class="rl-side">
+      <div class="rl-brand"><i><Icon name="zap" size={12} /></i>Respondly</div>
+      <nav>
+        <span class="is-on"><Icon name="layers" size={12} />Dashboard</span>
+        <span><Icon name="chat" size={12} />Conversations<b data-vals={v(["3", "4", "4", "4", "5"])}>5</b></span>
+        <span><Icon name="users" size={12} />Leads</span>
+        <small>Online store</small>
+        <span><Icon name="card" size={12} />Orders<b data-vals={v(["", "", "", "1", "1"])} data-in="3">1</b></span>
+        <span><Icon name="database" size={12} />Products</span>
+        <small>Set up</small>
+        <span><Icon name="sparkles" size={12} />Assistant</span>
+        <span><Icon name="plug" size={12} />Channels</span>
+      </nav>
+      <div class="rl-acct"><i>S</i><span><b>Stride & Co.</b><small>Demo store</small></span></div>
+    </aside>
+
+    <div class="rl-main">
+      <div class="rl-head">
+        <span><b>Dashboard</b><small>Your AI assistant at a glance</small></span>
+        <div class="rl-ev" data-in="1" data-out="3"><i class="rl-ev__wa"><Icon name="whatsapp" size={11} /></i><span><b>Anjali M.</b> Brown boots in size 9?</span><em data-vals={v(["", "Replying…", "Replied in 4 s", "Replied in 4 s", "Replied in 4 s"])}>Replied in 4 s</em></div>
+        <div class="rl-ev" data-in="3" data-out="4"><i class="rl-ev__ok"><Icon name="check" size={11} /></i><span><b>Order #1048</b> Brogue Commando, UK 9</span><em>Paid ₹4,999</em></div>
+        <div class="rl-ev rl-ev--hot" data-in="4"><i class="rl-ev__hot"><Icon name="bell" size={11} /></i><span><b>Rahul K.</b> “Any chance of a discount?”</span><em>Take over</em></div>
+      </div>
+
+      <div class="rl-row3">
+        <section class="rl-card">
+          <div class="rl-ch"><Icon name="chat" size={13} /><b>Channels</b><em>Manage →</em></div>
+          <p><i></i><span>WhatsApp<small>Connected</small></span><u>Live</u></p>
+          <p><i></i><span>Instagram<small>@stride.co</small></span><u>Live</u></p>
+          <p><i></i><span>Web chat<small>stride.co</small></span><u>Live</u></p>
+        </section>
+        <section class="rl-card">
+          <div class="rl-ch"><Icon name="zap" size={13} /><b>AI message quota</b><em>Details →</em></div>
+          <div class="rl-quota"><b data-vals={v(["1,284", "1,286", "1,288", "1,289", "1,291"])}>1,291</b><small>/ 3,000</small></div>
+          <div class="rl-bar"><i data-w={v(["42.8%", "42.9%", "42.9%", "43%", "43%"])} style="width:43%"></i></div>
+          <small class="rl-note">Messages used this period</small>
+        </section>
+        <section class="rl-card">
+          <div class="rl-ch"><Icon name="sparkles" size={13} /><b>AI status</b><span class="rl-pill" data-vals={v(["Replying", "Replying", "Replying", "Replying", "Replying"])}>Replying</span></div>
+          <p class="rl-st">Your assistant settings are live (version 12)</p>
+          <small class="rl-note">Taking orders · English, Malayalam, Manglish</small>
+          <p class="rl-wait" data-cls='{"4":"is-hot"}'><Icon name="userCheck" size={12} /><span data-vals={v(["0 waiting for a person", "0 waiting for a person", "0 waiting for a person", "0 waiting for a person", "1 waiting for a person →"])}>1 waiting for a person →</span></p>
+        </section>
+      </div>
+
+      <div class="rl-sold">
+        <i><Icon name="card" size={13} /></i>
+        <span>Sold by your assistant this month</span>
+        <b data-vals={v(["₹1,84,620", "₹1,84,620", "₹1,84,620", "₹1,89,619", "₹1,89,619"])}>₹1,89,619</b>
+        <small data-vals={v(["41 paid orders", "41 paid orders", "41 paid orders", "42 paid orders", "42 paid orders"])}>42 paid orders</small>
+      </div>
+
+      <div class="rl-stats">
+        <div><i class="rl-si"><Icon name="chat" size={12} /></i><small>Conversations</small><b data-vals={v(["126", "127", "127", "127", "128"])}>128</b><span>last 7 days</span></div>
+        <div><i class="rl-si rl-si--o"><Icon name="userCheck" size={12} /></i><small>Waiting for a person</small><b data-vals={v(["0", "0", "0", "0", "1"])}>1</b><span data-vals={v(["none right now", "none right now", "none right now", "none right now", "discount request"])}>discount request</span></div>
+        <div><i class="rl-si rl-si--g"><Icon name="target" size={12} /></i><small>Assistant's job</small><b class="rl-job">Take orders</b><span>See them in Online store</span></div>
+        <div><i class="rl-si rl-si--b"><Icon name="database" size={12} /></i><small>Products</small><b>186</b><span>164 in stock</span></div>
+      </div>
+
+      <div class="rl-bottom">
+        <section class="rl-card rl-pipe">
+          <div class="rl-ch"><b>Lead pipeline</b><small>This month</small></div>
+          <div class="rl-pipe__body">
+            <div class="rl-ring">
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#f2f4f7" stroke-width="12" />
+                {arcs.map((a) => (
+                  <circle cx="50" cy="50" r="40" fill="none" stroke={a.c} stroke-width="12" stroke-dasharray={a.dash} stroke-dashoffset={a.off} transform="rotate(-90 50 50)" />
+                ))}
+              </svg>
+              <span><b data-vals={v(total)}>{total[4]}</b><small>leads</small></span>
+            </div>
+            <ul>
+              {stages.map((x) => (
+                <li><i style={`background:${x.c}`} />{x.k}<b data-vals={v(x.n)}>{x.n[4]}</b></li>
+              ))}
+            </ul>
+          </div>
+        </section>
+        <section class="rl-card rl-status">
+          <div class="rl-ch"><b>Status breakdown</b></div>
+          {stages.map((x) => (
+            <div class="rl-sb">
+              <span>{x.k}</span>
+              <b data-vals={v(x.n)}>{x.n[4]}</b>
+              <small data-vals={v(x.n.map((n, i) => pct(n, total[i])))}>{pct(x.n[4], total[4])}</small>
+              <i><u data-w={v(x.n.map((n, i) => pct(n, total[i])))} style={`width:${pct(x.n[4], total[4])};background:${x.c}`} /></i>
+            </div>
+          ))}
+        </section>
+      </div>
+
+    </div>
+  </div>
+</LiveFrame>
+
+<style>
+  .rl {
+    --ink: #101828;
+    --mut: #6a7282;
+    --line: #eceef2;
+    --ind: #4f39f6;
+    display: grid;
+    grid-template-columns: 21em 1fr;
+    aspect-ratio: 16 / 10;
+    color: var(--ink);
+    background: #f9fafb;
+    overflow: hidden;
+  }
+  .rl :global(.icon) {
+    width: 1.25em;
+    height: 1.25em;
+    flex: none;
+  }
+  .rl-side {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 2em;
+    padding: 2em 1.2em 1.6em;
+    background: #030712;
+    color: #d1d5dc;
+  }
+  .rl-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.5em;
+  }
+  .rl-brand i {
+    display: grid;
+    place-items: center;
+    width: 1.8em;
+    height: 1.8em;
+    border-radius: 0.45em;
+    background: var(--ind);
+  }
+  .rl-side nav {
+    display: grid;
+    align-content: start;
+    gap: 0.25em;
+  }
+  .rl-side nav span {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 0.75em 1em;
+    border-radius: 0.6em;
+    font-size: 1.28em;
+  }
+  .rl-side nav span.is-on {
+    background: var(--ind);
+    color: #fff;
+  }
+  .rl-side nav small {
+    margin: 1.2em 1em 0.3em;
+    font-size: 0.95em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6a7282;
+  }
+  .rl-side nav b {
+    margin-left: auto;
+    min-width: 1.6em;
+    padding: 0 0.4em;
+    border-radius: 99px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.8em;
+    text-align: center;
+  }
+  .rl-acct {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding-top: 1.4em;
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+  }
+  .rl-acct i {
+    display: grid;
+    place-items: center;
+    width: 2.8em;
+    height: 2.8em;
+    border-radius: 0.6em;
+    background: var(--ind);
+    color: #fff;
+    font-style: normal;
+    font-weight: 700;
+  }
+  .rl-acct span {
+    display: grid;
+    line-height: 1.3;
+    font-size: 1.15em;
+  }
+  .rl-acct b {
+    color: #fff;
+  }
+  .rl-acct small {
+    color: #99a1af;
+  }
+  .rl-main {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 1.6em;
+    padding: 2.4em 2.6em;
+    min-width: 0;
+  }
+  .rl-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2em;
+    min-height: 5.6em;
+  }
+  .rl-head > span {
+    display: grid;
+    gap: 0.2em;
+  }
+  .rl-head > span > b {
+    font-size: 2.6em;
+    letter-spacing: -0.02em;
+  }
+  .rl-head > span > small {
+    font-size: 1.3em;
+    color: var(--mut);
+  }
+  .rl-row3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6em;
+  }
+  .rl-card {
+    display: grid;
+    align-content: start;
+    gap: 0.6em;
+    padding: 1.5em 1.7em;
+    border: 1px solid var(--line);
+    border-radius: 1.2em;
+    background: #fff;
+  }
+  .rl-ch {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    margin-bottom: 0.4em;
+    font-size: 1.3em;
+  }
+  .rl-ch :global(.icon) {
+    color: var(--ind);
+  }
+  .rl-ch em {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 0.85em;
+    color: var(--ind);
+  }
+  .rl-card > p {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    font-size: 1.2em;
+  }
+  .rl-card > p > i {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: #00c950;
+  }
+  .rl-card > p span {
+    display: grid;
+    line-height: 1.25;
+  }
+  .rl-card > p small {
+    color: var(--mut);
+    font-size: 0.85em;
+  }
+  .rl-card > p u {
+    margin-left: auto;
+    padding: 0.15em 0.6em;
+    border-radius: 99px;
+    background: #dcfce7;
+    color: #008236;
+    font-size: 0.85em;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .rl-quota {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4em;
+  }
+  .rl-quota b {
+    font-size: 3em;
+    letter-spacing: -0.02em;
+    border-radius: 0.2em;
+  }
+  .rl-quota small {
+    font-size: 1.4em;
+    color: var(--mut);
+  }
+  .rl-bar {
+    height: 0.6em;
+    border-radius: 99px;
+    background: #eef0f4;
+    overflow: hidden;
+  }
+  .rl-bar i {
+    display: block;
+    height: 100%;
+    background: var(--ind);
+  }
+  .rl-note {
+    font-size: 1.1em;
+    color: var(--mut);
+  }
+  .rl-pill {
+    margin-left: auto;
+    padding: 0.15em 0.7em;
+    border-radius: 99px;
+    background: #dcfce7;
+    color: #008236;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+  .rl-st {
+    font-size: 1.25em;
+  }
+  .rl-wait {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    color: var(--mut);
+    font-size: 1.15em !important;
+    font-weight: 600;
+  }
+  .rl-wait.is-hot {
+    color: #e17100;
+  }
+  .rl-sold {
+    display: flex;
+    align-items: center;
+    gap: 1.2em;
+    padding: 1.3em 1.7em;
+    border: 1px solid var(--line);
+    border-radius: 1.2em;
+    background: #fff;
+    font-size: 1.3em;
+  }
+  .rl-sold > i {
+    display: grid;
+    place-items: center;
+    width: 2.4em;
+    height: 2.4em;
+    border-radius: 0.6em;
+    background: #dcfce7;
+    color: #008236;
+  }
+  .rl-sold span {
+    color: var(--mut);
+  }
+  .rl-sold b {
+    font-size: 1.4em;
+    border-radius: 0.2em;
+  }
+  .rl-sold small {
+    color: var(--mut);
+  }
+  .rl-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.6em;
+  }
+  .rl-stats > div {
+    position: relative;
+    display: grid;
+    gap: 0.3em;
+    padding: 1.4em 1.6em;
+    border: 1px solid var(--line);
+    border-radius: 1.2em;
+    background: #fff;
+  }
+  .rl-stats small {
+    font-size: 1.05em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mut);
+  }
+  .rl-stats b {
+    justify-self: start;
+    font-size: 3em;
+    letter-spacing: -0.02em;
+    border-radius: 0.2em;
+  }
+  .rl-si {
+    position: absolute;
+    top: 1.2em;
+    right: 1.2em;
+    display: grid;
+    place-items: center;
+    width: 2.6em;
+    height: 2.6em;
+    border-radius: 0.7em;
+    background: #f0edff;
+    color: var(--ind);
+  }
+  .rl-si--o {
+    background: #fff4e5;
+    color: #e17100;
+  }
+  .rl-si--g {
+    background: #f2f4f7;
+    color: #475467;
+  }
+  .rl-si--b {
+    background: #e8f1ff;
+    color: #2563eb;
+  }
+  .rl-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.6em;
+  }
+  .rl-ch small {
+    margin-left: auto;
+    font-size: 0.8em;
+    color: var(--mut);
+  }
+  .rl-pipe__body {
+    display: grid;
+    grid-template-columns: 13em 1fr;
+    align-items: center;
+    gap: 2.4em;
+    padding-top: 0.4em;
+  }
+  .rl-ring {
+    position: relative;
+  }
+  .rl-ring svg {
+    display: block;
+    width: 100%;
+  }
+  .rl-ring span {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    line-height: 1.1;
+  }
+  .rl-ring b {
+    font-size: 2.6em;
+    border-radius: 0.2em;
+  }
+  .rl-ring small {
+    font-size: 1.05em;
+    color: var(--mut);
+  }
+  .rl-pipe ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.75em;
+  }
+  .rl-pipe li {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    font-size: 1.2em;
+    color: #344054;
+  }
+  .rl-pipe li i {
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+  }
+  .rl-pipe li b {
+    margin-left: auto;
+    color: var(--ink);
+    border-radius: 0.2em;
+  }
+  .rl-sb {
+    display: grid;
+    grid-template-columns: 1fr auto 3.2em;
+    align-items: baseline;
+    gap: 0.3em 0.8em;
+    font-size: 1.15em;
+  }
+  .rl-sb span {
+    color: #344054;
+  }
+  .rl-sb b,
+  .rl-sb small {
+    text-align: right;
+    border-radius: 0.2em;
+  }
+  .rl-sb small {
+    color: var(--mut);
+  }
+  .rl-sb i {
+    grid-column: 1 / -1;
+    height: 0.5em;
+    border-radius: 99px;
+    background: #f2f4f7;
+    overflow: hidden;
+  }
+  .rl-sb u {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+  }
+  .rl-status {
+    gap: 0.75em;
+  }
+  .rl-stats b.rl-job {
+    font-size: 2.4em;
+  }
+  .rl-stats span {
+    font-size: 1.1em;
+    color: var(--mut);
+  }
+  .rl-ev {
+    min-width: 40em;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.9em;
+    padding: 0.9em 1.2em;
+    border-radius: 0.9em;
+    background: #fff;
+    border: 1px solid var(--line);
+    box-shadow: 0 1em 2.4em -1em rgb(16 24 40 / 0.35);
+    font-size: 1.2em;
+  }
+  .rl-ev > i {
+    display: grid;
+    place-items: center;
+    width: 2.2em;
+    height: 2.2em;
+    border-radius: 50%;
+    color: #fff;
+  }
+  .rl-ev__wa {
+    background: #25d366;
+  }
+  .rl-ev__ok {
+    background: #00a63e;
+  }
+  .rl-ev__hot {
+    background: #f78d20;
+  }
+  .rl-ev b {
+    margin-right: 0.3em;
+  }
+  .rl-ev em {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--ind);
+    border-radius: 0.3em;
+  }
+  .rl-ev--hot {
+    border-color: #ffd6a7;
+  }
+  .rl-ev--hot em {
+    color: #e17100;
+  }
+
+  @container (max-width: 560px) {
+    .rl {
+      grid-template-columns: 1fr;
+      aspect-ratio: auto;
+      font-size: calc(var(--u) * 3.4);
+    }
+    .rl-side,
+    .rl-head > span,
+    .rl-row3,
+    .rl-stats,
+    .rl-bottom {
+      display: none !important;
+    }
+    .rl-head {
+      min-height: 0;
+    }
+    .rl-ev {
+      min-width: 0;
+      width: 100%;
+    }
+    .rl-main {
+      padding: 1.2em;
+      gap: 1em;
+    }
+    .rl-sold {
+      flex-wrap: wrap;
+    }
+  }
+</style>

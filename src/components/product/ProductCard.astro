@@ -1,7 +1,7 @@
 ---
 import Icon from "../ui/Icon.astro";
 import ProductIcon from "../ui/ProductIcon.astro";
-import ProductMiniUI from "../visuals/ProductMiniUI.astro";
+import ScreenshotFrame from "../visuals/ScreenshotFrame.astro";
 import { productHref, type Product } from "../../data/products";
 
 interface Props {
@@ -25,7 +25,14 @@ const { product: p, index = 0, headingLevel: H = "h3" } = Astro.props;
   </div>
   <p class="pc__tagline">{p.tagline}</p>
   <div class="pc__visual">
-    <ProductMiniUI product={p.slug} />
+    {p.screenshot && (
+      <ScreenshotFrame
+        shot={p.screenshot}
+        zoom={p.screenshot.heroZoom}
+        sizes={p.screenshot.heroZoom ? "(min-width: 1024px) 1100px, 180vw" : "(min-width: 1024px) 560px, 92vw"}
+        class="pc__shot"
+      />
+    )}
   </div>
   <span class="pc__more" aria-hidden="true">Learn more <Icon name="arrowRight" size={16} /></span>
 </article>
@@ -38,9 +45,7 @@ const { product: p, index = 0, headingLevel: H = "h3" } = Astro.props;
     gap: var(--space-4);
     padding: clamp(1.25rem, 1rem + 1vw, 2rem);
     border-radius: var(--radius-xl);
-    background:
-      radial-gradient(120% 70% at 100% 100%, color-mix(in srgb, var(--acc) 10%, transparent), transparent 60%),
-      var(--reofex-white);
+    background: var(--reofex-white);
     border: 1px solid var(--reofex-border);
     box-shadow: var(--shadow-sm);
     transition:
@@ -107,6 +112,11 @@ const { product: p, index = 0, headingLevel: H = "h3" } = Astro.props;
   }
   .pc:hover .pc__visual {
     transform: translateY(-3px);
+  }
+  .pc__visual :global(.pc__shot .sf__img) {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: 0 0;
   }
   .pc__more {
     display: inline-flex;

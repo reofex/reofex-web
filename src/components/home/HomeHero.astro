@@ -1,0 +1,584 @@
+---
+/**
+ * Home: hero and products as one continuous pinned sequence.
+ *
+ *   0 → intro   The headline sits beside a deck of the four real product
+ *               screens, stacked and turned away in depth.
+ *   intro → 1   Scrolling hands the left column from the headline to the
+ *               product list; the deck turns toward the viewer.
+ *   then        Each product is dealt to the front in turn while its entry
+ *               in the list opens.
+ *
+ * The list is the real content (names, taglines, links). The deck is
+ * decorative. Phones and no-JS get a static hero followed by a plain list.
+ */
+import Button from "../ui/Button.astro";
+import ProductIcon from "../ui/ProductIcon.astro";
+import Icon from "../ui/Icon.astro";
+import BackdropCurves from "../visuals/BackdropCurves.astro";
+import ScreenshotFrame from "../visuals/ScreenshotFrame.astro";
+import { products, productHref } from "../../data/products";
+
+const list = products.filter((p) => p.screenshot);
+---
+
+<section class="hh section--dark" aria-labelledby="hero-title" data-hh data-depth style={`--n:${list.length}`}>
+  <BackdropCurves variant="hero" />
+  <div class="hh__track">
+    <div class="hh__pin">
+      <div class="container container--wide hh__grid">
+        <div class="hh__left">
+          <div class="hh__intro">
+            <h1 class="h1 hh__title" id="hero-title">
+              <span>Software for the work</span>{" "}
+              <span>your team shouldn't</span>{" "}
+              <span class="accent">do by hand.</span>
+            </h1>
+            <p class="lead hh__lead">
+              Respondly answers customer messages. Reofex Sync enters purchase invoices. Reofex Growth runs WhatsApp
+              ads. Fynex runs visa and PRO cases. And when none of them fit, we build what does.
+            </p>
+            <div class="hh__ctas">
+              <Button href="#products" size="lg" data-hh-products>See the products</Button>
+              <Button href="/contact?topic=project" size="lg" variant="secondary" icon={null}>Build with Reofex</Button>
+            </div>
+          </div>
+
+          <div class="hh__products" id="products">
+            <h2 class="h2 hh__h2">Four products, each built for one job.</h2>
+            <ol class="hh__list">
+              {
+                list.map((p, i) => (
+                  <li class="hh__item" style={`--acc:${p.accent}`}>
+                    <button type="button" class="hh__btn" data-hh-go={i} aria-current={i === 0 ? "true" : undefined}>
+                      <ProductIcon product={p} size={34} />
+                      <span>
+                        <b>{p.name}</b>
+                        <small>{p.category}</small>
+                      </span>
+                    </button>
+                    <div class="hh__body">
+                      <div>
+                        <p class="hh__tag">{p.tagline}</p>
+                        <div class="hh__inline">
+                          <ScreenshotFrame shot={p.screenshot!} tone="dark" sizes="(max-width: 767px) 280vw, 92vw" />
+                        </div>
+                        <a class="hh__link" href={productHref(p.slug)}>
+                          See how {p.name} works <Icon name="arrowRight" size={16} />
+                        </a>
+                      </div>
+                    </div>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </div>
+
+        <div class="hh__stage" aria-hidden="true">
+          <div class="hh__deck">
+            {
+              list.map((p, i) => (
+                <div class="hh__card" data-hh-card style={`--k:${i}`}>
+                  <ScreenshotFrame
+                    crop={false}
+                    shot={p.screenshot!}
+                    priority={i === 0}
+                    tone="dark"
+                    sizes="(min-width: 1320px) 760px, (min-width: 900px) 58vw, 92vw"
+                    class="hh__shot"
+                  />
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const HEADER = 72;
+  const desktop = window.matchMedia("(min-width: 900px)");
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const clamp = (v: number, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+  const smooth = (a: number, b: number, x: number) => {
+    const t = clamp((x - a) / (b - a));
+    return t * t * (3 - 2 * t);
+  };
+  const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+  type Pose = { x: number; y: number; z: number; ry: number; rx: number; o: number; haze: number };
+  // hero: stacked deck turned away; card k sits k layers back
+  const heroPose = (k: number): Pose => ({
+    x: k * -1.5,
+    y: k * -8.5,
+    z: k * -120,
+    ry: -20,
+    rx: 9,
+    o: 1,
+    haze: Math.min(k * 0.22, 0.66),
+  });
+  // products: d = card index − deck position (0 front, >0 waiting, <0 dealt)
+  const dealPose = (d: number): Pose => {
+    if (d >= 0) {
+      const dd = Math.min(d, 3.5);
+      return {
+        x: dd * 4.5,
+        y: dd * -7.5,
+        z: dd * -130,
+        ry: -6 - Math.min(dd, 1) * 7,
+        rx: 4,
+        o: d > 3.2 ? Math.max(0, 1 - (d - 3.2) * 3) : 1,
+        haze: Math.min(dd * 0.24, 0.7),
+      };
+    }
+    const a = Math.min(-d, 1);
+    return { x: a * -4, y: a * 85, z: a * 120, ry: -6 + a * 5, rx: 4 - a * 28, o: Math.max(0, 1 - a * 2.4), haze: 0 };
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-hh]").forEach((root) => {
+    const track = root.querySelector<HTMLElement>(".hh__track")!;
+    const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-hh-card]"));
+    const btns = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-hh-go]"));
+    const n = cards.length;
+    const INTRO = 0.2; // share of the scroll spent handing over from headline to products
+    let active = 0;
+    let ticking = false;
+
+    const metrics = () => {
+      const r = track.getBoundingClientRect();
+      return { top: r.top + window.scrollY, travel: Math.max(1, r.height - (window.innerHeight - HEADER)) };
+    };
+    const progressFor = (i: number) => INTRO + ((i + 0.5) / n) * (1 - INTRO);
+
+    const clear = () => {
+      cards.forEach((c) => {
+        c.style.transform = "";
+        c.style.opacity = "";
+        c.style.zIndex = "";
+        c.style.removeProperty("--haze");
+      });
+      root.style.removeProperty("--q");
+    };
+
+    const update = () => {
+      ticking = false;
+      if (!desktop.matches) return clear();
+      const { top, travel } = metrics();
+      const p = clamp((window.scrollY + HEADER - top) / travel);
+      const q = smooth(0, INTRO, p); // 0 hero → 1 products
+      root.style.setProperty("--q", q.toFixed(4));
+      root.classList.toggle("is-products", q > 0.5);
+
+      const u = clamp(((p - INTRO) / (1 - INTRO)) * n - 0.5, 0, n - 1);
+      const i = Math.floor(u);
+      const t = i + smooth(0.3, 0.7, u - i);
+
+      const poses: { x: number; y: number; z: number; ry: number; rx: number; o: number; haze: number; zi: number }[] = [];
+      cards.forEach((c, k) => {
+        const a = heroPose(k);
+        const b = dealPose(k - t);
+        const x = lerp(a.x, b.x, q);
+        const y = lerp(a.y, b.y, q);
+        const z = lerp(a.z, b.z, q);
+        const ry = lerp(a.ry, b.ry, q);
+        const rx = lerp(a.rx, b.rx, q);
+        // each card carries its own perspective, so tilted cards never intersect
+        c.style.transform = `perspective(2200px) translate3d(${x}%, ${y}%, ${z}px) rotateY(${ry}deg) rotateX(${rx}deg)`;
+        c.style.opacity = lerp(a.o, b.o, q).toFixed(3);
+        c.style.setProperty("--haze", lerp(a.haze, b.haze, q).toFixed(3));
+        const zi = 100 - Math.round((k - t * q) * 10);
+        c.style.zIndex = String(zi);
+        poses.push({ x, y, z, ry, rx, o: lerp(a.o, b.o, q), haze: lerp(a.haze, b.haze, q), zi });
+      });
+      // shared with the WebGL deck (heroDeck3d), which draws the same poses in real 3D
+      (root as any).__poses = poses;
+      (root as any).__q = q;
+
+      const next = q < 0.5 ? -1 : Math.round(t);
+      if (next !== active) {
+        active = next;
+        btns.forEach((b, j) => (j === next ? b.setAttribute("aria-current", "true") : b.removeAttribute("aria-current")));
+      }
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    const scrollToP = (p: number) => {
+      const { top, travel } = metrics();
+      window.scrollTo({ top: top - HEADER + p * travel, behavior: reduce.matches ? "auto" : "smooth" });
+    };
+
+    btns.forEach((b, i) =>
+      b.addEventListener("click", () => {
+        if (desktop.matches) scrollToP(progressFor(i));
+      }),
+    );
+    root.querySelector<HTMLAnchorElement>("[data-hh-products]")?.addEventListener("click", (e) => {
+      if (!desktop.matches) return;
+      e.preventDefault();
+      scrollToP(progressFor(0));
+    });
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    update();
+
+    // Desktop upgrade: the same deck drawn with WebGL (real perspective, light,
+    // soft shadows). Loaded after the page is idle; the CSS deck stays as the fallback.
+    const saveData = (navigator as any).connection?.saveData;
+    if (desktop.matches && !reduce.matches && !saveData) {
+      const go = () =>
+        import("../../scripts/heroDeck3d")
+          .then((m) => m.mount(root))
+          .catch(() => {});
+      if ("requestIdleCallback" in window) (window as any).requestIdleCallback(go, { timeout: 2000 });
+      else setTimeout(go, 800);
+    }
+  });
+</script>
+
+<style>
+  .hh {
+    position: relative;
+    overflow: clip;
+    padding-top: var(--header-h);
+    background:
+      radial-gradient(60% 55% at 80% 55%, rgb(26 66 74 / 0.9), transparent 70%),
+      linear-gradient(180deg, var(--reofex-dark-2) 0%, var(--reofex-dark) 100%);
+  }
+
+  /* ---- Pinning ---- */
+  .hh__track {
+    height: calc((var(--n) + 1) * 72svh + 100svh);
+  }
+  .hh__pin {
+    position: sticky;
+    top: var(--header-h);
+    height: calc(100svh - var(--header-h));
+    display: grid;
+    align-items: center;
+  }
+  .hh__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    align-items: center;
+    gap: clamp(2rem, 1rem + 3vw, 4.5rem);
+  }
+
+  /* ---- Left column: headline hands over to the product list ---- */
+  .hh__left {
+    display: grid;
+  }
+  .hh__intro,
+  .hh__products {
+    grid-area: 1 / 1;
+    align-self: center;
+  }
+  .hh__intro {
+    display: grid;
+    gap: var(--space-6);
+    opacity: calc(1 - var(--q, 0) * 1.8);
+    translate: 0 calc(var(--q, 0) * -48px);
+    animation: hh-in 800ms var(--ease-out) both;
+  }
+  .hh__products {
+    display: grid;
+    gap: var(--space-6);
+    opacity: calc((var(--q, 0) - 0.45) * 1.8);
+    translate: 0 calc((1 - var(--q, 0)) * 48px);
+    visibility: hidden;
+  }
+  .hh.is-products .hh__products {
+    visibility: visible;
+  }
+  .hh.is-products .hh__intro {
+    visibility: hidden;
+  }
+  .hh__title {
+    font-size: clamp(2.5rem, 1.1rem + 3.2vw, 4rem);
+  }
+  .hh__title span {
+    display: block;
+    white-space: nowrap;
+  }
+  .hh__lead {
+    max-width: 48ch;
+  }
+  .hh__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  .hh__h2 {
+    font-size: clamp(1.75rem, 1.2rem + 1.4vw, 2.5rem);
+    max-width: 16ch;
+  }
+
+  .hh__list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    border-top: 1px solid var(--reofex-border-dark);
+  }
+  .hh__item {
+    border-bottom: 1px solid var(--reofex-border-dark);
+  }
+  .hh__btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    width: 100%;
+    padding: var(--space-3) 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: left;
+    color: #fff;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 300ms var(--ease-out);
+  }
+  .hh__btn:hover,
+  .hh__btn[aria-current] {
+    opacity: 1;
+  }
+  .hh__btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: var(--radius-sm);
+  }
+  .hh__btn span {
+    display: grid;
+    line-height: 1.3;
+  }
+  .hh__btn b {
+    font-size: var(--fs-md);
+    letter-spacing: -0.01em;
+  }
+  .hh__btn small {
+    font-size: var(--fs-sm);
+    color: var(--reofex-muted-dark);
+  }
+  .hh__body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 450ms var(--ease-out);
+  }
+  .hh__body > div {
+    overflow: hidden;
+    min-height: 0;
+    display: grid;
+    gap: var(--space-2);
+    padding-left: calc(34px + var(--space-4));
+  }
+  .hh__btn[aria-current] + .hh__body {
+    grid-template-rows: 1fr;
+  }
+  .hh__btn[aria-current] + .hh__body > div {
+    padding-bottom: var(--space-4);
+  }
+  .hh__tag {
+    color: var(--reofex-muted-dark);
+  }
+  .hh__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    justify-self: start;
+    font-weight: var(--fw-bold);
+    color: color-mix(in srgb, var(--acc) 55%, white);
+  }
+  .hh__link :global(.icon) {
+    transition: translate var(--dur-base) var(--ease-out);
+  }
+  .hh__link:hover :global(.icon) {
+    translate: 3px 0;
+  }
+  .hh__inline {
+    display: none;
+  }
+
+  /* ---- Deck ---- */
+  .hh__stage {
+    position: relative;
+    width: 100%;
+    max-width: calc((100svh - var(--header-h) - 3rem) * 1.45);
+    justify-self: center;
+    aspect-ratio: 16 / 11;
+  }
+  /* WebGL deck: a canvas a little larger than the stage, so dealt cards can travel */
+  .hh__stage :global(.hh__gl) {
+    position: absolute;
+    left: -20%;
+    top: -25%;
+    width: 140%;
+    height: 150%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 700ms var(--ease-out);
+  }
+  .hh__stage :global(.hh__gl.is-on) {
+    opacity: 1;
+  }
+  .hh--webgl .hh__card {
+    visibility: hidden;
+  }
+  .hh__deck {
+    position: absolute;
+    inset: 0;
+    /* the whole deck leans a touch toward the pointer (--mx/--my from motion.ts) */
+    transform: rotateY(calc(var(--mx, 0) * 4deg)) rotateX(calc(var(--my, 0) * -3deg));
+    transition: transform 150ms linear;
+  }
+  .hh__card {
+    position: absolute;
+    left: 0;
+    right: 3%;
+    top: 18%;
+    transform-origin: 50% 100%;
+    will-change: transform, opacity;
+    animation: hh-deal 1000ms var(--ease-out) both;
+    animation-delay: calc(200ms + (3 - var(--k)) * 110ms);
+    /* static/no-JS pose: the stacked hero deck */
+    transform: perspective(2200px) translate3d(calc(var(--k) * -1.5%), calc(var(--k) * -8.5%), calc(var(--k) * -120px))
+      rotateY(-20deg) rotateX(9deg);
+    z-index: calc(10 - var(--k));
+  }
+  .hh__card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: clamp(10px, 0.6rem + 0.5vw, 16px);
+    background: var(--reofex-dark-2);
+    opacity: var(--haze, calc(var(--k) * 0.22));
+    pointer-events: none;
+  }
+  .hh__card :global(.hh__shot .sf__img) {
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: 0 0;
+  }
+  @keyframes hh-deal {
+    from {
+      opacity: 0;
+      translate: 0 60px;
+    }
+  }
+  @keyframes hh-in {
+    from {
+      opacity: 0;
+      translate: 0 14px;
+    }
+  }
+
+  /* ---- Phones, tablets, no JS: static hero, then a plain product list ---- */
+  @media (max-width: 899px) {
+    .hh {
+      padding-top: calc(var(--header-h) + var(--space-10));
+      padding-bottom: var(--section-y);
+    }
+    .hh__track {
+      height: auto;
+    }
+    .hh__pin {
+      position: static;
+      height: auto;
+      display: block;
+    }
+    .hh__grid {
+      grid-template-columns: 1fr;
+      grid-template-areas: "intro" "stage" "products";
+    }
+    .hh__left {
+      display: contents;
+    }
+    .hh__intro {
+      grid-area: intro;
+      opacity: 1;
+      translate: none;
+      visibility: visible !important;
+    }
+    .hh__products {
+      grid-area: products;
+      opacity: 1;
+      translate: none;
+      visibility: visible;
+      margin-top: var(--space-8);
+    }
+    .hh__stage {
+      grid-area: stage;
+      max-width: 620px;
+      aspect-ratio: 4 / 3;
+    }
+    .hh__card {
+      left: 8%;
+      right: 10%;
+      top: 22%;
+    }
+    .hh__btn {
+      opacity: 1;
+      cursor: default;
+    }
+    .hh__body {
+      grid-template-rows: 1fr;
+    }
+    .hh__body > div {
+      padding-left: 0;
+      padding-bottom: var(--space-6);
+    }
+    .hh__inline {
+      display: block;
+      margin-block: var(--space-2);
+    }
+  }
+  @media (max-width: 767px) {
+    .hh__title span {
+      display: inline;
+      white-space: normal;
+    }
+    .hh__title .accent {
+      display: block;
+    }
+    .hh__ctas :global(.btn) {
+      flex: 1 1 auto;
+    }
+  }
+  :global(html:not(.js)) .hh__track {
+    height: auto;
+  }
+  :global(html:not(.js)) .hh__pin {
+    position: static;
+    height: auto;
+    padding-block: var(--space-12);
+  }
+  :global(html:not(.js)) .hh__left {
+    display: grid;
+    gap: var(--space-16);
+  }
+  :global(html:not(.js)) .hh__intro,
+  :global(html:not(.js)) .hh__products {
+    grid-area: auto;
+    opacity: 1;
+    translate: none;
+    visibility: visible;
+  }
+  :global(html:not(.js)) .hh__body {
+    grid-template-rows: 1fr;
+  }
+  :global(html:not(.js)) .hh__btn {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hh__card,
+    .hh__intro {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,484 @@
+---
+/**
+ * Reofex Sync home screen, rebuilt from the real dashboard with example data.
+ * Loop: a WhatsApp invoice arrives → it's read → it waits for approval →
+ * an older bill is approved and posts to Zoho Books, and the totals move.
+ */
+import Icon from "../ui/Icon.astro";
+import LiveFrame from "./LiveFrame.astro";
+
+const v = (a: string[]) => JSON.stringify(a);
+---
+
+<LiveFrame label="sync.reofex.com · demo data" steps={5} class="lf--tilt">
+  <div class="sl">
+    <aside class="sl-side">
+      <div class="sl-brand"><i><Icon name="check" size={12} /></i><span><b>Reofex Sync</b><small>AI for Accounts</small></span></div>
+      <nav>
+        <span class="is-on"><Icon name="compass" size={12} />Home</span>
+        <span><Icon name="mail" size={12} />Inbox<b data-vals={v(["5", "6", "6", "6", "6"])}>6</b></span>
+        <span><Icon name="check" size={12} />Approvals<b data-vals={v(["3", "3", "3", "4", "3"])}>3</b></span>
+        <span><Icon name="users" size={12} />Vendors</span>
+        <span><Icon name="chart" size={12} />Reports</span>
+        <span><Icon name="server" size={12} />Settings</span>
+      </nav>
+    </aside>
+
+    <div class="sl-main">
+      <div class="sl-top">
+        <span class="sl-search"><Icon name="scan" size={11} />Search invoices: vendor, invoice #, GSTIN…</span>
+        <span class="sl-bell"><Icon name="bell" size={13} /><i data-vals={v(["7", "8", "8", "8", "8"])}>8</i></span>
+        <span class="sl-user"><i>PN</i><span><b>Priya Nair</b><small>Admin</small></span></span>
+      </div>
+
+      <div class="sl-body">
+        <div class="sl-hello"><b>Good evening, Priya</b><small>November 2026 so far</small></div>
+
+        <div class="sl-grid">
+          <section class="sl-card sl-needs">
+            <div class="sl-cardhead"><b>Needs you</b><span>All <span data-vals={v(["9", "9", "10", "10", "9"])}>9</span> →</span></div>
+
+            <!-- the new invoice: arrives, gets read, waits for approval -->
+            <div class="sl-row sl-row--new" data-in="2">
+              <i class="sl-ic sl-ic--wa"><Icon name="whatsapp" size={12} /></i>
+              <span><b>Sharma Traders</b><small data-vals={v(["", "", "Reading invoice…", "Waiting for your approval · ST/26-27/0482", "Waiting for your approval · ST/26-27/0482"])}>Waiting for your approval · ST/26-27/0482</small></span>
+              <span class="sl-amt"><b data-vals={v(["", "", "…", "₹48,203", "₹48,203"])}>₹48,203</b><em data-cls='{"2":"is-busy","3":"is-review"}'>Review ›</em></span>
+            </div>
+
+            <div class="sl-row">
+              <i class="sl-ic"><Icon name="check" size={12} /></i>
+              <span><b>Bharat Freight Solutions</b><small>Waiting for your approval · BFS-5634</small></span>
+              <span class="sl-amt"><b>₹30,243</b><em>Review ›</em></span>
+            </div>
+            <!-- approved in step 4: shows it, then posts and leaves the list -->
+            <div class="sl-row" data-in="0" data-out="5" data-cls='{"4":"is-done"}'>
+              <i class="sl-ic"><Icon name="check" size={12} /></i>
+              <span><b>Kochi Interiors & Furnishings</b><small data-vals={v(["Waiting for your approval · KIF-3452", "Waiting for your approval · KIF-3452", "Waiting for your approval · KIF-3452", "Waiting for your approval · KIF-3452", "Approved by Priya · posting to Zoho Books"])}>Approved by Priya · posting to Zoho Books</small></span>
+              <span class="sl-amt"><b>₹68,440</b><em data-vals={v(["Review ›", "Review ›", "Review ›", "Review ›", "Posted ✓"])}>Posted ✓</em></span>
+            </div>
+            <div class="sl-row">
+              <i class="sl-ic"><Icon name="check" size={12} /></i>
+              <span><b>Cloudnest Software Pvt Ltd</b><small>Waiting for your approval · ZC-88390</small></span>
+              <span class="sl-amt"><b>₹50,976</b><em>Review ›</em></span>
+            </div>
+            <div class="sl-row">
+              <i class="sl-ic sl-ic--warn"><Icon name="clock" size={12} /></i>
+              <span><b>Papyrus Office Supplies Pvt Ltd</b><small>Needs review · INV-2026-0207</small></span>
+              <span class="sl-amt"><b>₹19,175</b><em>Fix ›</em></span>
+            </div>
+            <div class="sl-row" data-in="0" data-out="2">
+              <i class="sl-ic sl-ic--warn"><Icon name="clock" size={12} /></i>
+              <span><b>TechNest IT Services</b><small>Needs review · TN-2611-15</small></span>
+              <span class="sl-amt"><b>₹36,462</b><em>Fix ›</em></span>
+            </div>
+          </section>
+
+          <section class="sl-card sl-conn">
+            <div class="sl-cardhead"><b>Connections</b><span>Manage →</span></div>
+            <p><i></i>Gmail<em>Connected</em></p>
+            <p><i></i>WhatsApp<em>Connected</em></p>
+            <p><i></i>Zoho Books<em>Connected</em></p>
+            <p><i></i>AI provider<em>Connected</em></p>
+            <div class="sl-connfoot">
+              <span><small>Last email check</small><b data-vals={v(["4 min ago", "just now", "just now", "1 min ago", "1 min ago"])}>1 min ago</b></span>
+              <span><small>AI cost this month</small><b data-vals={v(["₹41.20", "₹41.20", "₹41.27", "₹41.27", "₹41.27"])}>₹41.27</b></span>
+            </div>
+          </section>
+        </div>
+
+        <div class="sl-stats">
+          <div><small>Posted</small><b data-vals={v(["₹1,12,265", "₹1,12,265", "₹1,12,265", "₹1,12,265", "₹1,80,705"])}>₹1,80,705</b><span data-vals={v(["5 bills this month", "5 bills this month", "5 bills this month", "5 bills this month", "6 bills this month"])}>6 bills this month</span></div>
+          <div><small>Awaiting approval</small><b data-vals={v(["₹1,49,659", "₹1,49,659", "₹1,49,659", "₹1,97,862", "₹1,29,422"])}>₹1,29,422</b><span data-vals={v(["3 invoices", "3 invoices", "3 invoices", "4 invoices", "3 invoices"])}>3 invoices</span></div>
+          <div><small>GST on posted bills</small><b data-vals={v(["₹17,125", "₹17,125", "₹17,125", "₹17,125", "₹27,565"])}>₹27,565</b><span>CGST + SGST + IGST + cess</span></div>
+          <div><small>Time saved</small><b data-vals={v(["1.7 h", "1.7 h", "1.8 h", "1.8 h", "1.9 h"])}>1.9 h</b><span data-vals={v(["15 invoices read for you", "15 invoices read for you", "16 invoices read for you", "16 invoices read for you", "16 invoices read for you"])}>16 invoices read for you</span></div>
+        </div>
+      </div>
+
+      <!-- event toast -->
+      <div class="sl-toast" data-in="1" data-out="3"><Icon name="whatsapp" size={12} />New invoice on WhatsApp · Sharma Traders</div>
+      <div class="sl-toast sl-toast--ok" data-in="4"><Icon name="check" size={12} />₹68,440 posted to Zoho Books</div>
+    </div>
+  </div>
+</LiveFrame>
+
+<style>
+  .sl {
+    --ink: #101828;
+    --mut: #667085;
+    --line: #eaecf0;
+    --blue: #2563eb;
+    display: grid;
+    grid-template-columns: 21em 1fr;
+    aspect-ratio: 16 / 10;
+    color: var(--ink);
+    background: #fff;
+    font-family: "Inter", var(--font-sans);
+    overflow: hidden;
+  }
+  .sl :global(.icon) {
+    width: 1.25em;
+    height: 1.25em;
+    flex: none;
+  }
+  /* sidebar */
+  .sl-side {
+    display: grid;
+    align-content: start;
+    gap: 2.2em;
+    padding: 2em 1.4em;
+    background: #1e293b;
+    color: #cbd5e1;
+  }
+  .sl-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+  }
+  .sl-brand i {
+    display: grid;
+    place-items: center;
+    width: 3em;
+    height: 3em;
+    border-radius: 0.7em;
+    background: var(--blue);
+    color: #fff;
+  }
+  .sl-brand span {
+    display: grid;
+    line-height: 1.25;
+  }
+  .sl-brand b {
+    color: #fff;
+    font-size: 1.35em;
+  }
+  .sl-brand small {
+    font-size: 1em;
+    color: #94a3b8;
+  }
+  .sl-side nav {
+    display: grid;
+    gap: 0.4em;
+  }
+  .sl-side nav span {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 0.85em 1em;
+    border-radius: 0.6em;
+    font-size: 1.3em;
+  }
+  .sl-side nav span.is-on {
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+    box-shadow: inset 0.2em 0 0 var(--blue);
+  }
+  .sl-side nav b {
+    margin-left: auto;
+    min-width: 1.6em;
+    padding: 0.1em 0.4em;
+    border-radius: 99px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 0.8em;
+    text-align: center;
+  }
+
+  /* main */
+  .sl-main {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-width: 0;
+    background: #fbfcfd;
+  }
+  .sl-top {
+    display: flex;
+    align-items: center;
+    gap: 2em;
+    padding: 1.3em 2.4em;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+  }
+  .sl-search {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    width: 46em;
+    padding: 0.9em 1.2em;
+    border: 1px solid var(--line);
+    border-radius: 0.7em;
+    background: #f9fafb;
+    color: var(--mut);
+    font-size: 1.2em;
+  }
+  .sl-bell {
+    position: relative;
+    margin-left: auto;
+    color: var(--mut);
+  }
+  .sl-bell :global(.icon) {
+    width: 1.8em;
+    height: 1.8em;
+  }
+  .sl-bell i {
+    position: absolute;
+    top: -0.7em;
+    right: -0.8em;
+    min-width: 1.7em;
+    padding: 0 0.3em;
+    border-radius: 99px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.95em;
+    font-style: normal;
+    font-weight: 700;
+    text-align: center;
+  }
+  .sl-user {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+  }
+  .sl-user i {
+    display: grid;
+    place-items: center;
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    background: #e0e7ff;
+    color: var(--blue);
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1.05em;
+  }
+  .sl-user span {
+    display: grid;
+    line-height: 1.25;
+    font-size: 1.2em;
+  }
+  .sl-user small {
+    color: var(--mut);
+  }
+  .sl-body {
+    display: grid;
+    align-content: start;
+    gap: 2em;
+    padding: 2.4em;
+    min-height: 0;
+  }
+  .sl-hello {
+    display: grid;
+    gap: 0.3em;
+  }
+  .sl-hello b {
+    font-size: 2.6em;
+    letter-spacing: -0.02em;
+  }
+  .sl-hello small {
+    font-size: 1.3em;
+    color: var(--mut);
+  }
+  .sl-grid {
+    display: grid;
+    grid-template-columns: 1fr 32em;
+    gap: 2em;
+    align-items: start;
+  }
+  .sl-card {
+    border: 1px solid var(--line);
+    border-radius: 1.2em;
+    background: #fff;
+    padding: 1.6em 1.8em;
+  }
+  .sl-cardhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8em;
+    font-size: 1.35em;
+  }
+  .sl-cardhead span {
+    color: var(--blue);
+    font-size: 0.85em;
+  }
+  .sl-needs {
+    height: 38em;
+    overflow: hidden;
+  }
+  .sl-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.2em;
+    padding: 0.95em 0.4em;
+    border-top: 1px solid var(--line);
+    font-size: 1.2em;
+    transition: opacity 500ms var(--ease-out);
+  }
+  .sl-row > span:nth-child(2) {
+    display: grid;
+    line-height: 1.35;
+    min-width: 0;
+  }
+  .sl-row small {
+    color: var(--mut);
+    font-size: 0.88em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sl-ic {
+    display: grid;
+    place-items: center;
+    width: 2.6em;
+    height: 2.6em;
+    border-radius: 0.6em;
+    background: #f3e8ff;
+    color: #7c3aed;
+  }
+  .sl-ic--warn {
+    background: #fef3c7;
+    color: #d97706;
+  }
+  .sl-ic--wa {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+  .sl-amt {
+    display: grid;
+    justify-items: end;
+    line-height: 1.35;
+  }
+  .sl-amt em {
+    font-style: normal;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+  .sl-amt em.is-busy {
+    color: var(--mut);
+  }
+  .sl-row--new {
+    background: linear-gradient(90deg, rgb(37 99 235 / 0.07), transparent 70%);
+    border-radius: 0.5em;
+  }
+  .sl-row.is-done {
+    background: linear-gradient(90deg, rgb(22 163 74 / 0.08), transparent 70%);
+  }
+  .sl-row.is-done small,
+  .sl-row.is-done em {
+    color: #15803d;
+  }
+  .sl-conn p {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 0.6em 0;
+    font-size: 1.25em;
+  }
+  .sl-conn p i {
+    width: 0.65em;
+    height: 0.65em;
+    border-radius: 50%;
+    background: #16a34a;
+  }
+  .sl-conn p em {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 0.9em;
+    color: #16a34a;
+  }
+  .sl-connfoot {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+    margin-top: 1em;
+    padding-top: 1.2em;
+    border-top: 1px solid var(--line);
+  }
+  .sl-connfoot span {
+    display: grid;
+    gap: 0.2em;
+    font-size: 1.15em;
+  }
+  .sl-connfoot small {
+    color: var(--mut);
+  }
+  .sl-connfoot b {
+    justify-self: start;
+    border-radius: 0.3em;
+  }
+  .sl-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.6em;
+  }
+  .sl-stats > div {
+    display: grid;
+    gap: 0.3em;
+    padding: 1.4em 1.6em;
+    border: 1px solid var(--line);
+    border-radius: 1.2em;
+    background: #fff;
+  }
+  .sl-stats small {
+    font-size: 1.15em;
+    color: var(--mut);
+  }
+  .sl-stats b {
+    justify-self: start;
+    font-size: 2.4em;
+    letter-spacing: -0.02em;
+    border-radius: 0.2em;
+  }
+  .sl-stats span {
+    font-size: 1.1em;
+    color: var(--mut);
+  }
+  .sl-toast {
+    position: absolute;
+    right: 2.4em;
+    top: 7.5em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0.9em 1.4em;
+    border-radius: 99px;
+    background: #0f172a;
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: 600;
+    box-shadow: 0 1em 2em -0.8em rgb(0 0 0 / 0.5);
+  }
+  .sl-toast :global(.icon) {
+    color: #4ade80;
+  }
+  .sl-toast--ok :global(.icon) {
+    color: #4ade80;
+  }
+
+  /* Phones: just the "Needs you" list, larger */
+  @container (max-width: 560px) {
+    .sl {
+      grid-template-columns: 1fr;
+      aspect-ratio: auto;
+      font-size: calc(var(--u) * 3.8);
+    }
+    .sl-side,
+    .sl-top,
+    .sl-hello,
+    .sl-conn,
+    .sl-stats,
+    .sl-toast {
+      display: none !important;
+    }
+    .sl-body {
+      padding: 1em;
+    }
+    .sl-grid {
+      grid-template-columns: 1fr;
+    }
+    .sl-needs {
+      height: auto;
+    }
+  }
+</style>

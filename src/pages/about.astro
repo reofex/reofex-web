@@ -9,10 +9,10 @@ import { products, productHref } from "../data/products";
 import { services } from "../data/site";
 
 const values = [
-  { title: "Clarity", body: "Simple products, clear communication, honest timelines." },
+  { title: "Clarity", body: "Plain answers on scope, cost and timelines before any work starts." },
   { title: "Ownership", body: "We treat every system we build as if we have to run it ourselves — because often we do." },
-  { title: "Practical AI", body: "AI where it removes real work, with people in control where it matters." },
-  { title: "Craft", body: "Good software is designed, not just delivered. Details matter." },
+  { title: "Practical AI", body: "AI does the reading and drafting. A person approves anything that involves money or a customer." },
+  { title: "Built to run", body: "Testing, monitoring and documentation are part of the build, because we support what we ship." },
 ];
 ---
 
@@ -22,16 +22,14 @@ const values = [
 >
   <PageHero
     crumbs={[{ label: "About" }]}
-    eyebrow="About Reofex"
     title="A software company that builds"
     titleAccent="real products."
-    lead="Reofex Technologies builds SaaS products, intelligent automation and custom software that help businesses operate smarter, faster and with less friction."
+    lead="We build and run four products of our own: Respondly, Reofex Sync, Reofex Growth and Fynex. We also build custom software for other businesses, with the same team and the same process."
   />
 
   <section class="section section--white" aria-labelledby="story-title">
     <div class="container ab">
       <div class="ab__copy" data-reveal>
-        <p class="eyebrow">What we do</p>
         <h2 class="h2" id="story-title">Products and engineering, under one roof.</h2>
         <p class="lead">
           We design, build and run our own products — and we bring that same product thinking and engineering discipline
@@ -80,12 +78,11 @@ const values = [
 
   <section class="section" aria-labelledby="values-title">
     <div class="container">
-      <SectionHeader id="values-title" eyebrow="What we value" title="How we work." />
+      <SectionHeader id="values-title" title="How we work." />
       <ul role="list" class="vl">
         {
           values.map((v, i) => (
             <li data-reveal style={`--reveal-i:${i}`}>
-              <span>{String(i + 1).padStart(2, "0")}</span>
               <h3>{v.title}</h3>
               <p>{v.body}</p>
             </li>
@@ -159,16 +156,14 @@ const values = [
   .vl {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-4);
+    gap: var(--space-8);
   }
   .vl li {
     display: grid;
     gap: var(--space-3);
     align-content: start;
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    background: var(--reofex-white);
-    border: 1px solid var(--reofex-border);
+    padding-top: var(--space-6);
+    border-top: 2px solid var(--reofex-dark);
   }
   .vl span {
     font-size: var(--fs-sm);

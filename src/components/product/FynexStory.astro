@@ -1,0 +1,681 @@
+---
+/**
+ * Fynex: follow one case (an employment visa renewal) through intake,
+ * routing, a rejection that loops back, signature and wallet payment, to a
+ * VAT invoice and expiry tracking. The case card on the left keeps its step
+ * list in sync with the stage; the right panel shows each moment.
+ * Example data only (illustrative client, amounts and dates).
+ */
+import Icon from "../ui/Icon.astro";
+import StoryShell from "./story/StoryShell.astro";
+
+const steps = [
+  {
+    title: "A request comes in",
+    body: "A permitted team member fills in the intake form you built for this service, with its price and VAT.",
+  },
+  {
+    title: "Routed to the right people",
+    body: "The task chain starts by itself and hands the case from HR to PRO to Finance.",
+  },
+  {
+    title: "Rejections loop back",
+    body: "If something's wrong, it goes back to the right person with a reason. No lost emails.",
+  },
+  {
+    title: "Signed and paid",
+    body: "E-signature on the form, and the charge is taken from the company's prepaid wallet.",
+  },
+  {
+    title: "Invoiced, then watched",
+    body: "A VAT-ready invoice is issued, and the new expiry date is tracked with an alert well ahead of time.",
+  },
+];
+
+const caseSteps = ["Submitted by HR", "PRO document review", "Signature", "Payment", "Approved & issued"];
+---
+
+<StoryShell
+  id="fx-title"
+  eyebrow="Follow one case"
+  title={"From an intake form\nto an issued visa."}
+  lead="Scroll to see how a single visa renewal moves through Fynex, including the moment it gets sent back."
+  steps={steps}
+  accent="#7357d6"
+  caption="Example case"
+>
+  <div class="fx">
+    <!-- The case (persistent) -->
+    <div class="ss-card fx-case">
+      <div class="fx-case__head">
+        <small>SR-1047 · Al Noor Trading LLC</small>
+        <b>Employment Visa Renewal</b>
+        <span lang="ar" dir="rtl">تجديد تأشيرة العمل</span>
+      </div>
+      <ol class="fx-steps">
+        {
+          caseSteps.map((label, i) => (
+            <li class={`fx-st fx-st--${i + 1}`}>
+              <span class="fx-dot">
+                <Icon name="check" size={12} class="fx-dot__ok" />
+              </span>
+              <span class="fx-st__label">
+                {label}
+                {i === 1 && <em class="fx-sentback">Sent back: passport copy is blurry</em>}
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="fx-case__foot">
+        <span><Icon name="users" size={13} />Mariam Saeed</span>
+        <span class="fx-amt">AED 1,942.50</span>
+      </div>
+    </div>
+
+    <!-- 0 · intake form -->
+    <div class="ss-card fx-panel fx-form" data-s="0">
+      <div class="fx-panel__head"><Icon name="form" size={16} /><b>Intake form</b><small>Employment Visa Renewal</small></div>
+      {
+        [
+          ["Employee", "Mariam Saeed"],
+          ["Passport no.", "N 4471 0239"],
+          ["Current visa expires", "28 Nov 2026"],
+        ].map(([k, v], i) => (
+          <label class="fx-field" style={`--k:${i}`}>
+            <span>{k}</span>
+            <b>{v}</b>
+          </label>
+        ))
+      }
+      <div class="fx-field fx-field--file" style="--k:3">
+        <span>Passport copy</span>
+        <b><Icon name="file" size={13} />passport-mariam.jpg</b>
+      </div>
+      <div class="fx-price">
+        <span>Service fee</span><b>AED 1,850.00</b>
+        <span>VAT 5%</span><b>AED 92.50</b>
+      </div>
+      <span class="fx-submit">Submit request</span>
+    </div>
+
+    <!-- 1 · routing chain -->
+    <div class="fx-panel fx-route" data-s="1">
+      <div class="ss-card fx-chain">
+        <div class="fx-panel__head"><Icon name="workflow" size={16} /><b>Task chain</b><small>Started automatically</small></div>
+        <div class="fx-chain__row">
+          <div class="fx-node fx-node--done" style="--k:0"><span>HR</span><small>Submitted</small></div>
+          <i class="fx-arrow" style="--k:1"></i>
+          <div class="fx-node fx-node--now" style="--k:2"><span>PRO</span><small>Reviewing</small></div>
+          <i class="fx-arrow" style="--k:3"></i>
+          <div class="fx-node" style="--k:4"><span>Finance</span><small>Next</small></div>
+        </div>
+      </div>
+      <div class="fx-toast"><Icon name="bell" size={13} />Assigned to PRO team · 2 documents</div>
+    </div>
+
+    <!-- 2 · rejection loops back -->
+    <div class="fx-panel fx-reject" data-s="2">
+      <div class="ss-card fx-note">
+        <div class="fx-note__head"><span class="fx-x">✕</span><b>Rejected by PRO</b><small>back to HR</small></div>
+        <p>"Passport copy is blurry. Please re-upload a clearer scan."</p>
+      </div>
+      <div class="fx-loop" aria-hidden="true">
+        <svg viewBox="0 0 120 40" fill="none"><path d="M110 8C80 -2 40 -2 12 14" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" /><path d="m18 6-7 8 10 3" stroke="currentColor" stroke-width="2" /></svg>
+      </div>
+      <div class="ss-card fx-note fx-note--ok">
+        <div class="fx-note__head"><span class="ss-tick"><Icon name="check" size={12} /></span><b>Re-uploaded by HR</b><small>back to PRO</small></div>
+        <p><Icon name="file" size={13} />passport-mariam-scan.pdf</p>
+      </div>
+    </div>
+
+    <!-- 3 · signature + wallet -->
+    <div class="fx-panel fx-pay" data-s="3">
+      <div class="ss-card fx-sign">
+        <div class="fx-panel__head"><Icon name="form" size={16} /><b>Signature</b><small>Mariam Saeed</small></div>
+        <svg class="fx-sig" viewBox="0 0 220 60" fill="none"><path d="M8 40c12-20 22-30 28-24s-10 28-2 26 14-26 22-24-4 22 4 20 12-18 20-16 2 16 10 14 14-14 22-12 6 10 14 8 20-6 36-10 22-2 40-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" pathLength="1" /></svg>
+      </div>
+      <div class="ss-card fx-wallet">
+        <div class="fx-panel__head"><Icon name="wallet" size={16} /><b>Company wallet</b><small>Prepaid</small></div>
+        <div class="fx-wallet__row"><span>Balance</span><b class="fx-bal"><s>AED 12,400.00</s><span>AED 10,457.50</span></b></div>
+        <div class="fx-wallet__row fx-debit"><span>Employment Visa Renewal</span><b>− AED 1,942.50</b></div>
+      </div>
+    </div>
+
+    <!-- 4 · invoice + expiry -->
+    <div class="fx-panel fx-done" data-s="4">
+      <div class="ss-card fx-inv">
+        <div class="fx-panel__head"><Icon name="invoice" size={16} /><b>Tax invoice</b><small>INV-2026-0318</small></div>
+        <div class="fx-wallet__row"><span>Service fee</span><b>AED 1,850.00</b></div>
+        <div class="fx-wallet__row"><span>VAT 5%</span><b>AED 92.50</b></div>
+        <div class="fx-wallet__row fx-total"><span>Total</span><b>AED 1,942.50</b></div>
+      </div>
+      <div class="ss-card fx-expiry">
+        <Icon name="bell" size={16} />
+        <div><b>New visa valid until 27 Nov 2028</b><small>Alert to PRO team on 28 Sep 2028 · 60 days before</small></div>
+      </div>
+    </div>
+  </div>
+</StoryShell>
+
+<style>
+  .fx {
+    --u: calc(100cqi / 60);
+    --bad: #c2410c;
+    font-size: var(--u);
+    position: relative;
+    aspect-ratio: 60 / 42;
+    color: var(--reofex-dark);
+  }
+
+  /* ---- Case card ---- */
+  .fx-case {
+    position: absolute;
+    left: 1em;
+    top: 2em;
+    width: 27em;
+    padding: 1.5em;
+    display: grid;
+    gap: 1.3em;
+  }
+  .fx-case__head {
+    display: grid;
+    gap: 0.2em;
+  }
+  .fx-case__head small {
+    font-size: 0.95em;
+    letter-spacing: 0.04em;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .fx-case__head b {
+    font-size: 1.55em;
+    letter-spacing: -0.02em;
+  }
+  .fx-case__head span {
+    font-size: 1.1em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .fx-steps {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.25em;
+  }
+  .fx-st {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9em;
+    padding: 0.7em 0.8em;
+    border-radius: 0.7em;
+    font-size: 1.1em;
+    color: rgb(18 40 47 / 0.45);
+    transition:
+      background-color 400ms var(--ease-out),
+      color 400ms var(--ease-out);
+  }
+  .fx-st:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: calc(0.8em + 0.85em);
+    top: 2.5em;
+    height: 1.2em;
+    width: 1px;
+    background: rgb(18 40 47 / 0.15);
+  }
+  .fx-dot {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.7em;
+    height: 1.7em;
+    border-radius: 50%;
+    border: 1.5px solid rgb(18 40 47 / 0.2);
+    color: #fff;
+    transition:
+      background-color 400ms var(--ease-out),
+      border-color 400ms var(--ease-out);
+  }
+  .fx-dot :global(.fx-dot__ok) {
+    width: 1em;
+    height: 1em;
+    stroke-width: 3;
+    opacity: 0;
+  }
+  .fx-st__label {
+    display: grid;
+    gap: 0.3em;
+  }
+  .fx-sentback {
+    display: none;
+    font-style: normal;
+    font-size: 0.85em;
+    font-weight: 700;
+    color: var(--bad);
+  }
+  /* state per stage: current */
+  :global(.story[data-stage="0"]) .fx-st--1,
+  :global(.story[data-stage="1"]) .fx-st--2,
+  :global(.story[data-stage="2"]) .fx-st--1,
+  :global(.story[data-stage="3"]) .fx-st--4 {
+    color: var(--reofex-dark);
+    font-weight: 700;
+    background: rgb(115 87 214 / 0.09);
+  }
+  :global(.story[data-stage="0"]) .fx-st--1 .fx-dot,
+  :global(.story[data-stage="1"]) .fx-st--2 .fx-dot,
+  :global(.story[data-stage="2"]) .fx-st--1 .fx-dot,
+  :global(.story[data-stage="3"]) .fx-st--4 .fx-dot {
+    border-color: var(--acc);
+    box-shadow: inset 0 0 0 0.3em #fff;
+    background: var(--acc);
+  }
+  /* done */
+  :global(.story[data-stage="1"]) .fx-st--1,
+  :global(.story[data-stage="3"]) :is(.fx-st--1, .fx-st--2, .fx-st--3),
+  :global(.story[data-stage="4"]) .fx-st {
+    color: var(--reofex-dark);
+  }
+  :global(.story[data-stage="1"]) .fx-st--1 .fx-dot,
+  :global(.story[data-stage="3"]) :is(.fx-st--1, .fx-st--2, .fx-st--3) .fx-dot,
+  :global(.story[data-stage="4"]) .fx-st .fx-dot {
+    border-color: var(--ok);
+    background: var(--ok);
+  }
+  :global(.story[data-stage="1"]) .fx-st--1 .fx-dot :global(.fx-dot__ok),
+  :global(.story[data-stage="3"]) :is(.fx-st--1, .fx-st--2, .fx-st--3) .fx-dot :global(.fx-dot__ok),
+  :global(.story[data-stage="4"]) .fx-st .fx-dot :global(.fx-dot__ok) {
+    opacity: 1;
+  }
+  /* stage 2: PRO step marked as sent back */
+  :global(.story[data-stage="2"]) .fx-st--2 {
+    color: var(--reofex-dark);
+  }
+  :global(.story[data-stage="2"]) .fx-st--2 .fx-dot {
+    border-color: var(--bad);
+    background: var(--bad);
+  }
+  :global(.story[data-stage="2"]) .fx-sentback {
+    display: block;
+  }
+  .fx-case__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1em;
+    border-top: 1px solid rgb(18 40 47 / 0.08);
+    font-size: 1.05em;
+    color: rgb(18 40 47 / 0.6);
+  }
+  .fx-case__foot span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+  .fx-amt {
+    font-weight: 800;
+    color: var(--reofex-dark);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Right-hand panels ---- */
+  .fx-panel {
+    position: absolute;
+    left: 30.5em;
+    top: 2em;
+    width: 28.5em;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(2.5em);
+    transition:
+      opacity 450ms var(--ease-out),
+      transform 600ms var(--ease-out),
+      visibility 0s linear 600ms;
+  }
+  :global(.story[data-stage="0"]) .fx-panel[data-s="0"],
+  :global(.story[data-stage="1"]) .fx-panel[data-s="1"],
+  :global(.story[data-stage="2"]) .fx-panel[data-s="2"],
+  :global(.story[data-stage="3"]) .fx-panel[data-s="3"],
+  :global(.story[data-stage="4"]) .fx-panel[data-s="4"] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 150ms, 150ms, 0s;
+  }
+  .fx-route,
+  .fx-reject,
+  .fx-pay,
+  .fx-done {
+    display: grid;
+    gap: 1.1em;
+    justify-items: start;
+  }
+  .fx-panel > .ss-card {
+    width: 100%;
+  }
+  .ss-card.fx-panel {
+    padding-bottom: 1.3em;
+  }
+  .fx-panel__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 1.2em 1.4em 0.8em;
+    font-size: 1.15em;
+  }
+  .fx-panel__head :global(.icon) {
+    width: 1.4em;
+    height: 1.4em;
+    color: var(--acc);
+  }
+  .fx-panel__head small {
+    margin-left: auto;
+    font-size: 0.82em;
+    color: rgb(18 40 47 / 0.5);
+  }
+
+  /* form */
+  .fx-field {
+    display: grid;
+    gap: 0.3em;
+    margin: 0 1.4em 0.8em;
+    padding: 0.6em 0.9em;
+    border-radius: 0.6em;
+    border: 1px solid rgb(18 40 47 / 0.12);
+    font-size: 1.02em;
+  }
+  .fx-field span {
+    font-size: 0.82em;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .fx-field b {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+  .fx-field--file {
+    border-style: dashed;
+  }
+  :global(.story[data-stage="0"]) .fx-field b {
+    animation: fx-type 500ms steps(12) both;
+    animation-delay: calc(400ms + var(--k) * 380ms);
+  }
+  .fx-price {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35em 1em;
+    margin: 0.4em 1.4em 1em;
+    font-size: 1em;
+    font-variant-numeric: tabular-nums;
+  }
+  .fx-price span {
+    color: rgb(18 40 47 / 0.55);
+  }
+  .fx-submit {
+    display: block;
+    margin: 0 1.4em;
+    padding: 0.8em;
+    border-radius: 99px;
+    background: var(--acc);
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    font-size: 1.05em;
+  }
+
+  /* chain */
+  .fx-chain {
+    padding-bottom: 1.6em;
+  }
+  .fx-chain__row {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.6em 1.4em 0;
+  }
+  .fx-node {
+    display: grid;
+    justify-items: center;
+    gap: 0.3em;
+    flex: 1;
+    padding: 0.9em 0.4em;
+    border-radius: 0.8em;
+    border: 1px solid rgb(18 40 47 / 0.12);
+    font-size: 1.05em;
+  }
+  .fx-node span {
+    font-weight: 800;
+  }
+  .fx-node small {
+    font-size: 0.82em;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .fx-node--done {
+    border-color: rgb(31 157 107 / 0.4);
+    background: rgb(31 157 107 / 0.07);
+  }
+  .fx-node--now {
+    border-color: var(--acc);
+    background: rgb(115 87 214 / 0.09);
+  }
+  .fx-arrow {
+    flex: none;
+    width: 2em;
+    height: 2px;
+    background: linear-gradient(90deg, rgb(18 40 47 / 0.25), var(--acc));
+  }
+  :global(.story[data-stage="1"]) :is(.fx-node, .fx-arrow) {
+    animation: fx-in 450ms var(--ease-out) both;
+    animation-delay: calc(250ms + var(--k) * 220ms);
+  }
+  .fx-toast {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.7em 1.2em;
+    border-radius: 99px;
+    background: rgb(20 46 54 / 0.9);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    color: #fff;
+    font-size: 1.05em;
+    font-weight: 700;
+  }
+  .fx-toast :global(.icon) {
+    width: 1.2em;
+    height: 1.2em;
+    color: #b6a4ff;
+  }
+  :global(.story[data-stage="1"]) .fx-toast {
+    animation: fx-in 450ms var(--ease-out) 1.4s both;
+  }
+
+  /* rejection */
+  .fx-note {
+    display: grid;
+    gap: 0.6em;
+    padding: 1.2em 1.4em;
+    font-size: 1.05em;
+  }
+  .fx-note__head {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+  }
+  .fx-note__head small {
+    margin-left: auto;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .fx-note p {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    color: rgb(18 40 47 / 0.7);
+    line-height: 1.45;
+  }
+  .fx-x {
+    display: grid;
+    place-items: center;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    background: var(--bad);
+    color: #fff;
+    font-size: 0.85em;
+    font-weight: 800;
+  }
+  .fx-loop {
+    justify-self: center;
+    width: 10em;
+    color: #b6a4ff;
+  }
+  :global(.story[data-stage="2"]) .fx-loop {
+    animation: fx-in 400ms var(--ease-out) 1s both;
+  }
+  :global(.story[data-stage="2"]) .fx-note--ok {
+    animation: fx-in 450ms var(--ease-out) 1.6s both;
+  }
+
+  /* signature + wallet */
+  .fx-sign {
+    padding-bottom: 1em;
+  }
+  .fx-sig {
+    display: block;
+    width: calc(100% - 2.8em);
+    margin: 0 1.4em;
+    padding: 0.4em 0 0.2em;
+    border-bottom: 1px solid rgb(18 40 47 / 0.15);
+    color: #2a2f8f;
+  }
+  .fx-sig path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  :global(.story[data-stage="3"]) .fx-sig path,
+  :global(.story.reached-4) .fx-sig path {
+    animation: fx-sign 1.4s ease-in-out 400ms both;
+  }
+  .fx-wallet,
+  .fx-inv {
+    padding-bottom: 0.8em;
+  }
+  .fx-wallet__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.7em 1.4em;
+    border-top: 1px solid rgb(18 40 47 / 0.06);
+    font-size: 1.05em;
+    font-variant-numeric: tabular-nums;
+  }
+  .fx-wallet__row > span {
+    color: rgb(18 40 47 / 0.6);
+  }
+  .fx-bal s {
+    margin-right: 0.6em;
+    color: rgb(18 40 47 / 0.4);
+    font-weight: 600;
+  }
+  .fx-debit b {
+    color: var(--bad);
+  }
+  :global(.story[data-stage="3"]) .fx-debit {
+    animation: fx-in 450ms var(--ease-out) 1.9s both;
+  }
+  :global(.story[data-stage="3"]) .fx-bal span {
+    animation: fx-in 450ms var(--ease-out) 2.3s both;
+  }
+  .fx-total {
+    font-weight: 800;
+  }
+  .fx-total > span {
+    color: var(--reofex-dark) !important;
+  }
+
+  /* expiry */
+  .fx-expiry {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 1.1em 1.4em;
+    font-size: 1.05em;
+  }
+  .fx-expiry > :global(.icon) {
+    flex: none;
+    width: 1.6em;
+    height: 1.6em;
+    color: var(--reofex-orange);
+  }
+  .fx-expiry div {
+    display: grid;
+    gap: 0.2em;
+    line-height: 1.35;
+  }
+  .fx-expiry small {
+    color: rgb(18 40 47 / 0.55);
+  }
+  :global(.story[data-stage="4"]) .fx-expiry {
+    animation: fx-in 450ms var(--ease-out) 900ms both;
+  }
+
+  @keyframes fx-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.8em);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fx-type {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes fx-sign {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @container (max-width: 520px) {
+    .fx {
+      --u: calc(100cqi / 32);
+      aspect-ratio: 32 / 34;
+    }
+    .fx-case {
+      left: 1.5em;
+      top: 0.5em;
+      width: 29em;
+    }
+    .fx-panel {
+      left: 2.5em;
+      top: 9em;
+      width: 27em;
+    }
+    .fx-price,
+    .fx-field--file {
+      display: none;
+    }
+    :global(.story) .fx-case {
+      transition: opacity 400ms var(--ease-out);
+    }
+    :global(.story:not([data-stage="0"])) .fx-case,
+    :global(.story[data-stage="0"]) .fx-case {
+      opacity: 0.35;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fx [class^="fx-"],
+    .fx :global(path) {
+      animation: none !important;
+    }
+    .fx-sig path {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

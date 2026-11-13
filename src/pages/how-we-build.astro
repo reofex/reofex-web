@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHero from "../components/ui/PageHero.astro";
-import ProcessTimeline from "../components/home/ProcessTimeline.astro";
+import ProcessStory from "../components/process/ProcessStory.astro";
 import SectionHeader from "../components/ui/SectionHeader.astro";
 import Icon from "../components/ui/Icon.astro";
 import CTASection from "../components/home/CTASection.astro";
@@ -22,23 +22,24 @@ const principles = [
 >
   <PageHero
     crumbs={[{ label: "How We Build" }]}
-    eyebrow="How we build"
-    title="Thoughtful process."
-    titleAccent="Solid engineering."
-    lead="A structured approach that turns ideas into reliable, scalable and maintainable software — the same one we use for our own products."
+    title="How we take software"
+    titleAccent="from idea to production."
+    lead="Seven steps, each ending in something you can see and sign off. Most projects go from first conversation to launch in about four weeks. It's the same process we use on our own products."
     compact
   />
-  <ProcessTimeline showCta={false} />
+  <ProcessStory />
 
   <section class="section section--white" aria-labelledby="principles-title">
     <div class="container">
-      <SectionHeader id="principles-title" eyebrow="Engineering principles" title="How we make decisions." align="split" lead="The principles behind every product we ship and every system we build for clients." />
+      <SectionHeader id="principles-title" title="How we make decisions." align="split" lead="The principles behind every product we ship and every system we build for clients." />
       <ul role="list" class="ep">
         {
           principles.map((p, i) => (
             <li data-reveal style={`--reveal-i:${i % 3}`}>
-              <Icon name={p.icon} size={22} />
-              <h3>{p.title}</h3>
+              <h3>
+                <Icon name={p.icon} size={18} />
+                {p.title}
+              </h3>
               <p>{p.body}</p>
             </li>
           ))
@@ -56,15 +57,21 @@ const principles = [
     grid-template-columns: repeat(3, 1fr);
     gap: var(--space-10) var(--space-8);
   }
+  /* same open, ruled rows as the products page */
   .ep li {
     display: grid;
-    gap: var(--space-3);
+    gap: var(--space-2);
     align-content: start;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--reofex-border);
   }
   .ep :global(.icon) {
     color: var(--reofex-orange-ink);
   }
   .ep h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
     font-size: 1.125rem;
   }
   .ep p {

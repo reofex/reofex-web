@@ -1,0 +1,234 @@
+---
+/**
+ * Solutions: the six services as a pinned story. Where we have it, each
+ * service is shown in a product we built and run ourselves (real screens).
+ * Development assistance and IT solutions have no product screen, so they get
+ * a plain card describing how the work runs. Step ids keep the
+ * /solutions#<service> deep links from the footer and About page working.
+ */
+import Icon from "../ui/Icon.astro";
+import ProductIcon from "../ui/ProductIcon.astro";
+import StoryShell from "../product/story/StoryShell.astro";
+import ScreenshotFrame from "../visuals/ScreenshotFrame.astro";
+import { services } from "../../data/site";
+import { products, getProduct } from "../../data/products";
+
+const steps = services.map((s) => ({ id: s.slug, title: s.name, body: s.detail, items: s.includes }));
+const fynex = getProduct("fynex");
+const sync = getProduct("reofex-sync");
+---
+
+<StoryShell
+  id="sv-title"
+  title={"What we build, and\nwhere you can see it."}
+  lead="Where we can, each service is shown in a product we built and run ourselves. The screens are real."
+  steps={steps}
+  accent="#f78d20"
+  ratio={60 / 40}
+>
+  <div class="sp">
+    <!-- 0 · Custom software → Fynex -->
+    <figure class="sp-panel" data-s="0">
+      <ScreenshotFrame crop={false} shot={fynex.screenshot!} zoom={fynex.screenshot!.heroZoom} sizes="(min-width: 1320px) 1400px, 120vw" tone="dark" />
+      <figcaption class="sp-cap"><ProductIcon product={fynex} size={22} /><span><b>Fynex</b> Intake forms and approval chains, configured per service</span></figcaption>
+    </figure>
+
+    <!-- 1 · SaaS development → the four products we run -->
+    <figure class="sp-panel sp-grid" data-s="1">
+      {
+        products.map((p) => (
+          <div class="sp-grid__item">
+            <ScreenshotFrame crop={false} shot={p.screenshot!} sizes="(min-width: 1320px) 380px, 46vw" tone="dark" class="sp-thumb" />
+            <span><ProductIcon product={p} size={18} />{p.name}</span>
+          </div>
+        ))
+      }
+      <figcaption class="sp-cap sp-cap--wide"><span><b>Four SaaS products</b> that we design, build and support ourselves</span></figcaption>
+    </figure>
+
+    <!-- 2 · AI & automation → Sync -->
+    <figure class="sp-panel" data-s="2">
+      <ScreenshotFrame crop={false} shot={sync.screenshot!} sizes="(min-width: 1320px) 760px, 92vw" tone="dark" />
+      <figcaption class="sp-cap"><ProductIcon product={sync} size={22} /><span><b>Reofex Sync</b> AI reads every purchase invoice; a person approves the exceptions</span></figcaption>
+    </figure>
+
+    <!-- 3 · Integrations → Sync connections -->
+    <figure class="sp-panel" data-s="3">
+      <ScreenshotFrame crop={false} shot={sync.screenshot!} zoom={{ scale: 2.2, origin: "100% 22%" }} sizes="(min-width: 1320px) 1600px, 200vw" tone="dark" />
+      <figcaption class="sp-cap"><ProductIcon product={sync} size={22} /><span><b>Reofex Sync</b> Gmail, WhatsApp, Zoho Books and Tally in one flow</span></figcaption>
+    </figure>
+
+    <!-- 4 · Development assistance: how it runs -->
+    <div class="sp-panel ss-card sp-card" data-s="4">
+      <div class="sp-card__head"><Icon name="users" size={16} /><b>How we join your team</b></div>
+      <p><Icon name="code" size={14} />Your repository, your tickets, your stand-ups</p>
+      <p><Icon name="eye" size={14} />A demo of what shipped, every week</p>
+      <p><Icon name="shieldCheck" size={14} />Code review on every change</p>
+      <p><Icon name="userCheck" size={14} />The same engineers for the whole engagement</p>
+    </div>
+
+    <!-- 5 · IT solutions: architecture we've shipped -->
+    <div class="sp-panel ss-card sp-card" data-s="5">
+      <div class="sp-card__head"><Icon name="server" size={16} /><b>Architecture we've shipped</b></div>
+      <div class="sp-arch">
+        <ProductIcon product={fynex} size={26} />
+        <span><b>Fynex</b>Deployed inside each client's own environment, not a shared multi-tenant cloud</span>
+      </div>
+      <div class="sp-arch">
+        <ProductIcon product={sync} size={26} />
+        <span><b>Reofex Sync</b>Runs on the customer's own computer or server; no Reofex servers in between</span>
+      </div>
+    </div>
+  </div>
+</StoryShell>
+
+<style>
+  .sp {
+    --u: calc(100cqi / 60);
+    font-size: var(--u);
+    position: relative;
+    aspect-ratio: 60 / 40;
+    color: var(--reofex-dark);
+  }
+  .sp-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: perspective(1800px) translateY(2em) rotateX(6deg);
+    transform-origin: 50% 0;
+    transition:
+      opacity 450ms var(--ease-out),
+      transform 700ms var(--ease-out),
+      visibility 0s linear 700ms;
+  }
+  :global(.story[data-stage="0"]) .sp-panel[data-s="0"],
+  :global(.story[data-stage="1"]) .sp-panel[data-s="1"],
+  :global(.story[data-stage="2"]) .sp-panel[data-s="2"],
+  :global(.story[data-stage="3"]) .sp-panel[data-s="3"],
+  :global(.story[data-stage="4"]) .sp-panel[data-s="4"],
+  :global(.story[data-stage="5"]) .sp-panel[data-s="5"] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 120ms, 120ms, 0s;
+  }
+
+  .sp-cap {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    margin-top: 1.4em;
+    color: rgb(255 255 255 / 0.75);
+    font-size: 1.2em;
+    line-height: 1.4;
+  }
+  .sp-cap b {
+    color: #fff;
+    margin-right: 0.35em;
+  }
+
+  /* four products */
+  .sp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.6em 1.6em;
+  }
+  .sp-grid__item {
+    display: grid;
+    gap: 0.6em;
+  }
+  .sp-grid__item > span {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1em;
+  }
+  .sp-grid :global(.sp-thumb .sf__img) {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    object-position: 0 0;
+  }
+  .sp-cap--wide {
+    grid-column: 1 / -1;
+    margin-top: 0.2em;
+  }
+
+  /* text cards */
+  .sp-card {
+    left: 8em;
+    right: 8em;
+    top: 4em;
+    padding: 0.4em 0 1em;
+  }
+  .sp-card__head {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 1.3em 1.8em 1em;
+    font-size: 1.3em;
+  }
+  .sp-card__head :global(.icon) {
+    width: 1.3em;
+    height: 1.3em;
+    color: var(--reofex-orange-ink);
+  }
+  .sp-card > p {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+    padding: 1em 1.8em;
+    border-top: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 1.2em;
+  }
+  .sp-card > p :global(.icon) {
+    width: 1.2em;
+    height: 1.2em;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .sp-arch {
+    display: flex;
+    align-items: flex-start;
+    gap: 1em;
+    padding: 1.2em 1.8em;
+    border-top: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 1.15em;
+    line-height: 1.45;
+  }
+  .sp-arch span {
+    display: grid;
+    gap: 0.2em;
+    color: rgb(18 40 47 / 0.7);
+  }
+  .sp-arch b {
+    color: var(--reofex-dark);
+  }
+
+  @container (max-width: 520px) {
+    .sp {
+      --u: calc(100cqi / 32);
+      aspect-ratio: 32 / 30;
+    }
+    .sp-card {
+      left: 0;
+      right: 0;
+      top: 0;
+    }
+    .sp-grid {
+      gap: 1em;
+    }
+    .sp-grid__item > span {
+      font-size: 0.95em;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sp-panel {
+      transform: none;
+    }
+  }
+</style>

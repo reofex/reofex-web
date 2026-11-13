@@ -1,0 +1,314 @@
+---
+/**
+ * The front layer of a product hero: one object from the product's story
+ * (same example data as the story further down the page), floating in front
+ * of the real screen. Reads --mx/--my/--sy from the hero's [data-depth] so it
+ * moves at a different depth from the screen behind it. Decorative.
+ */
+import Icon from "../ui/Icon.astro";
+import type { ProductSlug } from "../../data/products";
+
+interface Props {
+  product: ProductSlug;
+}
+const { product } = Astro.props;
+// Respondly's screen has its phone demo on the right, so its object sits left
+const side = product === "respondly" ? "left" : "right";
+---
+
+<div class:list={["ho", `ho--${side}`]} aria-hidden="true">
+  {
+    product === "respondly" && (
+      <div class="ho__card ho-alert">
+        <div class="ho-alert__top"><Icon name="bell" size={13} /><b>Respondly</b><small>now</small></div>
+        <b>Discount request from Anjali Menon</b>
+        <p>"Any chance of ₹4,500?" · Brogue Commando boots, ₹4,999</p>
+        <div class="ho-btns"><span>Later</span><span class="is-go">Take over</span></div>
+      </div>
+    )
+  }
+  {
+    product === "reofex-growth" && (
+      <div class="ho__card ho-appr">
+        <span class="ho-pill ho-pill--orange">Approval needed</span>
+        <b>Launch "Weekend cake box"?</b>
+        <dl>
+          <div><dt>Budget</dt><dd>₹500 / day</dd></div>
+          <div><dt>Runs on</dt><dd>Facebook, Instagram</dd></div>
+          <div><dt>Status</dt><dd>Paused until approved</dd></div>
+        </dl>
+        <div class="ho-btns"><span>Reject</span><span class="is-go">Approve</span></div>
+      </div>
+    )
+  }
+  {
+    product === "reofex-sync" && (
+      <div class="ho__card ho-checks">
+        <div class="ho-checks__head">
+          <span><b>Sharma Traders</b><small>ST/26-27/0482</small></span>
+          <b class="ho-amt">₹48,203.00</b>
+        </div>
+        <ul>
+          <li><span class="ho-tick"><Icon name="check" size={11} /></span>GSTIN format is valid</li>
+          <li><span class="ho-tick"><Icon name="check" size={11} /></span>Line items add up to the total</li>
+          <li><span class="ho-tick"><Icon name="check" size={11} /></span>Not a duplicate</li>
+          <li class="is-flag"><span class="ho-tick ho-tick--warn"><Icon name="userCheck" size={11} /></span>Over ₹25,000, sent for approval</li>
+        </ul>
+      </div>
+    )
+  }
+  {
+    product === "fynex" && (
+      <div class="ho__card ho-wallet">
+        <div class="ho-wallet__head"><Icon name="wallet" size={15} /><b>Company wallet</b><small>Prepaid</small></div>
+        <div class="ho-row"><span>Balance</span><b>AED 10,457.50</b></div>
+        <div class="ho-row"><span>Employment Visa Renewal</span><b class="is-debit">− AED 1,942.50</b></div>
+        <div class="ho-row ho-row--ok"><span class="ho-tick"><Icon name="check" size={11} /></span>VAT invoice INV-2026-0318 issued</div>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .ho {
+    position: absolute;
+    z-index: 2;
+    bottom: 12%;
+    width: clamp(240px, 30%, 320px);
+    color: var(--reofex-dark);
+    font-size: 14px;
+    /* nearer than the screen: moves more with the pointer, rises faster on scroll */
+    translate: calc(var(--mx, 0) * -16px) calc(var(--my, 0) * -12px - var(--sy, 0) * 120px);
+    animation: ho-in 900ms var(--ease-out) 450ms both;
+  }
+  .ho--left {
+    left: -5%;
+  }
+  .ho--right {
+    right: -5%;
+  }
+  .ho__card {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08),
+      0 30px 60px -20px rgb(0 0 0 / 0.65),
+      0 12px 24px -12px rgb(0 0 0 / 0.4);
+  }
+
+  /* Respondly */
+  .ho-alert > b {
+    font-size: 15px;
+    line-height: 1.3;
+  }
+  .ho-alert p {
+    font-size: 13px;
+    color: rgb(18 40 47 / 0.65);
+  }
+  .ho-alert__top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: rgb(18 40 47 / 0.55);
+  }
+  .ho-alert__top b {
+    color: var(--reofex-dark);
+  }
+  .ho-alert__top small {
+    margin-left: auto;
+  }
+  .ho-alert__top :global(.icon) {
+    color: var(--reofex-orange);
+  }
+
+  /* Growth */
+  .ho-appr {
+    justify-items: start;
+  }
+  .ho-appr > b {
+    font-size: 16px;
+    line-height: 1.3;
+  }
+  .ho-appr dl {
+    display: grid;
+    gap: 6px;
+    width: 100%;
+    margin: 0;
+  }
+  .ho-appr dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+  }
+  .ho-appr dt {
+    color: rgb(18 40 47 / 0.55);
+  }
+  .ho-appr dd {
+    margin: 0;
+    font-weight: 700;
+  }
+  .ho-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .ho-btns span {
+    display: grid;
+    place-items: center;
+    padding: 8px;
+    border-radius: 99px;
+    border: 1px solid rgb(18 40 47 / 0.15);
+    font-size: 13px;
+    font-weight: 700;
+    color: rgb(18 40 47 / 0.7);
+  }
+  .ho-btns .is-go {
+    border-color: var(--reofex-orange);
+    background: var(--reofex-orange);
+    color: var(--reofex-dark);
+  }
+  .ho-pill {
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .ho-pill--orange {
+    color: #8a4700;
+    background: rgb(247 141 32 / 0.16);
+  }
+
+  /* Sync */
+  .ho-checks__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgb(18 40 47 / 0.08);
+  }
+  .ho-checks__head > span {
+    display: grid;
+    line-height: 1.3;
+  }
+  .ho-checks__head small {
+    font-size: 11px;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .ho-amt {
+    font-variant-numeric: tabular-nums;
+  }
+  .ho-checks ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .ho-checks li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .ho-checks li.is-flag {
+    margin-top: 2px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgb(247 141 32 / 0.12);
+    font-weight: 700;
+  }
+  .ho-tick {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #1f9d6b;
+    color: #fff;
+  }
+  .ho-tick :global(.icon) {
+    stroke-width: 2.8;
+  }
+  .ho-tick--warn {
+    background: var(--reofex-orange);
+    color: var(--reofex-dark);
+  }
+
+  /* Fynex */
+  .ho-wallet {
+    gap: 0;
+    padding: 6px 0 4px;
+  }
+  .ho-wallet__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px 12px;
+  }
+  .ho-wallet__head :global(.icon) {
+    color: #7357d6;
+  }
+  .ho-wallet__head small {
+    margin-left: auto;
+    font-size: 11px;
+    color: rgb(18 40 47 / 0.5);
+  }
+  .ho-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-top: 1px solid rgb(18 40 47 / 0.07);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ho-row > span {
+    color: rgb(18 40 47 / 0.6);
+  }
+  .ho-row .is-debit {
+    color: #c2410c;
+  }
+  .ho-row--ok {
+    justify-content: flex-start;
+    font-weight: 700;
+  }
+
+  @keyframes ho-in {
+    from {
+      opacity: 0;
+      transform: translateY(40px) scale(0.96);
+    }
+  }
+
+  /* Phones: the object sits below the screen, overlapping only its lower edge */
+  @media (max-width: 767px) {
+    .ho {
+      position: relative;
+      bottom: auto;
+      width: min(88%, 320px);
+      margin: -24px 0 0 auto;
+      translate: none;
+      font-size: 13px;
+    }
+    .ho--left,
+    .ho--right {
+      left: auto;
+      right: auto;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ho {
+      animation: none;
+      translate: none;
+    }
+  }
+</style>

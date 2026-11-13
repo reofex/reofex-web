@@ -11,12 +11,12 @@ const { features, accent = "var(--reofex-orange)" } = Astro.props;
 
 <ul role="list" class="fg" style={`--acc:${accent}`}>
   {
-    features.map((f, i) => (
-      <li class="fg__item" data-reveal style={`--reveal-i:${i % 4}`}>
-        <span class="fg__icon">
-          <Icon name={f.icon} size={20} />
-        </span>
-        <h3 class="fg__title">{f.title}</h3>
+    features.map((f) => (
+      <li class="fg__item">
+        <h3 class="fg__title">
+          <Icon name={f.icon} size={18} class="fg__icon" />
+          {f.title}
+        </h3>
         <p class="fg__body">{f.body}</p>
       </li>
     ))
@@ -24,43 +24,32 @@ const { features, accent = "var(--reofex-orange)" } = Astro.props;
 </ul>
 
 <style>
+  /* Open grid divided by hairlines: these aren't interactive, so no boxes or hover motion */
   .fg {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr));
-    gap: var(--space-4);
+    column-gap: clamp(1.5rem, 1rem + 2vw, 3rem);
   }
   .fg__item {
     display: grid;
     align-content: start;
     gap: var(--space-2);
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    background: var(--reofex-white);
-    border: 1px solid var(--reofex-border);
-    transition:
-      border-color var(--dur-base),
-      transform var(--dur-base) var(--ease-out);
-  }
-  .fg__item:hover {
-    border-color: color-mix(in srgb, var(--acc) 45%, var(--reofex-border));
-    transform: translateY(-2px);
-  }
-  .fg__icon {
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    margin-bottom: var(--space-3);
-    border-radius: var(--radius-md);
-    color: color-mix(in srgb, var(--acc) 80%, black);
-    background: color-mix(in srgb, var(--acc) 12%, white);
+    padding-block: var(--space-6) var(--space-8);
+    border-top: 1px solid var(--reofex-border);
   }
   .fg__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
     font-size: 1rem;
     letter-spacing: -0.01em;
+  }
+  .fg__title :global(.fg__icon) {
+    color: color-mix(in srgb, var(--acc) 85%, black);
   }
   .fg__body {
     font-size: var(--fs-sm);
     color: var(--reofex-muted);
+    padding-left: calc(18px + var(--space-3));
   }
 </style>
